@@ -1,0 +1,20 @@
+{
+  "name": "condec-system-tests",
+  "version": "1.0.0",
+  "description": "System tests for the ConDec Jira Plugin",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --timeout 30000 --recursive"
+  },
+  "author": "Julia Baum",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "geckodriver": "^1.20.0",
+    "mocha": "^8.2.1",
+    "selenium-webdriver": "^4.0.0-alpha.7"
+  },
+  "dependencies": {
+    "axios": "^0.21.0"
+  }
+}
