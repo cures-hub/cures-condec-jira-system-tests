@@ -7,6 +7,9 @@ bin/
 .idea/
 .metadata/
 *target/
+node_modules/
+package-lock.json
+.vscode/
 
 # Files
 .classpath
