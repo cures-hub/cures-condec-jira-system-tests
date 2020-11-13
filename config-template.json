@@ -1,0 +1,9 @@
+{
+  "firefoxProfilePath": "/PATH/TO/YOUR/SELENIUM/PROFILE",
+  "baseUrl": "localhost",
+  "usePort": 2990,
+  "fullUrl": "http://localhost:2990/jira",
+  "localJiraUsername": "admin",
+  "localJiraPassword": "admin",
+  "projectKey": "CDTEST"
+}

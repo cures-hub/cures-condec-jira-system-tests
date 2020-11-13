@@ -1,63 +1,42 @@
-const chai = require("chai");
-const { Builder, By } = require("selenium-webdriver");
+const chai = require('chai');
+const { Builder, By } = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
-require("geckodriver");
-const axios = require("axios");
+const JSONConfig = require('../config.json');
 
-const baseUrl = "http://localhost:2990/jira"
-var sessionCookie;
-describe("Test create decision knowledge", () => {
-  // before(() => {
-  //   axios.post(baseUrl + "/rest/auth/1/session", {
-  //     username: "admin",
-  //     password: "admin"
-  //   })
-  //   .then(res => {
-  //     console.log("Loggin into local Jira...")
-  //     console.log(res)
-  //     sessionCookie = res.data.session;
-  //     const token = res.headers["set-cookie"];
-  //     console.log(token)
-  //   })
-  //   .catch(error => {
-  //     console.error(error)
-  //   })
-  // });
+require('geckodriver');
 
-  it("should do stuff", async () => {
-    let driver = await new Builder()
-      .forBrowser("firefox")
-      .setFirefoxOptions(() => {
-      setProfile("/Users/julia/Library/Application Support/Firefox/Profiles/gi2gkcor.SeleniumTester")})
+const baseUrl = 'http://localhost:2990/jira';
+describe('Test create decision knowledge', () => {
+  it('should create a decision knowledge issue via the create issue interface', async () => {
+    // set up the firefox profile
+    const options = new firefox.Options();
+    options.setProfile(JSONConfig.firefoxProfilePath);
+
+    const driver = await new Builder()
+      .forBrowser('firefox')
+      .setFirefoxOptions(options)
       .build();
+
+    // always wait for up to 10 seconds
+    await driver.manage().setTimeouts({ implicit: 10000 });
     try {
-    
-      await driver.get(baseUrl);
-      await driver.get(baseUrl + "/secure/CreateIssue!default.jspa");
-			// new WebDriverWait(driver, DEFAULT_TIME_OUT).until(ExpectedConditions.presenceOfElementLocated(By.id("jira")));
-			// TODO: this will only work if Issue is already selected. It should be replaced with a less volatile method
-			// like an HTTP request to create a decision knowledge issue.
-			await driver.findElement(By.id("issue-create-submit")).click(); // this clicks the next button
+      await driver.get(`${baseUrl}/secure/CreateIssue!default.jspa`);
 
-			// // wait until the page loads and the summary box is present
-			// new WebDriverWait(driver, DEFAULT_TIME_OUT).until(ExpectedConditions.presenceOfElementLocated(By.id("summary")));
+      // TODO: this will only work if Issue is already selected.
+      // It should be replaced with a less volatile method
+      // like an HTTP request to create a decision knowledge issue.
+      await driver.findElement(By.id('issue-create-submit')).click(); // this clicks the next button
 
-			// // Write the name of the decision knowledge element
-			// driver.findElement(By.id("summary")).sendKeys("Decision knowledge element 1");
+      // Write the name of the decision knowledge element
+      await driver.findElement(By.id('summary')).sendKeys('Decision knowledge element 1');
 
-			// // click the create button
-			// driver.findElement(By.id("issue-create-submit")).click();
+      // click the create button
+      await driver.findElement(By.id('issue-create-submit')).click();
 
-			// // Wait until the issue page loads
-			// new WebDriverWait(driver, DEFAULT_TIME_OUT).until(ExpectedConditions.presenceOfElementLocated(By.id("type-val")));
-      // // await driver.manage().options()
-
-      // await driver.get(baseUrl);
-      // await driver.sleep(5000);
+      // make sure the created issue has the correct type
+      chai.assert.equal(await driver.findElement(By.id('type-val')).getText(), 'Issue');
+    } finally {
+      driver.quit();
     }
-    finally {
-      driver.quit()
-    }
-  console.log("pass");
   });
-}, 30000);
+});

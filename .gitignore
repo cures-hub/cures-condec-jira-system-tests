@@ -21,3 +21,5 @@ config.properties
 preview_standalone.*
 pngLaTeX.*
 tikz-uml.sty
+config.json
+
