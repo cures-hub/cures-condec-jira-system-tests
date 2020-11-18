@@ -41,7 +41,7 @@ const activateConDec = async () => {
 const setIssueStrategy = async () => {
   await axios.post(
     `${JSONConfig.fullUrl}/rest/condec/latest/config/setIssueStrategy.json?projectKey=${JSONConfig.projectKey}&isIssueStrategy=true`,
-    undefined,
+    undefined, // no data in the body
     localCredentialsObject,
   ).then((res) => assert(res.status === 200));
 };
@@ -61,6 +61,8 @@ const setUpJira = async () => {
       description: 'A project for testing the ConDec Jira plugin',
       lead: 'admin',
     });
+    // const issueTypes = await jira.listIssueTypes();
+    // console.log(issueTypes);
 
     // activate ConDec
     await activateConDec();
@@ -119,7 +121,7 @@ const setUpJira = async () => {
     return false;
   }
 };
-// setUpJira().then((res) => console.log(res)).catch((err) => { throw err; });
+setUpJira().then((res) => console.log(res)).catch((err) => { throw err; });
 
 module.exports = {
   deleteProject, jira, setUpJira,
