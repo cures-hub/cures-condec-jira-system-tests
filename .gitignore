@@ -1,0 +1,20 @@
+# Gitignore for Automated System Tests for the Jira ConDec plug-in
+
+# Directories
+codemr/
+target/
+bin/
+.idea/
+.metadata/
+*target/
+
+# Files
+.classpath
+.project
+.settings
+*.iml
+*.class
+config.properties
+preview_standalone.*
+pngLaTeX.*
+tikz-uml.sty
