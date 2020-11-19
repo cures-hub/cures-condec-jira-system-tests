@@ -5,9 +5,8 @@ const JSONConfig = require('../config.json');
 
 require('geckodriver');
 
-const baseUrl = 'http://localhost:2990/jira';
-describe('Test create decision knowledge', () => {
-  it('should create a decision knowledge issue via the create issue interface', async () => {
+describe('Test SF: create decision knowledge element (CONDEC-168)', () => {
+  it('should create a decision knowledge issue via the create issue interface @requirement=CONDEC-168', async () => {
     // set up the firefox profile
     const options = new firefox.Options();
     options.setProfile(JSONConfig.firefoxProfilePath);
@@ -20,7 +19,7 @@ describe('Test create decision knowledge', () => {
     // always wait for up to 10 seconds
     await driver.manage().setTimeouts({ implicit: 10000 });
     try {
-      await driver.get(`${baseUrl}/secure/CreateIssue!default.jspa`);
+      await driver.get(`${JSONConfig.fullUrl}/secure/CreateIssue!default.jspa`);
 
       // TODO: this will only work if Issue is already selected.
       // It should be replaced with a less volatile method
