@@ -5,8 +5,6 @@
 const axios = require('axios');
 const { assert } = require('chai');
 const JiraApi = require('jira-client');
-
-// baseUrl, usePort, localJiraPassword, localJiraUsername, fullUrl, projectKey,
 const JSONConfig = require('../config.json');
 
 const jira = new JiraApi({
@@ -45,6 +43,7 @@ const setIssueStrategy = async () => {
     localCredentialsObject,
   ).then((res) => assert(res.status === 200));
 };
+
 const setUpJira = async () => {
   try {
     // delete existing project with the configured key (if it exists)
@@ -52,7 +51,7 @@ const setUpJira = async () => {
     if (allProjects.some((elem) => elem.key === JSONConfig.projectKey)) {
       await deleteProject(JSONConfig.projectKey);
     }
-    // create one new project
+    // create one new project with the configured key
     await jira.createProject({
       key: JSONConfig.projectKey,
       name: 'ConDec Test',
@@ -121,7 +120,6 @@ const setUpJira = async () => {
     return false;
   }
 };
-setUpJira().then((res) => console.log(res)).catch((err) => { throw err; });
 
 module.exports = {
   deleteProject, jira, setUpJira,
