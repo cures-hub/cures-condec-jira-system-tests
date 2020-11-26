@@ -6,7 +6,7 @@
   "scripts": {
     "start": "mocha --timeout 0 --recursive",
     "test": "mocha --timeout 0 --recursive",
-    "report": "mocha --timeout 0 --recursive"
+    "report": "mocha --timeout 0 --recursive --reporter mocha-junit-reporter"
   },
   "author": "Julia Baum",
   "license": "ISC",
