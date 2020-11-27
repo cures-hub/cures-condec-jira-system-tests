@@ -1,5 +1,7 @@
 # ConDec System Tests
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e2ed5ab4866a41e4b4a21e132e84152e)](https://app.codacy.com/gh/cures-hub/cures-condec-jira-system-tests?utm_source=github.com&utm_medium=referral&utm_content=cures-hub/cures-condec-jira-system-tests&utm_campaign=Badge_Grade_Settings)
+
 This repo contains system tests for the ConDec Jira plugin. The tests run using Selenium and
 Geckodriver (the Firefox driver for Selenium).
 
