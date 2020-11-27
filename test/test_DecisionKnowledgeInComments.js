@@ -6,7 +6,7 @@ const { By, Builder } = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
 
 const JSONConfig = require('../config.json');
-const { jira, setUpJira } = require('./helpers.js');
+const { jira, setUpJira, createJiraIssue } = require('./helpers.js');
 
 describe('TCS: CONDEC-123', () => {
   before((done) => {
@@ -23,21 +23,7 @@ describe('TCS: CONDEC-123', () => {
     // always wait for up to 10 seconds
     await driver.manage().setTimeouts({ implicit: 10000 });
     try {
-      const issue = await jira.addNewIssue({
-        fields: {
-          project: {
-            key: JSONConfig.projectKey,
-          },
-          summary: 'Dummy task',
-          issuetype: {
-            name: 'Task',
-          },
-          reporter: {
-            name: 'admin',
-          },
-        },
-      });
-      console.log(`Created issue: ${issue.key}`);
+      const issue = await createJiraIssue('Task', 'Dummy task');
 
       const commentString = `{issue}How should we brew coffee?{issue}
       {decision}Use a french press to brew coffee!{decision}

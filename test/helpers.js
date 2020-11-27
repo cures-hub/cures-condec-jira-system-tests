@@ -22,6 +22,7 @@ const localCredentialsObject = {
     password: JSONConfig.localJiraPassword,
   },
 };
+
 const deleteProject = async (projectKeyOrId) => {
   await axios.delete(
     `${JSONConfig.fullUrl}/rest/api/2/project/${projectKeyOrId}`,
@@ -36,12 +37,40 @@ const activateConDec = async () => {
     localCredentialsObject,
   ).then((res) => assert(res.status === 200));
 };
+
 const setIssueStrategy = async () => {
   await axios.post(
     `${JSONConfig.fullUrl}/rest/condec/latest/config/setIssueStrategy.json?projectKey=${JSONConfig.projectKey}&isIssueStrategy=true`,
     undefined, // no data in the body
     localCredentialsObject,
   ).then((res) => assert(res.status === 200));
+};
+
+/**
+ * Creates a Jira issue with the project, user, and Jira instance configured in the `config.json`.
+ * The user is used as the reporter of the issue.
+ *
+ * @param  {string} issueTypeName
+ * @param  {string} issueSummary
+ *
+ */
+const createJiraIssue = async (issueTypeName, issueSummary) => {
+  const createdIssue = await jira.addNewIssue({
+    fields: {
+      project: {
+        key: JSONConfig.projectKey,
+      },
+      summary: issueSummary,
+      issuetype: {
+        name: issueTypeName,
+      },
+      reporter: {
+        name: JSONConfig.localJiraUsername,
+      },
+    },
+  });
+  console.log(`Created issue: ${createdIssue.key}`);
+  return createdIssue;
 };
 
 const setUpJira = async () => {
@@ -66,58 +95,15 @@ const setUpJira = async () => {
     await setIssueStrategy();
 
     // add some issues
-    // TODO: improve issue adding
-
-    await jira.addNewIssue({
-      fields: {
-        project: {
-          key: JSONConfig.projectKey,
-        },
-        summary: 'Issue 1',
-        issuetype: {
-          name: 'Task',
-        },
-        reporter: {
-          name: 'admin',
-        },
-      },
-    });
-    await jira.addNewIssue({
-      fields: {
-        project: {
-          key: JSONConfig.projectKey,
-        },
-        summary: 'Issue 2',
-        issuetype: {
-          name: 'Task',
-        },
-        reporter: {
-          name: 'admin',
-        },
-      },
-    });
-    await jira.addNewIssue({
-      fields: {
-        project: {
-          key: JSONConfig.projectKey,
-        },
-        summary: 'Issue 3',
-        issuetype: {
-          name: 'Issue',
-        },
-        reporter: {
-          name: 'admin',
-        },
-      },
-    });
-
-    return true;
+    await createJiraIssue('Task', 'Issue 1');
+    await createJiraIssue('Task', 'Issue 2');
+    await createJiraIssue('Task', 'Issue 3');
   } catch (err) {
     console.log(err);
-    return false;
+    throw err;
   }
 };
 
 module.exports = {
-  deleteProject, jira, setUpJira,
+  deleteProject, jira, setUpJira, createJiraIssue,
 };

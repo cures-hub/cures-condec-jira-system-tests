@@ -6,7 +6,7 @@ const { By, Builder } = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
 
 const JSONConfig = require('../config.json');
-const { jira, setUpJira } = require('./helpers.js');
+const { setUpJira, createJiraIssue } = require('./helpers.js');
 
 describe('TCS: CONDEC-168', () => {
   before((done) => {
@@ -20,25 +20,12 @@ describe('TCS: CONDEC-168', () => {
       .forBrowser('firefox')
       .setFirefoxOptions(options)
       .build();
+
     // always wait for up to 10 seconds
     await driver.manage().setTimeouts({ implicit: 10000 });
     try {
-      // TODO: maybe make a helper function that calls this
-      const issue = await jira.addNewIssue({
-        fields: {
-          project: {
-            key: JSONConfig.projectKey,
-          },
-          summary: 'What to do with decision knowledge?',
-          issuetype: {
-            name: 'Issue',
-          },
-          reporter: {
-            name: 'admin',
-          },
-        },
-      });
-      console.log(`Created issue: ${issue.key}`);
+      const issue = await createJiraIssue('Issue', 'What to do with decision knowledge?');
+
       // make sure the created issue has the correct type in the GUI
       await driver.get(`${JSONConfig.fullUrl}/browse/${issue.key}`);
       chai.assert.equal(await driver.findElement(By.id('type-val')).getText(), 'Issue');
