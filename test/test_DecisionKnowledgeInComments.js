@@ -38,23 +38,23 @@ describe('TCS: CONDEC-123', () => {
         },
       });
       console.log(`Created issue: ${issue.key}`);
+
       const commentString = `{issue}How should we brew coffee?{issue}
-      {alternative}Use a french press{alternative}
+      {decision}Use a french press to brew coffee!{decision}
       {pro}French press coffee tastes very good{pro}
       {con}French press coffee takes a lot of cleanup{con}
       {alternative}Use a filter coffee machine{alternative}
       {con}Filter coffee doesn't taste very good{con}
-      {pro}Filter coffee does not require much cleanup{pro}
-      {decision}Use a french press to brew coffee!{decision}`;
+      {pro}Filter coffee does not require much cleanup{pro}`;
+
       const decisionKnowledgeTypeList = [
         'issue',
-        'alternative',
-        'argument_pro',
-        'argument_con',
-        'alternative',
-        'argument_con',
-        'argument_pro',
         'decision',
+        'argument_pro',
+        'argument_con',
+        'alternative',
+        'argument_con',
+        'argument_pro',
       ];
       const commentObject = await jira.addComment(issue.key, commentString);
 

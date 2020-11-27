@@ -60,8 +60,6 @@ const setUpJira = async () => {
       description: 'A project for testing the ConDec Jira plugin',
       lead: 'admin',
     });
-    // const issueTypes = await jira.listIssueTypes();
-    // console.log(issueTypes);
 
     // activate ConDec
     await activateConDec();
@@ -84,7 +82,6 @@ const setUpJira = async () => {
         },
       },
     });
-
     await jira.addNewIssue({
       fields: {
         project: {
