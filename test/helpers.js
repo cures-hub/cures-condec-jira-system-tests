@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
+
 /**
- * Set up the local Jira instance
+ * Helper functions for the ConDec Jira system tests
  */
 const axios = require('axios');
 const { assert } = require('chai');
@@ -22,6 +23,12 @@ const localCredentialsObject = {
     password: JSONConfig.localJiraPassword,
   },
 };
+
+/**
+ * Delete a Jira project on the configured Jira instance
+ *
+ * @param  {string} projectKeyOrId
+ */
 const deleteProject = async (projectKeyOrId) => {
   await axios.delete(
     `${JSONConfig.fullUrl}/rest/api/2/project/${projectKeyOrId}`,
@@ -29,6 +36,12 @@ const deleteProject = async (projectKeyOrId) => {
   ).then((res) => assert(res.status === 204));
 };
 
+/**
+ * Activate the ConDec plugin for the configured Jira instance.
+ *
+ * Note that since this function calls the ConDec REST API,
+ * it will only work if the ConDec plugin has been activated manually on the instance before.
+ */
 const activateConDec = async () => {
   await axios.post(
     `${JSONConfig.fullUrl}/rest/condec/latest/config/setActivated.json?projectKey=${JSONConfig.projectKey}&isActivated=true`,
@@ -36,6 +49,10 @@ const activateConDec = async () => {
     localCredentialsObject,
   ).then((res) => assert(res.status === 200));
 };
+
+/**
+ * Set up the ConDec plugin to be used with Jira issue types for decision knowledge
+ */
 const setIssueStrategy = async () => {
   await axios.post(
     `${JSONConfig.fullUrl}/rest/condec/latest/config/setIssueStrategy.json?projectKey=${JSONConfig.projectKey}&isIssueStrategy=true`,
@@ -44,6 +61,37 @@ const setIssueStrategy = async () => {
   ).then((res) => assert(res.status === 200));
 };
 
+/**
+ * Creates a Jira issue with the project, user, and Jira instance configured in the `config.json`.
+ * The user is used as the reporter of the issue.
+ *
+ * @param  {string} issueTypeName - must be a valid Jira issue type for the configured instance
+ * @param  {string} issueSummary
+ *
+ */
+const createJiraIssue = async (issueTypeName, issueSummary) => {
+  const createdIssue = await jira.addNewIssue({
+    fields: {
+      project: {
+        key: JSONConfig.projectKey,
+      },
+      summary: issueSummary,
+      issuetype: {
+        name: issueTypeName,
+      },
+      reporter: {
+        name: JSONConfig.localJiraUsername,
+      },
+    },
+  });
+  console.log(`Created issue: ${createdIssue.key}`);
+  return createdIssue;
+};
+
+/**
+ * Set up the configured Jira instance in order to be able to run system tests against it.
+ *
+ */
 const setUpJira = async () => {
   try {
     // delete existing project with the configured key (if it exists)
@@ -66,58 +114,15 @@ const setUpJira = async () => {
     await setIssueStrategy();
 
     // add some issues
-    // TODO: improve issue adding
-
-    await jira.addNewIssue({
-      fields: {
-        project: {
-          key: JSONConfig.projectKey,
-        },
-        summary: 'Issue 1',
-        issuetype: {
-          name: 'Task',
-        },
-        reporter: {
-          name: 'admin',
-        },
-      },
-    });
-    await jira.addNewIssue({
-      fields: {
-        project: {
-          key: JSONConfig.projectKey,
-        },
-        summary: 'Issue 2',
-        issuetype: {
-          name: 'Task',
-        },
-        reporter: {
-          name: 'admin',
-        },
-      },
-    });
-    await jira.addNewIssue({
-      fields: {
-        project: {
-          key: JSONConfig.projectKey,
-        },
-        summary: 'Issue 3',
-        issuetype: {
-          name: 'Issue',
-        },
-        reporter: {
-          name: 'admin',
-        },
-      },
-    });
-
-    return true;
+    await createJiraIssue('Task', 'Issue 1');
+    await createJiraIssue('Task', 'Issue 2');
+    await createJiraIssue('Task', 'Issue 3');
   } catch (err) {
     console.log(err);
-    return false;
+    throw err;
   }
 };
 
 module.exports = {
-  deleteProject, jira, setUpJira,
+  deleteProject, jira, setUpJira, createJiraIssue,
 };
