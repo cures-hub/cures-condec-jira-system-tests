@@ -53,7 +53,7 @@ describe('TCS: CONDEC-177', () => {
       chai.expect(secondLevel[0].children.length).to.eql(0);
       chai.expect(secondLevel[1].children.length).to.eql(0);
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   });
 });
@@ -83,26 +83,70 @@ describe('TCS: CONDEC-492', () => {
 
       // sort here so we can guarantee the order for later comparisons
       const visNodes = graph.data.nodes.sort((a, b) => ((a.id > b.id) ? 1 : -1));
-      const visEdges = graph.data.edges;
-
-      const expectedLabels = [
-        'TASK\nDummy task',
-        'ISSUE\nHow should we brew coffee?',
-        'DECISION\nUse a french press to brew coffee!',
-        'ALTERNATIVE\nUse a filter coffee machine',
-      ];
-      const expectedGroups = ['task', 'issue', 'decision', 'alternative'];
-
+      const visEdges = graph.data.edges.sort((a, b) => ((a.from > b.from) ? 1 : -1));
+      const expectedNodes = {
+        task: {
+          expectedLabel: 'TASK\nDummy vis.js task',
+          expectedGroup: 'task',
+        },
+        issue: {
+          expectedLabel: 'ISSUE\nHow should we brew coffee?',
+          expectedGroup: 'issue',
+        },
+        decision: {
+          expectedLabel: 'DECISION\nUse a french press to brew coffee!',
+          expectedGroup: 'decision',
+        },
+        alternative: {
+          expectedLabel: 'ALTERNATIVE\nUse a filter coffee machine',
+          expectedGroup: 'alternative',
+        },
+      };
+      const expectedEdges = [
+        {
+          from: 'issue',
+          to: 'task',
+        },
+        {
+          from: 'alternative',
+          to: 'issue',
+        },
+        {
+          from: 'decision',
+          to: 'issue',
+        }];
       chai.expect(visNodes).to.have.length(4);
       chai.expect(visEdges).to.have.length(3);
 
-      // TODO test more things about the edges than the length
-      visNodes.forEach((node, index) => {
-        chai.expect(node.label).to.eql(expectedLabels[index]);
-        chai.expect(node.group).to.eql(expectedGroups[index]);
+      visNodes.forEach((node) => {
+        chai.expect(node.label).to.eql(expectedNodes[node.group].expectedLabel);
+        chai.expect(node.group).to.eql(expectedNodes[node.group].expectedGroup);
+
+        // save the node ids so we can use them for the edge lookup
+        expectedNodes[node.group].id = node.id;
+
+        // replace the names in expected edges with the corresponding IDs
+        // this is necessary because the IDs are dynamic so we can't hardcode them
+        expectedEdges.forEach((connection) => {
+          if (connection.from === node.group) {
+            // eslint-disable-next-line no-param-reassign
+            connection.from = node.id;
+          }
+          if (connection.to === node.group) {
+            // eslint-disable-next-line no-param-reassign
+            connection.to = node.id;
+          }
+        });
+        expectedEdges.sort(((a, b) => ((a.from > b.from) ? 1 : -1)));
+      });
+
+      visEdges.forEach((edge, index) => {
+        chai.expect(edge.from).to.eql(expectedEdges[index].from);
+        chai.expect(edge.to).to.eql(expectedEdges[index].to);
       });
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      throw err;
     }
   });
 });

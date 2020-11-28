@@ -94,7 +94,7 @@ const createJiraIssue = async (issueTypeName, issueSummary) => {
       },
     },
   });
-  console.log(`Created issue: ${createdIssue.key}`);
+  console.info(`Created issue: ${createdIssue.key}`);
   return createdIssue;
 };
 
@@ -103,7 +103,7 @@ const createJiraIssue = async (issueTypeName, issueSummary) => {
  *
  */
 const setUpJira = async () => {
-  console.log('Setting up jira...');
+  console.info('Setting up jira...');
   try {
     // delete existing project with the configured key (if it exists)
     const allProjects = await jira.listProjects();
@@ -128,9 +128,9 @@ const setUpJira = async () => {
     await createJiraIssue('Task', 'Issue 1');
     await createJiraIssue('Task', 'Issue 2');
     await createJiraIssue('Task', 'Issue 3');
-    console.log('Successfully set up Jira!');
+    console.info('Successfully set up Jira!');
   } catch (err) {
-    console.log(err);
+    console.error(err);
     throw err;
   }
 };
