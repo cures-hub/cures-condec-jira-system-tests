@@ -1,7 +1,5 @@
 const axios = require('axios');
 const chai = require('chai');
-// const { By, Builder } = require('selenium-webdriver');
-// const firefox = require('selenium-webdriver/firefox');
 
 const JSONConfig = require('../config.json');
 const {
