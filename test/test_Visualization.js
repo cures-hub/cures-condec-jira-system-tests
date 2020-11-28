@@ -137,9 +137,8 @@ describe('TCS: CONDEC-492', () => {
             connection.to = node.id;
           }
         });
-        expectedEdges.sort(((a, b) => ((a.from > b.from) ? 1 : -1)));
       });
-
+      expectedEdges.sort(((a, b) => ((a.from > b.from) ? 1 : -1)));
       visEdges.forEach((edge, index) => {
         chai.expect(edge.from).to.eql(expectedEdges[index].from);
         chai.expect(edge.to).to.eql(expectedEdges[index].to);
