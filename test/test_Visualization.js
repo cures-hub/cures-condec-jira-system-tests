@@ -8,7 +8,7 @@ const {
   jira, setUpJira, createJiraIssue, localCredentialsObject,
 } = require('./helpers.js');
 
-describe('TCS: CONDEC-492', () => {
+describe('TCS: CONDEC-177', () => {
   before(async () => {
     await setUpJira();
   });
@@ -63,4 +63,10 @@ describe('TCS: CONDEC-492', () => {
       console.log(err);
     }
   });
+});
+describe('TCS: CONDEC-177', () => {
+  before(async () => {
+    await setUpJira();
+  });
+  it('should generate ')
 });
