@@ -12,6 +12,7 @@
         "ecmaVersion": 12
     },
     "rules": {
-      "no-console": ["error", {"allow": ["error", "info", "warn"]}]
+      "no-console": ["error", {"allow": ["error", "info", "warn"]}],
+      "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }]
     }
 }

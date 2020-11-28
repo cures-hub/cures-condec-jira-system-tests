@@ -1,5 +1,3 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-plusplus */
 const chai = require('chai');
 const { By, Builder } = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
