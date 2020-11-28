@@ -37,6 +37,16 @@ const deleteProject = async (projectKeyOrId) => {
 };
 
 /**
+ * Get all configured issue types
+ */
+const getIssueTypes = async () => {
+  const issueTypes = await axios.get(
+    `${JSONConfig.fullUrl}/rest/api/2/issuetype`,
+    localCredentialsObject,
+  );
+  return issueTypes.data;
+};
+/**
  * Activate the ConDec plugin for the configured Jira instance.
  *
  * Note that since this function calls the ConDec REST API,
@@ -93,6 +103,7 @@ const createJiraIssue = async (issueTypeName, issueSummary) => {
  *
  */
 const setUpJira = async () => {
+  console.log('Setting up jira...');
   try {
     // delete existing project with the configured key (if it exists)
     const allProjects = await jira.listProjects();
@@ -117,6 +128,7 @@ const setUpJira = async () => {
     await createJiraIssue('Task', 'Issue 1');
     await createJiraIssue('Task', 'Issue 2');
     await createJiraIssue('Task', 'Issue 3');
+    console.log('Successfully set up Jira!');
   } catch (err) {
     console.log(err);
     throw err;
@@ -124,5 +136,5 @@ const setUpJira = async () => {
 };
 
 module.exports = {
-  deleteProject, jira, setUpJira, createJiraIssue,
+  deleteProject, jira, setUpJira, createJiraIssue, getIssueTypes, localCredentialsObject,
 };
