@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
 const chai = require('chai');
@@ -30,7 +29,8 @@ describe('TCS: CONDEC-168', () => {
       await driver.get(`${JSONConfig.fullUrl}/browse/${issue.key}`);
       chai.assert.equal(await driver.findElement(By.id('type-val')).getText(), 'Issue');
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      throw err;
     } finally {
       driver.quit();
     }

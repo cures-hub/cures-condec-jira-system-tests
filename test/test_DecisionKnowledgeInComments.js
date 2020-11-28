@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
 const chai = require('chai');
@@ -56,7 +55,8 @@ describe('TCS: CONDEC-123', () => {
         chai.expect(src).to.contain(`${decisionKnowledgeTypeList[i]}.png`);
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      throw err;
     } finally {
       driver.quit();
     }
