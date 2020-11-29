@@ -61,11 +61,13 @@ const activateConDec = async () => {
 };
 
 /**
- * Set up the ConDec plugin to be used with Jira issue types for decision knowledge
+ * Set whether the ConDec plugin should use Jira issue types for decision knowledge
+ *
+ * @param  {boolean} useIssueStrategy
  */
-const setIssueStrategy = async () => {
+const setIssueStrategy = async (useIssueStrategy) => {
   await axios.post(
-    `${JSONConfig.fullUrl}/rest/condec/latest/config/setIssueStrategy.json?projectKey=${JSONConfig.projectKey}&isIssueStrategy=true`,
+    `${JSONConfig.fullUrl}/rest/condec/latest/config/setIssueStrategy.json?projectKey=${JSONConfig.projectKey}&isIssueStrategy=${useIssueStrategy}`,
     undefined, // no data in the body
     localCredentialsObject,
   ).then((res) => assert(res.status === 200));
@@ -102,7 +104,7 @@ const createJiraIssue = async (issueTypeName, issueSummary) => {
  * Set up the configured Jira instance in order to be able to run system tests against it.
  *
  */
-const setUpJira = async () => {
+const setUpJira = async (useIssueStrategy = false) => {
   console.info('Setting up jira...');
   try {
     // delete existing project with the configured key (if it exists)
@@ -122,12 +124,9 @@ const setUpJira = async () => {
 
     // activate ConDec
     await activateConDec();
-    await setIssueStrategy();
+    // explicitly set whether to use the issue persistence strategy or not
+    await setIssueStrategy(useIssueStrategy);
 
-    // add some issues
-    await createJiraIssue('Task', 'Issue 1');
-    await createJiraIssue('Task', 'Issue 2');
-    await createJiraIssue('Task', 'Issue 3');
     console.info('Successfully set up Jira!');
   } catch (err) {
     console.error(err);

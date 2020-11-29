@@ -7,7 +7,8 @@ const { setUpJira, createJiraIssue } = require('./helpers.js');
 
 describe('TCS: CONDEC-168', () => {
   before((done) => {
-    setUpJira();
+    // explicitly use issue persistence strategy here
+    setUpJira(true);
     done();
   });
   it('should create a decision knowledge issue via the create issue interface', async () => {
