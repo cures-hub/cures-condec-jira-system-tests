@@ -1,6 +1,3 @@
-/* eslint-disable no-console */
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-plusplus */
 const chai = require('chai');
 const { By, Builder } = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
@@ -10,7 +7,8 @@ const { setUpJira, createJiraIssue } = require('./helpers.js');
 
 describe('TCS: CONDEC-168', () => {
   before((done) => {
-    setUpJira();
+    // explicitly use issue persistence strategy here
+    setUpJira(true);
     done();
   });
   it('should create a decision knowledge issue via the create issue interface', async () => {
@@ -30,7 +28,8 @@ describe('TCS: CONDEC-168', () => {
       await driver.get(`${JSONConfig.fullUrl}/browse/${issue.key}`);
       chai.assert.equal(await driver.findElement(By.id('type-val')).getText(), 'Issue');
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      throw err;
     } finally {
       driver.quit();
     }

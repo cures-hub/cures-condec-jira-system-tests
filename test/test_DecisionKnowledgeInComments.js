@@ -1,6 +1,3 @@
-/* eslint-disable no-console */
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-plusplus */
 const chai = require('chai');
 const { By, Builder } = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
@@ -52,11 +49,13 @@ describe('TCS: CONDEC-123', () => {
 
       // check that the icons are correct
       for (let i = 0; i < decisionKnowledgeElements.length; i++) {
+        // eslint-disable-next-line no-await-in-loop
         const src = await decisionKnowledgeElements[i].getAttribute('src');
         chai.expect(src).to.contain(`${decisionKnowledgeTypeList[i]}.png`);
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      throw err;
     } finally {
       driver.quit();
     }

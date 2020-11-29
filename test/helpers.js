@@ -37,6 +37,16 @@ const deleteProject = async (projectKeyOrId) => {
 };
 
 /**
+ * Get all configured issue types
+ */
+const getIssueTypes = async () => {
+  const issueTypes = await axios.get(
+    `${JSONConfig.fullUrl}/rest/api/2/issuetype`,
+    localCredentialsObject,
+  );
+  return issueTypes.data;
+};
+/**
  * Activate the ConDec plugin for the configured Jira instance.
  *
  * Note that since this function calls the ConDec REST API,
@@ -51,11 +61,13 @@ const activateConDec = async () => {
 };
 
 /**
- * Set up the ConDec plugin to be used with Jira issue types for decision knowledge
+ * Set whether the ConDec plugin should use Jira issue types for decision knowledge
+ *
+ * @param  {boolean} useIssueStrategy
  */
-const setIssueStrategy = async () => {
+const setIssueStrategy = async (useIssueStrategy) => {
   await axios.post(
-    `${JSONConfig.fullUrl}/rest/condec/latest/config/setIssueStrategy.json?projectKey=${JSONConfig.projectKey}&isIssueStrategy=true`,
+    `${JSONConfig.fullUrl}/rest/condec/latest/config/setIssueStrategy.json?projectKey=${JSONConfig.projectKey}&isIssueStrategy=${useIssueStrategy}`,
     undefined, // no data in the body
     localCredentialsObject,
   ).then((res) => assert(res.status === 200));
@@ -84,7 +96,7 @@ const createJiraIssue = async (issueTypeName, issueSummary) => {
       },
     },
   });
-  console.log(`Created issue: ${createdIssue.key}`);
+  console.info(`Created issue: ${createdIssue.key}`);
   return createdIssue;
 };
 
@@ -92,7 +104,8 @@ const createJiraIssue = async (issueTypeName, issueSummary) => {
  * Set up the configured Jira instance in order to be able to run system tests against it.
  *
  */
-const setUpJira = async () => {
+const setUpJira = async (useIssueStrategy = false) => {
+  console.info('Setting up jira...');
   try {
     // delete existing project with the configured key (if it exists)
     const allProjects = await jira.listProjects();
@@ -111,18 +124,16 @@ const setUpJira = async () => {
 
     // activate ConDec
     await activateConDec();
-    await setIssueStrategy();
+    // explicitly set whether to use the issue persistence strategy or not
+    await setIssueStrategy(useIssueStrategy);
 
-    // add some issues
-    await createJiraIssue('Task', 'Issue 1');
-    await createJiraIssue('Task', 'Issue 2');
-    await createJiraIssue('Task', 'Issue 3');
+    console.info('Successfully set up Jira!');
   } catch (err) {
-    console.log(err);
+    console.error(err);
     throw err;
   }
 };
 
 module.exports = {
-  deleteProject, jira, setUpJira, createJiraIssue,
+  deleteProject, jira, setUpJira, createJiraIssue, getIssueTypes, localCredentialsObject,
 };
