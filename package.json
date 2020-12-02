@@ -9,7 +9,7 @@
     "report": "mocha --timeout 0 --recursive --reporter mocha-junit-reporter"
   },
   "author": "Julia Baum",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "axios": "^0.21.0",
     "chai": "^4.2.0",
