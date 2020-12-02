@@ -56,7 +56,7 @@ Checklist:
 
 You are now ready to run the tests!
 
-Run the tests using
+### Run all the tests
 
 ```bash
 npm test
@@ -70,6 +70,26 @@ npm start
 
 (both commands run the tests)
 
+### Run just one file
+
+```bash
+npm test -- path/to/your/test/file
+```
+
+### Run just one test case
+
+add `.only()` to your test case definition
+
+Example:
+
+```bash
+it.only('should do stuff' () => {
+  ...
+});
+```
+
+(**Do not commit/push** tests using `.only()`, this will stop all the other tests from running)
+
 ## Upload results to Jira/XRay
 
 To create a report for uploading to Jira/XRay, run
@@ -79,3 +99,37 @@ npm run report
 ```
 
 To upload, use the provided script (TODO: provide a script :smile:)
+
+## Writing new tests
+
+### Technology stack
+
+- `Mocha.js` - test runner
+- `chai` - provides assertions and test fixtures
+- Selenium WebDriver (Geckodriver) - Drives the Firefox browser
+  - Selenium API for NodeJS
+- `jira-client` library - this is a library that provides a convenient way to send HTTP requests to
+  Jira.
+- `axios` - Unfortunately the jira-client doesn't cover all of the Jira REST API (or the ConDec REST
+  API), so we use axios for other REST calls.
+
+### Things to pay attention to
+
+- Each test should be atomic - it should not depend on data or objects from other test cases
+- A lot of things can be tested via the REST API and don't require graphical tests
+- If you want to test the GUI, use a fresh webdriver object for every test case, or at least for
+  every `describe` block
+- WebDriver is slow. It should be used as sparingly as possible. If your test case requires setup,
+  try to do as much as possibly of it using HTTP calls
+- If you are trying to find the path to a HTML artifact on Jira, it can help to use the web
+  inspector (Ctrl-Shift-C on Firefox)
+
+### Useful links
+
+- [chai](https://www.chaijs.com/)
+- [Mocha](https://mochajs.org/)
+- [Selenium NodeJS API](https://www.selenium.dev/selenium/docs/api/javascript/)
+- [axios](https://github.com/axios/axios#axios)
+- [xpath cheetsheet](https://devhints.io/xpath)
+- [node-jira-client API reference](https://jira-node.github.io/class/src/jira.js~JiraApi.html#instance-method-doRequest)
+- [Official Jira API reference](https://docs.atlassian.com/software/jira/docs/api/REST/latest/)
