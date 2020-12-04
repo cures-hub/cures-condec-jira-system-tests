@@ -2,11 +2,10 @@
   "name": "condec-system-tests",
   "version": "1.0.0",
   "description": "System tests for the ConDec Jira Plugin",
-  "main": "index.js",
   "scripts": {
-    "start": "mocha --timeout 0 --recursive",
-    "test": "mocha --timeout 0 --recursive",
-    "report": "mocha --timeout 0 --recursive --reporter mocha-junit-reporter"
+    "start": "mocha --no-timeouts --recursive",
+    "test": "mocha --no-timeouts --recursive",
+    "report": "mocha --no-timeouts --recursive --reporter mocha-junit-reporter"
   },
   "author": "Julia Baum",
   "license": "ISC",
@@ -19,7 +18,7 @@
     "geckodriver": "^1.20.0",
     "jira-client": "^6.21.1",
     "mocha": "^8.2.1",
-    "mocha-xunit-reporter": "^2.2.0",
+    "mocha-junit-reporter": "^2.0.0",
     "selenium-webdriver": "^4.0.0-alpha.7"
   },
   "repository": {
