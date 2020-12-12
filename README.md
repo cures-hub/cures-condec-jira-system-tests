@@ -17,7 +17,7 @@ npm install
 
 ## Setting up Selenium
 
-TBD
+TODO: check if npm install is enough, or if the selenium binaries need to be installed separately
 
 ### Adding your local configuration to the repo
 
@@ -98,16 +98,19 @@ To create a report for uploading to Jira/XRay, run
 npm run report
 ```
 
-To upload, use the provided script (TODO: provide a script :smile:)
+To upload the report to XRay, open the test execution issue you want to add the results to. Press
+the `.` button and search for `Import execution results`.
 
 ## Writing new tests
+
+If you want to write new automated system tests, you should read this section.
 
 ### Technology stack
 
 - `Mocha.js` - test runner
 - `chai` - provides assertions and test fixtures
 - Selenium WebDriver (Geckodriver) - Drives the Firefox browser
-  - Selenium API for NodeJS
+  - Uses the selenium API for NodeJS
 - `jira-client` library - this is a library that provides a convenient way to send HTTP requests to
   Jira.
 - `axios` - Unfortunately the jira-client doesn't cover all of the Jira REST API (or the ConDec REST
