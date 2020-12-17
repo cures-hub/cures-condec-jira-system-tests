@@ -3,7 +3,7 @@ const chai = require('chai');
 
 const JSONConfig = require('../config.json');
 const {
-  jira, setUpJira, createJiraIssue, localCredentialsObject,
+  jira, setUpJira, createJiraIssue, localCredentialsObject, base64LocalCredentials
 } = require('./helpers.js');
 
 describe('TCS: CONDEC-170', () => {
@@ -45,5 +45,44 @@ describe('TCS: CONDEC-170', () => {
     chai.expect(treantGraph.data.nodeStructure.children).to.be.empty;
   });
 
-  it('should throw an exception when deleting a nonexistent element');
+  it('should delete child elements of a decision knowledge issue that is deleted', async () => {
+    const createdIssue = await createJiraIssue('Task', 'Write a definition of ready for tasks');
+    const commentString = `{issue}Which language should we use to define tasks?{issue}
+        {decision}Use English to define tasks!{decision}
+        {alternative}Use German to define tasks!{alternative}`;
+    await jira.addComment(createdIssue.key, commentString);
+    const searchPayload = {
+      searchTerm: '',
+      selectedElement: createdIssue.key,
+      projectKey: JSONConfig.projectKey,
+    };
+    const treantGraph = await axios
+      .post(`${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
+        searchPayload,
+        localCredentialsObject);
+
+    const deleteDecisionKnowledgeRequest = {
+      method: 'delete',
+      url: 'http://localhost:2990/jira/rest/condec/latest/knowledge/deleteDecisionKnowledgeElement.json',
+      headers: {
+        Authorization: `Basic ${base64LocalCredentials}`,
+        'Content-Type': 'application/json',
+        Cookie: 'JSESSIONID=53911A156DD2C7A5F22654F8F488D38F; atlassian.xsrf.token=BWP3-NZB2-6EDY-6C7K_3320a31c2a596ece222918dd26804ac2bd190306_lin',
+      },
+      data: {
+        id: treantGraph.data.nodeStructure.children[0].HTMLid, // Child of the root element
+        projectKey: JSONConfig.projectKey,
+        documentationLocation: treantGraph.data.nodeStructure.children[0].text.documentationLocation,
+      },
+    };
+
+    await axios.request(deleteDecisionKnowledgeRequest);
+
+    const treantGraphAfterDeletion = await axios
+      .post(`${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
+        searchPayload,
+        localCredentialsObject);
+    chai.expect(treantGraphAfterDeletion.data.nodeStructure.children).to.be.empty;
+
+  });
 });
