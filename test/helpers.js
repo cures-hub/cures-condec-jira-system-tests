@@ -23,7 +23,12 @@ const localCredentialsObject = {
     password: JSONConfig.localJiraPassword,
   },
 };
-
+const base64LocalCredentials = Buffer
+  .from(
+    `${JSONConfig.localJiraUsername}:${JSONConfig.localJiraPassword}`,
+    'binary',
+  )
+  .toString('base64');
 /**
  * Delete a Jira project on the configured Jira instance
  *
@@ -135,5 +140,12 @@ const setUpJira = async (useIssueStrategy = false) => {
 };
 
 module.exports = {
-  deleteProject, jira, setUpJira, createJiraIssue, getIssueTypes, localCredentialsObject,
+  deleteProject,
+  jira,
+  setUpJira,
+  createJiraIssue,
+  getIssueTypes,
+  localCredentialsObject,
+  base64LocalCredentials,
+
 };

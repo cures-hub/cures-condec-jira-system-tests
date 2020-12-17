@@ -56,6 +56,8 @@ describe('TCS: CONDEC-170', () => {
       selectedElement: createdIssue.key,
       projectKey: JSONConfig.projectKey,
     };
+
+    // We get the graph here in order to access the decision elements ID, so we know what to delete
     const treantGraph = await axios
       .post(`${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
         searchPayload,
@@ -72,7 +74,8 @@ describe('TCS: CONDEC-170', () => {
       data: {
         id: treantGraph.data.nodeStructure.children[0].HTMLid, // Child of the root element
         projectKey: JSONConfig.projectKey,
-        documentationLocation: treantGraph.data.nodeStructure.children[0].text.documentationLocation,
+        documentationLocation: treantGraph.data.nodeStructure.children[0]
+          .text.documentationLocation,
       },
     };
 
@@ -82,7 +85,8 @@ describe('TCS: CONDEC-170', () => {
       .post(`${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
         searchPayload,
         localCredentialsObject);
-    chai.expect(treantGraphAfterDeletion.data.nodeStructure.children).to.be.empty;
 
+    // eslint-disable-next-line no-unused-expressions
+    chai.expect(treantGraphAfterDeletion.data.nodeStructure.children).to.be.empty;
   });
 });
