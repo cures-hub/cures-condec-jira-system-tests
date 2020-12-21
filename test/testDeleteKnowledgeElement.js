@@ -109,4 +109,25 @@ describe('TCS: CONDEC-170', () => {
       { id: alternativeID, type: 'Alternative', summary: 'Use German to define tasks!' },
     );
   });
+  it('should throw an error when the element to delete does not exist in the database', async () => {
+    const deleteDecisionKnowledgeRequest = {
+      method: 'delete',
+      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteDecisionKnowledgeElement.json`,
+      headers: {
+        Authorization: `Basic ${base64LocalCredentials}`,
+        'Content-Type': 'application/json',
+      },
+      data: {
+        id: -1, // this ID won't exist as ConDec only gives positive ids
+        projectKey: JSONConfig.projectKey,
+        documentationLocation: 's',
+      },
+    };
+    try {
+      await axios.request(deleteDecisionKnowledgeRequest);
+    } catch (err) {
+      chai.expect(err.response.status).to.equal(500);
+      chai.expect(err.response.data.error).to.include('Deletion of decision knowledge element failed.');
+    }
+  });
 });
