@@ -23,7 +23,12 @@ const localCredentialsObject = {
     password: JSONConfig.localJiraPassword,
   },
 };
-
+const base64LocalCredentials = Buffer
+  .from(
+    `${JSONConfig.localJiraUsername}:${JSONConfig.localJiraPassword}`,
+    'binary',
+  )
+  .toString('base64');
 /**
  * Delete a Jira project on the configured Jira instance
  *
@@ -99,10 +104,11 @@ const createJiraIssue = async (issueTypeName, issueSummary) => {
   console.info(`Created issue: ${createdIssue.key}`);
   return createdIssue;
 };
-
 /**
  * Set up the configured Jira instance in order to be able to run system tests against it.
  *
+ * @param  {boolean} useIssueStrategy=false - if set to true, the project will be set up to use the
+ * issue persistence strategy
  */
 const setUpJira = async (useIssueStrategy = false) => {
   console.info('Setting up jira...');
@@ -135,5 +141,12 @@ const setUpJira = async (useIssueStrategy = false) => {
 };
 
 module.exports = {
-  deleteProject, jira, setUpJira, createJiraIssue, getIssueTypes, localCredentialsObject,
+  deleteProject,
+  jira,
+  setUpJira,
+  createJiraIssue,
+  getIssueTypes,
+  localCredentialsObject,
+  base64LocalCredentials,
+
 };
