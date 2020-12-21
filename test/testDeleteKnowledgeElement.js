@@ -10,7 +10,8 @@ describe('TCS: CONDEC-170', () => {
   before(async () => {
     await setUpJira();
   });
-  it('should delete a decision knowledge comment', async () => {
+  it(`should not show decision knowledge elements in the graph after the comment 
+    containing them is deleted`, async () => {
     // Create a task in Jira with a decision knowledge comment
     const createdIssue = await createJiraIssue('Task', 'The easiest task in the world');
     const commentString = '{issue}Which language should we use to define tasks?{issue}';
@@ -22,7 +23,7 @@ describe('TCS: CONDEC-170', () => {
       localCredentialsObject,
     );
 
-    // Check that the comment does not appear in the treant or vis graphs
+    // Check that the documented decision knowledge from the comment does not appear in the graphs
     const searchPayload = {
       searchTerm: '',
       selectedElement: createdIssue.key,
@@ -37,7 +38,6 @@ describe('TCS: CONDEC-170', () => {
       .post(`${JSONConfig.fullUrl}/rest/condec/latest/view/getVis.json`,
         searchPayload,
         localCredentialsObject);
-
     chai.expect(visGraph.data.nodes).to.have.lengthOf(1); // This graph should just contain the root
     // eslint-disable-next-line no-unused-expressions
     chai.expect(visGraph.data.edges).to.be.empty;
@@ -69,7 +69,6 @@ describe('TCS: CONDEC-170', () => {
       headers: {
         Authorization: `Basic ${base64LocalCredentials}`,
         'Content-Type': 'application/json',
-        Cookie: 'JSESSIONID=53911A156DD2C7A5F22654F8F488D38F; atlassian.xsrf.token=BWP3-NZB2-6EDY-6C7K_3320a31c2a596ece222918dd26804ac2bd190306_lin',
       },
       data: {
         id: treantGraph.data.nodeStructure.children[0].HTMLid, // Child of the root element
