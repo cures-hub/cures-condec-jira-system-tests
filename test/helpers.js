@@ -104,10 +104,11 @@ const createJiraIssue = async (issueTypeName, issueSummary) => {
   console.info(`Created issue: ${createdIssue.key}`);
   return createdIssue;
 };
-
 /**
  * Set up the configured Jira instance in order to be able to run system tests against it.
  *
+ * @param  {boolean} useIssueStrategy=false - if set to true, the project will be set up to use the
+ * issue persistence strategy
  */
 const setUpJira = async (useIssueStrategy = false) => {
   console.info('Setting up jira...');
