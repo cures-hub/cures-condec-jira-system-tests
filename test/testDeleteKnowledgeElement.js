@@ -72,7 +72,7 @@ describe('TCS: CONDEC-170', () => {
 
     const deleteDecisionKnowledgeRequest = {
       method: 'delete',
-      url: 'http://localhost:2990/jira/rest/condec/latest/knowledge/deleteDecisionKnowledgeElement.json',
+      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteDecisionKnowledgeElement.json`,
       headers: {
         Authorization: `Basic ${base64LocalCredentials}`,
         'Content-Type': 'application/json',
