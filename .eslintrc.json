@@ -13,6 +13,10 @@
     },
     "rules": {
       "no-console": ["error", {"allow": ["error", "info", "warn"]}],
-      "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }]
-    }
+      "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+      "no-only-tests/no-only-tests": "error"
+    },
+    "plugins": [
+      "no-only-tests"
+    ]
 }
