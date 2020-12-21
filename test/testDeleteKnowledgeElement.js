@@ -1,10 +1,12 @@
 const axios = require('axios');
 const chai = require('chai');
-
 const JSONConfig = require('../config.json');
 const {
-  jira, setUpJira, createJiraIssue, localCredentialsObject, base64LocalCredentials
+  jira, setUpJira, createJiraIssue, localCredentialsObject, base64LocalCredentials,
 } = require('./helpers.js');
+
+chai.use(require('chai-like'));
+chai.use(require('chai-things'));
 
 describe('TCS: CONDEC-170', () => {
   before(async () => {
@@ -63,6 +65,11 @@ describe('TCS: CONDEC-170', () => {
         searchPayload,
         localCredentialsObject);
 
+    // Then save the issue, decision, and alternative ids for later
+    const issue = treantGraph.data.nodeStructure.children[0];
+    const decisionID = issue.children[0].HTMLid;
+    const alternativeID = issue.children[1].HTMLid;
+
     const deleteDecisionKnowledgeRequest = {
       method: 'delete',
       url: 'http://localhost:2990/jira/rest/condec/latest/knowledge/deleteDecisionKnowledgeElement.json',
@@ -85,7 +92,21 @@ describe('TCS: CONDEC-170', () => {
         searchPayload,
         localCredentialsObject);
 
+    // The graph for this element should not contain the child elements anymore
     // eslint-disable-next-line no-unused-expressions
     chai.expect(treantGraphAfterDeletion.data.nodeStructure.children).to.be.empty;
+
+    // The child elements should still exist in the database after their parent was deleted
+    const allKnowledgeElementsAfterDeletion = await axios
+      .post(`${JSONConfig.fullUrl}/rest/condec/latest/knowledge/knowledgeElements.json`,
+        { projectKey: JSONConfig.projectKey, searchTerm: '' },
+        localCredentialsObject);
+
+    chai.expect(allKnowledgeElementsAfterDeletion.data).to.be.an('array').that.contains.something.like(
+      { id: decisionID, type: 'Decision', summary: 'Use English to define tasks!' },
+    );
+    chai.expect(allKnowledgeElementsAfterDeletion.data).to.be.an('array').that.contains.something.like(
+      { id: alternativeID, type: 'Alternative', summary: 'Use German to define tasks!' },
+    );
   });
 });
