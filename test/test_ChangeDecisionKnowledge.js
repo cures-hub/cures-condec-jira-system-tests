@@ -48,10 +48,43 @@ describe('TCS: CONDEC-169', () => {
     chai.expect(sqliteDecisionElement.data[0].status).to.eql('decided');
     chai.expect(sqliteDecisionElement.data[0].type).to.eql('Decision');
   });
-  it('(R2) should change the knowledge type when the status is changed');
-  it('(R3) Alternatives that will never be picked should get the status discarded'); // is this something we can test? or rather a user issue
+  it('(R2) should change the knowledge type when the status is changed', async () => {
+    const createdIssue = await createJiraIssue('Task', 'Add a toggle for enabling data persistence');
+    await jira.addComment(
+      createdIssue.id,
+      `{issue}Who should be allowed to use the toggle?{issue}
+      {decision}Everyone should be allowed to set the toggle!{decision}
+      {alternative}Only users with admin rights should be allowed to set the toggle!{alternative}`,
+    );
+
+    // get the id of the decision element so we can change its status to rejected
+    const decisionElement = await axios
+      .post(`${JSONConfig.fullUrl}/rest/condec/latest/knowledge/knowledgeElements.json`,
+        { projectKey: JSONConfig.projectKey, searchTerm: 'Everyone' },
+        localCredentialsObject);
+    const idOfDecision = decisionElement.data[0].id;
+    await axios.post(
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/updateDecisionKnowledgeElement.json`,
+      {
+        id: idOfDecision,
+        summary: null,
+        projectKey: JSONConfig.projectKey,
+        description: null,
+        documentationLocation: 's',
+        status: 'rejected',
+      },
+      localCredentialsObject,
+    );
+
+    // Check that the knowledge type also changed
+    const formerDecisionElement = await axios
+      .post(`${JSONConfig.fullUrl}/rest/condec/latest/knowledge/knowledgeElements.json`,
+        { projectKey: JSONConfig.projectKey, searchTerm: 'Everyone' },
+        localCredentialsObject);
+    chai.expect(formerDecisionElement.data[0].status).to.eql('rejected'); // sanity check
+    chai.expect(formerDecisionElement.data[0].type).to.eql('Alternative');
+  });
   it('(R4) should delete comment and create Jira issue instead when an element\'s location is changed from comment to Jira issue');
   it('(R5) should update the comment containing an element that is changed via the changeElement interface');
-  it('(R6) should fire the webhook if it is activated'); // not sure what this means
   it('(E) should throw an error when the element with given id and documentation location does not exist in database');
 });
