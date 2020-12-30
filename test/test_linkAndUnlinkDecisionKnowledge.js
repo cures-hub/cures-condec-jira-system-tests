@@ -43,6 +43,20 @@ describe('TCS: CONDEC-171', () => {
       .to.have.property('key', `${issue1.key}`);
   });
 
-  it('(R2) should store the link in the ConDec database when at least one of the elements is not a Jira issue');
-  it('(R3) The source element must be different to the destination/target element.');
+  it('(R2) should store the link in the ConDec database when at least one of the linked '
+    + 'elements is not a Jira issue');
+  xit('(R3) The source element must be different to the destination/target element.', async () => {
+    const alternative = await createJiraIssue('Alternative', 'Dummy Alternative');
+
+    // This should fail, but it doesn't!
+    const link = await axios.post(`${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json`
+    + `?projectKey=${JSONConfig.projectKey}`
+    + '&documentationLocationOfParent=i'
+    + '&documentationLocationOfChild=i'
+    + `&idOfParent=${alternative.id}`
+    + `&idOfChild=${alternative.id}`
+    + '&linkTypeName=relates',
+    undefined);
+    chai.expect(link.statusCode).not.to.be(200);
+  });
 });
