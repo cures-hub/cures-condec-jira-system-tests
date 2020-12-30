@@ -3,7 +3,7 @@ const chai = require('chai');
 
 const JSONConfig = require('../config.json');
 const {
-  jira, setUpJira, createJiraIssue, localCredentialsObject,
+  jira, setUpJira, createJiraIssue, localCredentialsObject, base64LocalCredentials,
 } = require('./helpers.js');
 
 describe('TCS: CONDEC-171', () => {
@@ -58,5 +58,53 @@ describe('TCS: CONDEC-171', () => {
     + '&linkTypeName=relates',
     undefined);
     chai.expect(link.statusCode).not.to.be(200);
+  });
+});
+describe('TCS: CONDEC-172', () => {
+  before(async () => {
+    await setUpJira(true); // turn issue strategy on
+  });
+  it('(R1) If both the source and destination/target knowledge elements are documented in separate Jira issues, the Jira issue link is deleted. ', async () => {
+    const issue1 = await createJiraIssue('Issue', 'Issue 1');
+    const issue2 = await createJiraIssue('Alternative', 'Issue 2');
+
+    // Create a link between issue 1 and issue 2
+    await axios.post(`${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json`
+    + `?projectKey=${JSONConfig.projectKey}`
+    + '&documentationLocationOfParent=i'
+    + '&documentationLocationOfChild=i'
+    + `&idOfParent=${issue1.id}`
+    + `&idOfChild=${issue2.id}`
+    + '&linkTypeName=relates',
+    undefined,
+    localCredentialsObject);
+
+    // Then delete the link
+    const payload = {
+      // THESE ELEMENTS MUST BE IN THIS ORDER ?!
+      idOfSourceElement: issue1.id,
+      idOfDestinationElement: issue2.id,
+      documentationLocationOfSourceElement: 'i',
+      documentationLocationOfDestinationElement: 'i',
+    };
+    const deleteLinkRequest = {
+      method: 'delete',
+      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink.json`
+      + `?projectKey=${JSONConfig.projectKey}`,
+      headers: {
+        Authorization: `Basic ${base64LocalCredentials}`,
+        'Content-Type': 'application/json',
+      },
+      data: payload,
+    };
+    try {
+      const deleted = await axios(deleteLinkRequest);
+      chai.expect(deleted.status).to.eql(200);
+    } catch (err) {
+      console.error(err);
+    }
+    const searchResult = await jira.findIssue(issue1.key);
+    // Make sure it's really gone
+    chai.expect(searchResult.fields.issuelinks).to.be.an('Array').with.length(0);
   });
 });
