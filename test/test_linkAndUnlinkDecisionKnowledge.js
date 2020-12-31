@@ -12,7 +12,7 @@ const {
 /**
  * CONDEC-171: Link knowledge elements
  */
-describe.only('TCS: CONDEC-171', () => {
+describe('TCS: CONDEC-171', () => {
   before(async () => {
     await setUpJira(true); // turn issue strategy on
   });
