@@ -116,4 +116,5 @@ describe('TCS: CONDEC-172', () => {
     // Make sure it's really gone
     chai.expect(searchResult.fields.issuelinks).to.be.an('Array').with.length(0);
   });
+  it('(R2) If at least on knowledge element of the link (=edge) is not documented in a separate Jira issue, the link is deleted in a link database that comes with the ConDec plugin. ')
 });
