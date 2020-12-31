@@ -1,11 +1,13 @@
 const axios = require('axios');
 const chai = require('chai');
-
 const JSONConfig = require('../config.json');
 const {
   jira, setUpJira, createJiraIssue, localCredentialsObject, base64LocalCredentials,
 } = require('./helpers.js');
 
+/**
+ * CONDEC-171: Link knowledge elements
+ */
 describe('TCS: CONDEC-171', () => {
   before(async () => {
     await setUpJira(true); // turn issue strategy on
@@ -60,11 +62,16 @@ describe('TCS: CONDEC-171', () => {
     chai.expect(link.statusCode).not.to.be(200);
   });
 });
+
+/**
+ * CONDEC-172: Unlink knowledge elements
+ */
 describe('TCS: CONDEC-172', () => {
   before(async () => {
     await setUpJira(true); // turn issue strategy on
   });
-  it('(R1) If both the source and destination/target knowledge elements are documented in separate Jira issues, the Jira issue link is deleted. ', async () => {
+  it('(R1) If both the source and destination/target knowledge elements are documented in separate'
+      + 'Jira issues, the Jira issue link is deleted. ', async () => {
     const issue1 = await createJiraIssue('Issue', 'Issue 1');
     const issue2 = await createJiraIssue('Alternative', 'Issue 2');
 
@@ -81,7 +88,7 @@ describe('TCS: CONDEC-172', () => {
 
     // Then delete the link
     const payload = {
-      // THESE ELEMENTS MUST BE IN THIS ORDER ?!
+      // THESE ELEMENTS MUST BE PASSED IN THIS ORDER!!
       idOfSourceElement: issue1.id,
       idOfDestinationElement: issue2.id,
       documentationLocationOfSourceElement: 'i',
@@ -98,6 +105,8 @@ describe('TCS: CONDEC-172', () => {
       data: payload,
     };
     try {
+      // Due to some strangeness with axios, we have to construct the request as above before
+      // sending it
       const deleted = await axios(deleteLinkRequest);
       chai.expect(deleted.status).to.eql(200);
     } catch (err) {
