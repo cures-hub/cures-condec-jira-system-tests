@@ -23,22 +23,19 @@ const localCredentialsObject = {
     password: JSONConfig.localJiraPassword,
   },
 };
-const base64LocalCredentials = Buffer
-  .from(
-    `${JSONConfig.localJiraUsername}:${JSONConfig.localJiraPassword}`,
-    'binary',
-  )
-  .toString('base64');
+const base64LocalCredentials = Buffer.from(
+  `${JSONConfig.localJiraUsername}:${JSONConfig.localJiraPassword}`,
+  'binary'
+).toString('base64');
 /**
  * Delete a Jira project on the configured Jira instance
  *
  * @param  {string} projectKeyOrId
  */
 const deleteProject = async (projectKeyOrId) => {
-  await axios.delete(
-    `${JSONConfig.fullUrl}/rest/api/2/project/${projectKeyOrId}`,
-    localCredentialsObject,
-  ).then((res) => assert(res.status === 204));
+  await axios
+    .delete(`${JSONConfig.fullUrl}/rest/api/2/project/${projectKeyOrId}`, localCredentialsObject)
+    .then((res) => assert(res.status === 204));
 };
 
 /**
@@ -47,7 +44,7 @@ const deleteProject = async (projectKeyOrId) => {
 const getIssueTypes = async () => {
   const issueTypes = await axios.get(
     `${JSONConfig.fullUrl}/rest/api/2/issuetype`,
-    localCredentialsObject,
+    localCredentialsObject
   );
   return issueTypes.data;
 };
@@ -58,11 +55,13 @@ const getIssueTypes = async () => {
  * it will only work if the ConDec plugin has been activated manually on the instance before.
  */
 const activateConDec = async () => {
-  await axios.post(
-    `${JSONConfig.fullUrl}/rest/condec/latest/config/setActivated.json?projectKey=${JSONConfig.projectKey}&isActivated=true`,
-    undefined, // no data in the body
-    localCredentialsObject,
-  ).then((res) => assert(res.status === 200));
+  await axios
+    .post(
+      `${JSONConfig.fullUrl}/rest/condec/latest/config/setActivated.json?projectKey=${JSONConfig.projectKey}&isActivated=true`,
+      undefined, // no data in the body
+      localCredentialsObject
+    )
+    .then((res) => assert(res.status === 200));
 };
 
 /**
@@ -71,11 +70,13 @@ const activateConDec = async () => {
  * @param  {boolean} useIssueStrategy
  */
 const setIssueStrategy = async (useIssueStrategy) => {
-  await axios.post(
-    `${JSONConfig.fullUrl}/rest/condec/latest/config/setIssueStrategy.json?projectKey=${JSONConfig.projectKey}&isIssueStrategy=${useIssueStrategy}`,
-    undefined, // no data in the body
-    localCredentialsObject,
-  ).then((res) => assert(res.status === 200));
+  await axios
+    .post(
+      `${JSONConfig.fullUrl}/rest/condec/latest/config/setIssueStrategy.json?projectKey=${JSONConfig.projectKey}&isIssueStrategy=${useIssueStrategy}`,
+      undefined, // no data in the body
+      localCredentialsObject
+    )
+    .then((res) => assert(res.status === 200));
 };
 
 /**
@@ -148,5 +149,4 @@ module.exports = {
   getIssueTypes,
   localCredentialsObject,
   base64LocalCredentials,
-
 };

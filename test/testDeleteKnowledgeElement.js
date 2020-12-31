@@ -2,7 +2,11 @@ const axios = require('axios');
 const chai = require('chai');
 const JSONConfig = require('../config.json');
 const {
-  jira, setUpJira, createJiraIssue, localCredentialsObject, base64LocalCredentials,
+  jira,
+  setUpJira,
+  createJiraIssue,
+  localCredentialsObject,
+  base64LocalCredentials,
 } = require('./helpers.js');
 
 chai.use(require('chai-like'));
@@ -12,40 +16,41 @@ describe('TCS: CONDEC-170', () => {
   before(async () => {
     await setUpJira();
   });
-  it('should not show rationale elements in the graph after comment containing them is deleted',
-    async () => {
+  it('should not show rationale elements in the graph after comment containing them is deleted', async () => {
     // Create a task in Jira with a decision knowledge comment
-      const createdIssue = await createJiraIssue('Task', 'The easiest task in the world');
-      const commentString = '{issue}Which language should we use to define tasks?{issue}';
-      const addedComment = await jira.addComment(createdIssue.key, commentString);
+    const createdIssue = await createJiraIssue('Task', 'The easiest task in the world');
+    const commentString = '{issue}Which language should we use to define tasks?{issue}';
+    const addedComment = await jira.addComment(createdIssue.key, commentString);
 
-      // Delete the comment
-      await axios.delete(
-        `${JSONConfig.fullUrl}/rest/api/2/issue/${createdIssue.key}/comment/${addedComment.id}`,
-        localCredentialsObject,
-      );
+    // Delete the comment
+    await axios.delete(
+      `${JSONConfig.fullUrl}/rest/api/2/issue/${createdIssue.key}/comment/${addedComment.id}`,
+      localCredentialsObject
+    );
 
-      // Check that the documented decision knowledge from the comment does not appear in the graphs
-      const searchPayload = {
-        searchTerm: '',
-        selectedElement: createdIssue.key,
-        projectKey: JSONConfig.projectKey,
-      };
-      const treantGraph = await axios
-        .post(`${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
-          searchPayload,
-          localCredentialsObject);
+    // Check that the documented decision knowledge from the comment does not appear in the graphs
+    const searchPayload = {
+      searchTerm: '',
+      selectedElement: createdIssue.key,
+      projectKey: JSONConfig.projectKey,
+    };
+    const treantGraph = await axios.post(
+      `${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
+      searchPayload,
+      localCredentialsObject
+    );
 
-      const visGraph = await axios
-        .post(`${JSONConfig.fullUrl}/rest/condec/latest/view/getVis.json`,
-          searchPayload,
-          localCredentialsObject);
-      chai.expect(visGraph.data.nodes).to.have.lengthOf(1); // Graph should just contain the root
-      // eslint-disable-next-line no-unused-expressions
-      chai.expect(visGraph.data.edges).to.be.empty;
-      // eslint-disable-next-line no-unused-expressions
-      chai.expect(treantGraph.data.nodeStructure.children).to.be.empty;
-    });
+    const visGraph = await axios.post(
+      `${JSONConfig.fullUrl}/rest/condec/latest/view/getVis.json`,
+      searchPayload,
+      localCredentialsObject
+    );
+    chai.expect(visGraph.data.nodes).to.have.lengthOf(1); // Graph should just contain the root
+    // eslint-disable-next-line no-unused-expressions
+    chai.expect(visGraph.data.edges).to.be.empty;
+    // eslint-disable-next-line no-unused-expressions
+    chai.expect(treantGraph.data.nodeStructure.children).to.be.empty;
+  });
 
   it('should delete child elements of a decision knowledge issue that is deleted', async () => {
     const createdIssue = await createJiraIssue('Task', 'Write a definition of ready for tasks');
@@ -60,10 +65,11 @@ describe('TCS: CONDEC-170', () => {
     };
 
     // We get the graph here in order to access the decision elements ID, so we know what to delete
-    const treantGraph = await axios
-      .post(`${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
-        searchPayload,
-        localCredentialsObject);
+    const treantGraph = await axios.post(
+      `${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
+      searchPayload,
+      localCredentialsObject
+    );
 
     // Then save the issue, decision, and alternative ids for later
     const issue = treantGraph.data.nodeStructure.children[0];
@@ -80,34 +86,46 @@ describe('TCS: CONDEC-170', () => {
       data: {
         id: treantGraph.data.nodeStructure.children[0].HTMLid, // Child of the root element
         projectKey: JSONConfig.projectKey,
-        documentationLocation: treantGraph.data.nodeStructure.children[0]
-          .text.documentationLocation,
+        documentationLocation:
+          treantGraph.data.nodeStructure.children[0].text.documentationLocation,
       },
     };
 
     await axios.request(deleteDecisionKnowledgeRequest);
 
-    const treantGraphAfterDeletion = await axios
-      .post(`${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
-        searchPayload,
-        localCredentialsObject);
+    const treantGraphAfterDeletion = await axios.post(
+      `${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
+      searchPayload,
+      localCredentialsObject
+    );
 
     // The graph for this element should not contain the child elements anymore
     // eslint-disable-next-line no-unused-expressions
     chai.expect(treantGraphAfterDeletion.data.nodeStructure.children).to.be.empty;
 
     // The child elements should still exist in the database after their parent was deleted
-    const allKnowledgeElementsAfterDeletion = await axios
-      .post(`${JSONConfig.fullUrl}/rest/condec/latest/knowledge/knowledgeElements.json`,
-        { projectKey: JSONConfig.projectKey, searchTerm: '' },
-        localCredentialsObject);
+    const allKnowledgeElementsAfterDeletion = await axios.post(
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/knowledgeElements.json`,
+      { projectKey: JSONConfig.projectKey, searchTerm: '' },
+      localCredentialsObject
+    );
 
-    chai.expect(allKnowledgeElementsAfterDeletion.data).to.be.an('array').that.contains.something.like(
-      { id: decisionID, type: 'Decision', summary: 'Use English to define tasks!' },
-    );
-    chai.expect(allKnowledgeElementsAfterDeletion.data).to.be.an('array').that.contains.something.like(
-      { id: alternativeID, type: 'Alternative', summary: 'Use German to define tasks!' },
-    );
+    chai
+      .expect(allKnowledgeElementsAfterDeletion.data)
+      .to.be.an('array')
+      .that.contains.something.like({
+        id: decisionID,
+        type: 'Decision',
+        summary: 'Use English to define tasks!',
+      });
+    chai
+      .expect(allKnowledgeElementsAfterDeletion.data)
+      .to.be.an('array')
+      .that.contains.something.like({
+        id: alternativeID,
+        type: 'Alternative',
+        summary: 'Use German to define tasks!',
+      });
   });
   it('should throw an error when the element to delete does not exist in the database', async () => {
     const deleteDecisionKnowledgeRequest = {
@@ -127,7 +145,9 @@ describe('TCS: CONDEC-170', () => {
       await axios.request(deleteDecisionKnowledgeRequest);
     } catch (err) {
       chai.expect(err.response.status).to.equal(500);
-      chai.expect(err.response.data.error).to.include('Deletion of decision knowledge element failed.');
+      chai
+        .expect(err.response.data.error)
+        .to.include('Deletion of decision knowledge element failed.');
     }
   });
 });

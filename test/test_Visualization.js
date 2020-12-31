@@ -2,9 +2,7 @@ const axios = require('axios');
 const chai = require('chai');
 
 const JSONConfig = require('../config.json');
-const {
-  jira, setUpJira, createJiraIssue, localCredentialsObject,
-} = require('./helpers.js');
+const { jira, setUpJira, createJiraIssue, localCredentialsObject } = require('./helpers.js');
 
 describe('TCS: CONDEC-177', () => {
   before(async () => {
@@ -24,10 +22,11 @@ describe('TCS: CONDEC-177', () => {
         selectedElement: createdIssue.key,
         projectKey: JSONConfig.projectKey,
       };
-      const graph = await axios
-        .post(`${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
-          searchPayload,
-          localCredentialsObject);
+      const graph = await axios.post(
+        `${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
+        searchPayload,
+        localCredentialsObject
+      );
       // check that the tree has contains the correct data by traversing the graph
 
       const rootLevel = graph.data.nodeStructure.children;
@@ -74,14 +73,15 @@ describe('TCS: CONDEC-492', () => {
         selectedElement: createdIssue.key,
         projectKey: JSONConfig.projectKey,
       };
-      const graph = await axios
-        .post(`${JSONConfig.fullUrl}/rest/condec/latest/view/getVis.json`,
-          searchPayload,
-          localCredentialsObject);
+      const graph = await axios.post(
+        `${JSONConfig.fullUrl}/rest/condec/latest/view/getVis.json`,
+        searchPayload,
+        localCredentialsObject
+      );
 
       // sort here so we can guarantee the order for later comparisons
-      const visNodes = graph.data.nodes.sort((a, b) => ((a.id > b.id) ? 1 : -1));
-      const visEdges = graph.data.edges.sort((a, b) => ((a.from > b.from) ? 1 : -1));
+      const visNodes = graph.data.nodes.sort((a, b) => (a.id > b.id ? 1 : -1));
+      const visEdges = graph.data.edges.sort((a, b) => (a.from > b.from ? 1 : -1));
       const expectedNodes = {
         task: {
           expectedLabel: 'TASK\nDummy vis.js task',
@@ -112,7 +112,8 @@ describe('TCS: CONDEC-492', () => {
         {
           from: 'decision',
           to: 'issue',
-        }];
+        },
+      ];
       chai.expect(visNodes).to.have.length(4);
       chai.expect(visEdges).to.have.length(3);
 
@@ -136,7 +137,7 @@ describe('TCS: CONDEC-492', () => {
           }
         });
       });
-      expectedEdges.sort(((a, b) => ((a.from > b.from) ? 1 : -1)));
+      expectedEdges.sort((a, b) => (a.from > b.from ? 1 : -1));
       visEdges.forEach((edge, index) => {
         chai.expect(edge.from).to.eql(expectedEdges[index].from);
         chai.expect(edge.to).to.eql(expectedEdges[index].to);
