@@ -13,10 +13,7 @@ describe('TCS: CONDEC-123', () => {
   it('should show decision knowledge comments with the correct icons', async () => {
     const options = new firefox.Options();
     options.setProfile(JSONConfig.firefoxProfilePath);
-    const driver = await new Builder()
-      .forBrowser('firefox')
-      .setFirefoxOptions(options)
-      .build();
+    const driver = await new Builder().forBrowser('firefox').setFirefoxOptions(options).build();
     // always wait for up to 10 seconds
     await driver.manage().setTimeouts({ implicit: 10000 });
     try {
@@ -41,11 +38,15 @@ describe('TCS: CONDEC-123', () => {
       ];
       const commentObject = await jira.addComment(issue.key, commentString);
 
-      await driver.get(`${JSONConfig.fullUrl}/browse/${issue.key}?focusedCommentId=${commentObject.id}`);
+      await driver.get(
+        `${JSONConfig.fullUrl}/browse/${issue.key}?focusedCommentId=${commentObject.id}`
+      );
 
       // the html code is generated dynamically via the comment's id, so we need to use the id from
       // above to find the right element
-      const decisionKnowledgeElements = await driver.findElements(By.xpath(`//*[@id='comment-${commentObject.id}']//div/p/img`));
+      const decisionKnowledgeElements = await driver.findElements(
+        By.xpath(`//*[@id='comment-${commentObject.id}']//div/p/img`)
+      );
 
       // check that the icons are correct
       for (let i = 0; i < decisionKnowledgeElements.length; i++) {
