@@ -12,7 +12,7 @@ const {
 /**
  * CONDEC-171: Link knowledge elements
  */
-describe('TCS: CONDEC-171', () => {
+describe.only('TCS: CONDEC-171', () => {
   before(async () => {
     await setUpJira(true); // turn issue strategy on
   });
@@ -59,7 +59,7 @@ describe('TCS: CONDEC-171', () => {
     '(R2) should store the link in the ConDec database when at least one of the linked ' +
       'elements is not a Jira issue'
   );
-  xit('(R3) The source element must be different to the destination/target element.', async () => {
+  it('(R3) The source element must be different to the destination/target element.', async () => {
     const alternative = await createJiraIssue('Alternative', 'Dummy Alternative');
 
     // This should fail, but it doesn't!
@@ -71,9 +71,10 @@ describe('TCS: CONDEC-171', () => {
         `&idOfParent=${alternative.id}` +
         `&idOfChild=${alternative.id}` +
         '&linkTypeName=relates',
-      undefined
+      undefined,
+      localCredentialsObject
     );
-    chai.expect(link.statusCode).not.to.be(200);
+    chai.expect(link.status).not.to.eql(200);
   });
 });
 
