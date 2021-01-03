@@ -3,18 +3,14 @@ const { By, Builder } = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
 
 const JSONConfig = require('../config.json');
-const {
-  setUpJira,
-  createJiraIssue,
-  jira,
-  getKnowledgeElements,
-} = require('./helpers.js');
+const { setUpJira, createJiraIssue, jira, getKnowledgeElements } = require('./helpers.js');
 
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
 
 describe('TCS: CONDEC-168', () => {
-  before(async () => {
+  // reset Jira project for every test case, to ensure no interference
+  beforeEach(async () => {
     // explicitly use issue persistence strategy here
     await setUpJira(true);
   });
@@ -50,7 +46,16 @@ describe('TCS: CONDEC-168', () => {
   });
   it(
     '(R5) A new issue (=decision problem), i.e. an issue without linked decision has' +
-      'the status "unresolved".'
+      'the status "unresolved".',
+    async () => {
+      await createJiraIssue('Issue', 'Dummy issue for R5');
+      const knowledgeElements = await getKnowledgeElements();
+      chai.expect(knowledgeElements).to.be.an('Array').that.contains.something.like({
+        summary: 'Dummy issue for R5',
+        status: 'unresolved',
+        type: 'Issue',
+      });
+    }
   );
   it(
     '(R6) A Jira issue (i.e. a decision knowledge element documented as an entire Jira issue) can' +
