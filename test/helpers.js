@@ -140,7 +140,24 @@ const setUpJira = async (useIssueStrategy = false) => {
     throw err;
   }
 };
-
+/**
+ * Get all the knowledge elements via the ConDec REST API
+ *
+ * @param {string} searchTerm=''
+ */
+const getKnowledgeElements = async (searchTerm = '') => {
+  try {
+    const results = await axios.post(
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/knowledgeElements.json`,
+      { projectKey: JSONConfig.projectKey, searchTerm },
+      localCredentialsObject
+    );
+    return results.data;
+  } catch (err) {
+    console.error(err);
+    throw new Error('Getting knowledge elements did not work')
+  }
+};
 module.exports = {
   deleteProject,
   jira,
@@ -149,4 +166,5 @@ module.exports = {
   getIssueTypes,
   localCredentialsObject,
   base64LocalCredentials,
+  getKnowledgeElements
 };
