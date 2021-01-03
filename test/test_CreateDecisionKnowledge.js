@@ -21,7 +21,8 @@ describe('TCS: CONDEC-168', () => {
     // explicitly use issue persistence strategy here
     await setUpJira(true);
   });
-  xit(  // This will be tested elsewhere
+  xit(
+    // This will be tested elsewhere
     '(R1) If the decision knowledge element is created within an existing knowledge element ' +
       '(Jira issue or code file), a link is created between an existing knowledge' +
       ' element and the new element (CONDEC-291). '
@@ -87,7 +88,8 @@ describe('TCS: CONDEC-168', () => {
       });
     }
   );
-  xit( // This will be tested elsewhere
+  xit(
+    // This will be tested elsewhere
     '(R6) A Jira issue (i.e. a decision knowledge element documented as an entire Jira issue) can' +
       ' only be created in a view on the knowledge graph if the user has the rights to create Jira' +
       ' issues (CONDEC-852, integrity).'
@@ -96,8 +98,9 @@ describe('TCS: CONDEC-168', () => {
   // This will be tested elsewhere
   xit('(R7) If the webhook is activated, it will be fired (CONDEC-185).');
 
-  it('(E1) A decision knowledge element with the same id already exists.');
-  
+  // Currently there is no way to trigger this through the UI, so we don't test it here.
+  xit('(E1) A decision knowledge element with the same id already exists.');
+
   // This will be tested elsewhere
   xit('(E2) The user does not have the rights for creation.');
 
