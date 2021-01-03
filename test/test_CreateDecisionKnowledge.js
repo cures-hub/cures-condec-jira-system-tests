@@ -14,10 +14,7 @@ describe('TCS: CONDEC-168', () => {
   it('should create a decision knowledge issue via the create issue interface', async () => {
     const options = new firefox.Options();
     options.setProfile(JSONConfig.firefoxProfilePath);
-    const driver = await new Builder()
-      .forBrowser('firefox')
-      .setFirefoxOptions(options)
-      .build();
+    const driver = await new Builder().forBrowser('firefox').setFirefoxOptions(options).build();
 
     // always wait for up to 10 seconds
     await driver.manage().setTimeouts({ implicit: 10000 });
