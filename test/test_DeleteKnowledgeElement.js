@@ -16,10 +16,15 @@ describe('TCS: CONDEC-170', () => {
   before(async () => {
     await setUpJira();
   });
-  it('should not show rationale elements in the graph after comment containing them is deleted', async () => {
+  it('(R4) If a Jira issue comment is deleted, all decision knowledge '+
+  'elements in its body are deleted in the database and knowledge graph. ', async () => {
     // Create a task in Jira with a decision knowledge comment
-    const createdIssue = await createJiraIssue('Task', 'The easiest task in the world');
-    const commentString = '{issue}Which language should we use to define tasks?{issue}';
+    const createdIssue = await createJiraIssue(
+      'Task',
+      'The easiest task in the world'
+    );
+    const commentString =
+      '{issue}Which language should we use to define tasks?{issue}';
     const addedComment = await jira.addComment(createdIssue.key, commentString);
 
     // Delete the comment
@@ -53,7 +58,10 @@ describe('TCS: CONDEC-170', () => {
   });
 
   it('should delete child elements of a decision knowledge issue that is deleted', async () => {
-    const createdIssue = await createJiraIssue('Task', 'Write a definition of ready for tasks');
+    const createdIssue = await createJiraIssue(
+      'Task',
+      'Write a definition of ready for tasks'
+    );
     const commentString = `{issue}Which language should we use to define tasks?{issue}
         {decision}Use English to define tasks!{decision}
         {alternative}Use German to define tasks!{alternative}`;
@@ -101,7 +109,8 @@ describe('TCS: CONDEC-170', () => {
 
     // The graph for this element should not contain the child elements anymore
     // eslint-disable-next-line no-unused-expressions
-    chai.expect(treantGraphAfterDeletion.data.nodeStructure.children).to.be.empty;
+    chai.expect(treantGraphAfterDeletion.data.nodeStructure.children).to.be
+      .empty;
 
     // The child elements should still exist in the database after their parent was deleted
     const allKnowledgeElementsAfterDeletion = await axios.post(
