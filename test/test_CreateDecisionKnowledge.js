@@ -99,7 +99,7 @@ describe('TCS: CONDEC-168', () => {
   xit('(R7) If the webhook is activated, it will be fired (CONDEC-185).');
 
   // Currently there is no way to trigger this through the UI, so we don't test it here.
-  xit('(E1) A decision knowledge element with the same id already exists.');
+  xit('(E1) A decision knowledge element with the same summary and description already exists.');
 
   // This will be tested elsewhere
   xit('(E2) The user does not have the rights for creation.');
