@@ -20,9 +20,9 @@ describe('TCS: CONDEC-168', () => {
       ' element and the new element (CONDEC-291). '
   );
   it(
-    '(R2) If the documentation location of the new decision knowledge element is "Jira issue' +
+    '(R2) If the documentation location of the new decision knowledge element is "Jira issue ' +
       'text", a new comment in an existing Jira issue is created, which contains the new decision' +
-      'knowledge element. '
+      ' knowledge element. '
   );
   it('(R3) A new alternative has the status "idea".', async () => {
     const issue = await createJiraIssue('Issue', 'Dummy issue for R3');
@@ -46,7 +46,7 @@ describe('TCS: CONDEC-168', () => {
   });
   it(
     '(R5) A new issue (=decision problem), i.e. an issue without linked decision has' +
-      'the status "unresolved".',
+      ' the status "unresolved".',
     async () => {
       await createJiraIssue('Issue', 'Dummy issue for R5');
       const knowledgeElements = await getKnowledgeElements();
@@ -59,12 +59,14 @@ describe('TCS: CONDEC-168', () => {
   );
   it(
     '(R6) A Jira issue (i.e. a decision knowledge element documented as an entire Jira issue) can' +
-      'only be created in a view on the knowledge graph if the user has the rights to create Jira' +
-      'issues (CONDEC-852, integrity).'
+      ' only be created in a view on the knowledge graph if the user has the rights to create Jira' +
+      ' issues (CONDEC-852, integrity).'
   );
   it('(R7) If the webhook is activated, it will be fired (CONDEC-185).');
   it('(E1) A decision knowledge element with the same id already exists.');
   it('(E2) The user does not have the rights for creation.');
+
+  // Currently disabled since Selenium tests run very slow and require complex setup
   xit('should create a decision knowledge issue via the create issue interface', async () => {
     const options = new firefox.Options();
     options.setProfile(JSONConfig.firefoxProfilePath);
