@@ -3,12 +3,20 @@ const { By, Builder } = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
 
 const JSONConfig = require('../config.json');
-const { setUpJira, createJiraIssue } = require('./helpers.js');
+const {
+  setUpJira,
+  createJiraIssue,
+  jira,
+  getKnowledgeElements,
+} = require('./helpers.js');
+
+chai.use(require('chai-like'));
+chai.use(require('chai-things'));
 
 describe('TCS: CONDEC-168', () => {
   before(async () => {
     // explicitly use issue persistence strategy here
-    setUpJira(true);
+    await setUpJira(true);
   });
   it(
     '(R1) If the decision knowledge element is created within an existing knowledge element ' +
@@ -20,7 +28,16 @@ describe('TCS: CONDEC-168', () => {
       'text", a new comment in an existing Jira issue is created, which contains the new decision' +
       'knowledge element. '
   );
-  it('(R3) A new alternative has the status "idea".');
+  it('(R3) A new alternative has the status "idea".', async () => {
+    const issue = await createJiraIssue('Issue', 'Dummy issue for R3');
+    await jira.addComment(issue.id, '{alternative}dummy alternative for R3{alternative}');
+    const knowledgeElements = await getKnowledgeElements();
+    chai.expect(knowledgeElements).to.be.an('Array').that.contains.something.like({
+      summary: 'dummy alternative for R3',
+      status: 'idea',
+      type: 'Alternative',
+    });
+  });
   it('(R4) A new decision has the status "decided".');
   it(
     '(R5) A new issue (=decision problem), i.e. an issue without linked decision has' +
