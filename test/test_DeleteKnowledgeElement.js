@@ -16,46 +16,52 @@ describe('TCS: CONDEC-170', () => {
   before(async () => {
     await setUpJira();
   });
-  it('(R4) If a Jira issue comment is deleted, all decision knowledge '+
-  'elements in its body are deleted in the database and knowledge graph. ', async () => {
-    // Create a task in Jira with a decision knowledge comment
-    const createdIssue = await createJiraIssue(
-      'Task',
-      'The easiest task in the world'
-    );
-    const commentString =
-      '{issue}Which language should we use to define tasks?{issue}';
-    const addedComment = await jira.addComment(createdIssue.key, commentString);
+  it(
+    '(R4) If a Jira issue comment is deleted, all decision knowledge ' +
+      'elements in its body are deleted in the database and knowledge graph. ',
+    async () => {
+      // Create a task in Jira with a decision knowledge comment
+      const createdIssue = await createJiraIssue(
+        'Task',
+        'The easiest task in the world'
+      );
+      const commentString =
+        '{issue}Which language should we use to define tasks?{issue}';
+      const addedComment = await jira.addComment(
+        createdIssue.key,
+        commentString
+      );
 
-    // Delete the comment
-    await axios.delete(
-      `${JSONConfig.fullUrl}/rest/api/2/issue/${createdIssue.key}/comment/${addedComment.id}`,
-      localCredentialsObject
-    );
+      // Delete the comment
+      await axios.delete(
+        `${JSONConfig.fullUrl}/rest/api/2/issue/${createdIssue.key}/comment/${addedComment.id}`,
+        localCredentialsObject
+      );
 
-    // Check that the documented decision knowledge from the comment does not appear in the graphs
-    const searchPayload = {
-      searchTerm: '',
-      selectedElement: createdIssue.key,
-      projectKey: JSONConfig.projectKey,
-    };
-    const treantGraph = await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
-      searchPayload,
-      localCredentialsObject
-    );
+      // Check that the documented decision knowledge from the comment does not appear in the graphs
+      const searchPayload = {
+        searchTerm: '',
+        selectedElement: createdIssue.key,
+        projectKey: JSONConfig.projectKey,
+      };
+      const treantGraph = await axios.post(
+        `${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
+        searchPayload,
+        localCredentialsObject
+      );
 
-    const visGraph = await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/view/getVis.json`,
-      searchPayload,
-      localCredentialsObject
-    );
-    chai.expect(visGraph.data.nodes).to.have.lengthOf(1); // Graph should just contain the root
-    // eslint-disable-next-line no-unused-expressions
-    chai.expect(visGraph.data.edges).to.be.empty;
-    // eslint-disable-next-line no-unused-expressions
-    chai.expect(treantGraph.data.nodeStructure.children).to.be.empty;
-  });
+      const visGraph = await axios.post(
+        `${JSONConfig.fullUrl}/rest/condec/latest/view/getVis.json`,
+        searchPayload,
+        localCredentialsObject
+      );
+      chai.expect(visGraph.data.nodes).to.have.lengthOf(1); // Graph should just contain the root
+      // eslint-disable-next-line no-unused-expressions
+      chai.expect(visGraph.data.edges).to.be.empty;
+      // eslint-disable-next-line no-unused-expressions
+      chai.expect(treantGraph.data.nodeStructure.children).to.be.empty;
+    }
+  );
 
   it('should delete child elements of a decision knowledge issue that is deleted', async () => {
     const createdIssue = await createJiraIssue(
@@ -136,7 +142,7 @@ describe('TCS: CONDEC-170', () => {
         summary: 'Use German to define tasks!',
       });
   });
-  it('should throw an error when the element to delete does not exist in the database', async () => {
+  it('(E1) Knowledge element with given id and documentation location does not exist in database.', async () => {
     const deleteDecisionKnowledgeRequest = {
       method: 'delete',
       url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteDecisionKnowledgeElement.json`,
