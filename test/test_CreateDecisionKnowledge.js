@@ -1,9 +1,16 @@
+const { default: axios } = require('axios');
 const chai = require('chai');
 const { By, Builder } = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
 
 const JSONConfig = require('../config.json');
-const { setUpJira, createJiraIssue, jira, getKnowledgeElements } = require('./helpers.js');
+const {
+  setUpJira,
+  createJiraIssue,
+  jira,
+  getKnowledgeElements,
+  localCredentialsObject,
+} = require('./helpers.js');
 
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
@@ -22,7 +29,30 @@ describe('TCS: CONDEC-168', () => {
   it(
     '(R2) If the documentation location of the new decision knowledge element is "Jira issue ' +
       'text", a new comment in an existing Jira issue is created, which contains the new decision' +
-      ' knowledge element. '
+      ' knowledge element.',
+    async () => {
+      const task = await createJiraIssue('Task', 'Dummy task for R2');
+      await axios.post(
+        `${JSONConfig.fullUrl}/rest/condec/latest/knowledge` +
+          `/createDecisionKnowledgeElement.json?idOfExistingElement=${task.id}` +
+          `&documentationLocationOfExistingElement=i`,
+        {
+          type: 'Issue',
+          projectKey: JSONConfig.projectKey,
+          description: 'Dummy decision knowledge issue for R2',
+          documentationLocation: 's',
+        },
+        localCredentialsObject
+      );
+      const taskAfterUpdate = await jira.findIssue(task.key);
+
+      chai
+        .expect(taskAfterUpdate.fields.comment.comments)
+        .to.be.an('Array')
+        .that.contains.something.like({
+          body: '{issue}\nDummy decision knowledge issue for R2{issue}',
+        });
+    }
   );
   it('(R3) A new alternative has the status "idea".', async () => {
     const issue = await createJiraIssue('Issue', 'Dummy issue for R3');
