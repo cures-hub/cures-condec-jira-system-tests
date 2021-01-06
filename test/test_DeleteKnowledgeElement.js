@@ -172,7 +172,7 @@ describe('TCS: CONDEC-170', () => {
       });
     }
   );
-  xit( 
+  xit(
     '(R6) If a decision knowledge element is deleted in a view on the knowledge graph, it is ' +
       'deleted in the database and in the knowledge graph (i.e. datastructure).'
   );
@@ -185,7 +185,8 @@ describe('TCS: CONDEC-170', () => {
     '(R8) Decision knowledge elements documented in code comments cannot be deleted in Jira' +
       ' (only directly in the code).'
   );
-  xit( // Since this would require meta-testing, we omit it here.
+  xit(
+    // Since this would require meta-testing, we omit it here.
     '(R9) When the Jira project is deleted, all knowledge elements are deleted in the database' +
       ' and the knowledge graph.'
   );
