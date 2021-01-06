@@ -85,6 +85,7 @@ const setIssueStrategy = async (useIssueStrategy) => {
  *
  * @param  {string} issueTypeName - must be a valid Jira issue type for the configured instance
  * @param  {string} issueSummary
+ * @param  {?string} issueDescription - optional - if not specified, the issue description will be empty
  *
  */
 const createJiraIssue = async (issueTypeName, issueSummary, issueDescription='') => {
