@@ -16,8 +16,7 @@ describe('TCS: CONDEC-171', () => {
   before(async () => {
     await setUpJira(true); // turn issue strategy on
   });
-  it(`(R1) should create a Jira issue link when both linked
-  decision knowledge elements are Jira issues`, async () => {
+  it('(R1) If both the source and destination elements (=nodes) are Jira issues (documentation location is Jira issue), a Jira issue link is created.', async () => {
     const issue1 = await createJiraIssue('Issue', 'Issue 1');
     const issue2 = await createJiraIssue('Alternative', 'Issue 2');
 
@@ -36,8 +35,12 @@ describe('TCS: CONDEC-171', () => {
     const issue1Links = await jira.findIssue(issue1.id);
     const issue2Links = await jira.findIssue(issue2.id);
 
-    chai.expect(issue1Links.fields.issuelinks[0]).to.have.deep.property('id', `${link.data.id}`);
-    chai.expect(issue1Links.fields.issuelinks[0].type).to.have.property('name', 'Relates');
+    chai
+      .expect(issue1Links.fields.issuelinks[0])
+      .to.have.deep.property('id', `${link.data.id}`);
+    chai
+      .expect(issue1Links.fields.issuelinks[0].type)
+      .to.have.property('name', 'Relates');
     chai
       .expect(issue1Links.fields.issuelinks[0].outwardIssue)
       .to.have.property('id', `${issue2.id}`);
@@ -45,8 +48,12 @@ describe('TCS: CONDEC-171', () => {
       .expect(issue1Links.fields.issuelinks[0].outwardIssue)
       .to.have.property('key', `${issue2.key}`);
 
-    chai.expect(issue2Links.fields.issuelinks[0]).to.have.deep.property('id', `${link.data.id}`);
-    chai.expect(issue2Links.fields.issuelinks[0].type).to.have.property('name', 'Relates');
+    chai
+      .expect(issue2Links.fields.issuelinks[0])
+      .to.have.deep.property('id', `${link.data.id}`);
+    chai
+      .expect(issue2Links.fields.issuelinks[0].type)
+      .to.have.property('name', 'Relates');
     chai
       .expect(issue2Links.fields.issuelinks[0].inwardIssue)
       .to.have.property('id', `${issue1.id}`);
@@ -56,11 +63,13 @@ describe('TCS: CONDEC-171', () => {
   });
 
   it(
-    '(R2) should store the link in the ConDec database when at least one of the linked ' +
-      'elements is not a Jira issue'
+    '(R2) If at least one knowledge element has a different documentation location than a Jira issue, the link is stored in an internal database of the ConDec plugin and not as a Jira issue link.'
   );
   it('(R3) The source element must be different to the destination/target element.', async () => {
-    const alternative = await createJiraIssue('Alternative', 'Dummy Alternative');
+    const alternative = await createJiraIssue(
+      'Alternative',
+      'Dummy Alternative'
+    );
 
     // This should fail, but it doesn't!
     const link = await axios.post(
@@ -76,6 +85,15 @@ describe('TCS: CONDEC-171', () => {
     );
     chai.expect(link.status).not.to.eql(200);
   });
+  it(
+    '(R4) If an issue (=decision problem) is linked to a decision in state "decided", the state of this issue is set to "resolved".'
+  );
+  xit(
+    '(R5) A Jira issue link can only be created in a view on the knowledge graph if the user has the rights to link Jira issues (CONDEC-852, integrity).'
+  );
+  xit('(R6) If the webhook is activated, it will be fired (CONDEC-185).');
+  it('(E1) Source and/or destination/target element with given id does not exist in database.')
+  it('(E2) The user does not have the rights for linking.')
 });
 
 /**
@@ -134,7 +152,10 @@ describe('TCS: CONDEC-172', () => {
       }
       const searchResult = await jira.findIssue(issue1.key);
       // Make sure it's really gone
-      chai.expect(searchResult.fields.issuelinks).to.be.an('Array').with.length(0);
+      chai
+        .expect(searchResult.fields.issuelinks)
+        .to.be.an('Array')
+        .with.length(0);
     }
   );
   it(
