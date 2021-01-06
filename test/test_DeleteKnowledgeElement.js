@@ -172,11 +172,11 @@ describe('TCS: CONDEC-170', () => {
       });
     }
   );
-  it(
+  xit( 
     '(R6) If a decision knowledge element is deleted in a view on the knowledge graph, it is ' +
       'deleted in the database and in the knowledge graph (i.e. datastructure).'
   );
-  it(
+  xit(
     '(R7) If a decision knowledge element documented in the description or a comment of a Jira' +
       'issue is deleted in a view on the knowledge graph, it is not removed from the description' +
       ' or comment (i.e. the body/text of the description/comment is not changed).'
