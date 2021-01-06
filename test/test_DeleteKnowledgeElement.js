@@ -60,13 +60,30 @@ describe('TCS: CONDEC-170', () => {
         '{issue}Which method of transportation to use?{issue}\n{alternative}Use a bicycle!{alternative}'
       );
       await jira.deleteIssue(issue.id);
+
+      // Check knowledge elements are not in the database
+      // (if they are not in the database, they also can't be in the knowledge graph)
       const knowledgeElements = await getKnowledgeElements();
-      chai.expect(knowledgeElements).to.have.length(0);
+      chai.expect(knowledgeElements).to.not.contain.something.that.has.property('summary', 'Use a bicycle!');
+      chai.expect(knowledgeElements).to.not.contain.something.that.has.property('summary', 'Which method of transportation to use?');
+      
     }
   );
   it(
     '(R3) If a Jira issue is deleted, the knowledge element (=node) that represents this Jira' +
-      ' issue is deleted in the knowledge graph.'
+      ' issue is deleted in the knowledge graph.', async () => {
+        const issue = await createJiraIssue(
+          'Task',
+          'Develop strategy for fast and cost-effective pizza delivery',
+          '{issue}Which method of transportation to use?{issue}\n{decision}Use a moped!{decision}'
+        );
+        await jira.deleteIssue(issue.id);
+        // Check knowledge elements are not in the database
+        const knowledgeElements = await getKnowledgeElements();
+
+        chai.expect(knowledgeElements).to.not.contain.something.that.has.property('summary', 'Develop strategy for fast and cost-effective pizza delivery');
+        
+      }
   );
   it(
     '(R4) If a Jira issue comment is deleted, all decision knowledge ' +
