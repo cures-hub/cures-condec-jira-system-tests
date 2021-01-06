@@ -7,12 +7,15 @@ const {
   createJiraIssue,
   localCredentialsObject,
   base64LocalCredentials,
+  getKnowledgeElements,
 } = require('./helpers.js');
 
+chai.use(require('chai-like'));
+chai.use(require('chai-things'))
 /**
  * CONDEC-171: Link knowledge elements
  */
-describe('TCS: CONDEC-171', () => {
+describe.only('TCS: CONDEC-171', () => {
   before(async () => {
     await setUpJira(true); // turn issue strategy on
   });
@@ -62,9 +65,40 @@ describe('TCS: CONDEC-171', () => {
       .to.have.property('key', `${issue1.key}`);
   });
 
+
+  // This is also currently failing -- seems like linking a comment to an issue
+  // is not currently possible
   it(
-    '(R2) If at least one knowledge element has a different documentation location than a Jira issue, the link is stored in an internal database of the ConDec plugin and not as a Jira issue link.'
+    '(R2) If at least one knowledge element has a different documentation location than a ' +
+      'Jira issue, the link is stored in an internal database of the ConDec plugin and not ' +
+      'as a Jira issue link.',
+    async () => {
+      const issue1 = await createJiraIssue('Issue', 'Which method of transportation should be used?');
+      
+      const issue2 = await createJiraIssue('Task', 'Schedule pizza deliveries');
+      const comment = await jira.addComment(issue2.id, '(/) Use a car to deliver pizzas!');
+
+      const link = await axios.post(
+        `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json` +
+          `?projectKey=${JSONConfig.projectKey}` +
+          '&documentationLocationOfParent=i' +
+          '&documentationLocationOfChild=s' +
+          `&idOfParent=${issue1.id}` +
+          `&idOfChild=${comment.id}` +
+          '&linkTypeName=relates',
+        undefined,
+        localCredentialsObject
+      );
+
+    const issue1Links = await jira.findIssue(issue1.id);
+    chai.expect(issue1Links.fields.issueLinks).to.be.an('Array').with.lengthOf(0);
+    
+    const knowledgeElements = await getKnowledgeElements();
+    chai.expect(knowledgeElements).to.contain.something.with.property('id', link.data.id)
+    }
   );
+
+  // This is currently failing
   it('(R3) The source element must be different to the destination/target element.', async () => {
     const alternative = await createJiraIssue(
       'Alternative',
@@ -72,6 +106,7 @@ describe('TCS: CONDEC-171', () => {
     );
 
     // This should fail, but it doesn't!
+    // Link the alternative to itself
     const link = await axios.post(
       `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json` +
         `?projectKey=${JSONConfig.projectKey}` +
@@ -92,8 +127,10 @@ describe('TCS: CONDEC-171', () => {
     '(R5) A Jira issue link can only be created in a view on the knowledge graph if the user has the rights to link Jira issues (CONDEC-852, integrity).'
   );
   xit('(R6) If the webhook is activated, it will be fired (CONDEC-185).');
-  it('(E1) Source and/or destination/target element with given id does not exist in database.')
-  it('(E2) The user does not have the rights for linking.')
+  it(
+    '(E1) Source and/or destination/target element with given id does not exist in database.'
+  );
+  it('(E2) The user does not have the rights for linking.');
 });
 
 /**
