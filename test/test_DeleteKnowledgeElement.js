@@ -150,7 +150,27 @@ describe('TCS: CONDEC-170', () => {
     '(R5) If a decision knowledge element is deleted in the description or ' +
       'a comment of a Jira issue (through deleting in the body/text),' +
       ' it is deleted in the database and knowledge graph.',
-    async () => {}
+    async () => {
+      const issue = await createJiraIssue(
+        'Task',
+        'Buy mugs for serving coffee',
+        '(!) How large to make the mugs?'
+      );
+      await jira.updateIssue(issue.id, {
+        update: { description: [{ set: 'foo' }] },
+      });
+      const knowledgeElements = await getKnowledgeElements();
+      chai
+        .expect(knowledgeElements)
+        .to.not.contain.something.that.has.property(
+          'description',
+          'How large to make the mugs?'
+        );
+      chai.expect(knowledgeElements).to.contain.something.like({
+        summary: 'Buy mugs for serving coffee',
+        description: 'foo',
+      });
+    }
   );
   it(
     '(R6) If a decision knowledge element is deleted in a view on the knowledge graph, it is ' +
