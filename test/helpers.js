@@ -87,13 +87,14 @@ const setIssueStrategy = async (useIssueStrategy) => {
  * @param  {string} issueSummary
  *
  */
-const createJiraIssue = async (issueTypeName, issueSummary) => {
+const createJiraIssue = async (issueTypeName, issueSummary, issueDescription='') => {
   const createdIssue = await jira.addNewIssue({
     fields: {
       project: {
         key: JSONConfig.projectKey,
       },
       summary: issueSummary,
+      description: issueDescription,
       issuetype: {
         name: issueTypeName,
       },
