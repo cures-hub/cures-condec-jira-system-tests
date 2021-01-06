@@ -64,26 +64,40 @@ describe('TCS: CONDEC-170', () => {
       // Check knowledge elements are not in the database
       // (if they are not in the database, they also can't be in the knowledge graph)
       const knowledgeElements = await getKnowledgeElements();
-      chai.expect(knowledgeElements).to.not.contain.something.that.has.property('summary', 'Use a bicycle!');
-      chai.expect(knowledgeElements).to.not.contain.something.that.has.property('summary', 'Which method of transportation to use?');
-      
+      chai
+        .expect(knowledgeElements)
+        .to.not.contain.something.that.has.property(
+          'summary',
+          'Use a bicycle!'
+        );
+      chai
+        .expect(knowledgeElements)
+        .to.not.contain.something.that.has.property(
+          'summary',
+          'Which method of transportation to use?'
+        );
     }
   );
   it(
     '(R3) If a Jira issue is deleted, the knowledge element (=node) that represents this Jira' +
-      ' issue is deleted in the knowledge graph.', async () => {
-        const issue = await createJiraIssue(
-          'Task',
-          'Develop strategy for fast and cost-effective pizza delivery',
-          '{issue}Which method of transportation to use?{issue}\n{decision}Use a moped!{decision}'
-        );
-        await jira.deleteIssue(issue.id);
-        // Check knowledge elements are not in the database
-        const knowledgeElements = await getKnowledgeElements();
+      ' issue is deleted in the knowledge graph.',
+    async () => {
+      const issue = await createJiraIssue(
+        'Task',
+        'Develop strategy for fast and cost-effective pizza delivery',
+        '{issue}Which method of transportation to use?{issue}\n{decision}Use a moped!{decision}'
+      );
+      await jira.deleteIssue(issue.id);
+      // Check knowledge elements are not in the database
+      const knowledgeElements = await getKnowledgeElements();
 
-        chai.expect(knowledgeElements).to.not.contain.something.that.has.property('summary', 'Develop strategy for fast and cost-effective pizza delivery');
-        
-      }
+      chai
+        .expect(knowledgeElements)
+        .to.not.contain.something.that.has.property(
+          'summary',
+          'Develop strategy for fast and cost-effective pizza delivery'
+        );
+    }
   );
   it(
     '(R4) If a Jira issue comment is deleted, all decision knowledge ' +
@@ -92,7 +106,7 @@ describe('TCS: CONDEC-170', () => {
       // Create a task in Jira with a decision knowledge comment
       const createdIssue = await createJiraIssue(
         'Task',
-        'The easiest task in the world'
+        'Plan the tasks from June until October'
       );
       const commentString =
         '{issue}Which language should we use to define tasks?{issue}';
@@ -135,7 +149,8 @@ describe('TCS: CONDEC-170', () => {
   it(
     '(R5) If a decision knowledge element is deleted in the description or ' +
       'a comment of a Jira issue (through deleting in the body/text),' +
-      ' it is deleted in the database and knowledge graph.'
+      ' it is deleted in the database and knowledge graph.',
+    async () => {}
   );
   it(
     '(R6) If a decision knowledge element is deleted in a view on the knowledge graph, it is ' +
