@@ -26,6 +26,9 @@ chai.use(require('chai-things'));
  * @con Not all rules/exceptions end up in the system test description. It can be hard to
  * find them later.
  * 
+ * @decision Disable test cases that will not be implemented using `xit`
+ * @pro Test cases that are disabled don't show up in junit reports
+ * 
  * @issue Which naming convention should system test cases follow?
  * @decision Test cases should be named using the exact text of the
  * rule/exception they test!
@@ -115,7 +118,7 @@ describe('TCS: CONDEC-170', () => {
       'issue is deleted in a view on the knowledge graph, it is not removed from the description' +
       ' or comment (i.e. the body/text of the description/comment is not changed).'
   );
-  it(
+  xit(
     '(R8) Decision knowledge elements documented in code comments cannot be deleted in Jira' +
       ' (only directly in the code).'
   );
@@ -123,15 +126,15 @@ describe('TCS: CONDEC-170', () => {
     '(R9) When the Jira project is deleted, all knowledge elements are deleted in the database' +
       ' and the knowledge graph.'
   );
-  it(
+  xit(
     '(R10) A Jira issue can only be deleted in a view on the knowledge graph if the user has ' +
       'the rights to delete Jira issues (CONDEC-852, integrity).'
   );
-  it(
+  xit(
     '(R11) A decision knowledge element documented within the description or a comment of a ' +
       'Jira issue can also be deleted in a view on the knowledge graph even if the user does not have the right to change the text of the description/comment, because during deletion in a view the body/text of the description/comment is not updated (see R7).'
   );
-  it('(R12) If the webhook is activated, it will be fired (CONDEC-185).');
+  xit('(R12) If the webhook is activated, it will be fired (CONDEC-185).');
   it(
     '(E1) Knowledge element with given id and documentation location' +
       'does not exist in database.',
@@ -159,5 +162,5 @@ describe('TCS: CONDEC-170', () => {
       }
     }
   );
-  it('(E2) The user does not have the rights for deletion.');
+  xit('(E2) The user does not have the rights for deletion.');
 });
