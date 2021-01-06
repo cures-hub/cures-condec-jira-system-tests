@@ -7,6 +7,7 @@ const {
   createJiraIssue,
   localCredentialsObject,
   base64LocalCredentials,
+  getKnowledgeElements,
 } = require('./helpers.js');
 
 chai.use(require('chai-like'));
@@ -51,7 +52,17 @@ describe('TCS: CONDEC-170', () => {
   );
   it(
     '(R2) If a Jira issue is deleted, all decision knowledge elements in its description and ' +
-      'comments are deleted in the database and knowledge graph.'
+      'comments are deleted in the database and knowledge graph.',
+    async () => {
+      const issue = await createJiraIssue(
+        'Task',
+        'Develop strategy for maximizing joy',
+        '{issue}Which method of transportation to use?{issue}\n{alternative}Use a bicycle!{alternative}'
+      );
+      await jira.deleteIssue(issue.id);
+      const knowledgeElements = await getKnowledgeElements();
+      chai.expect(knowledgeElements).to.have.length(0);
+    }
   );
   it(
     '(R3) If a Jira issue is deleted, the knowledge element (=node) that represents this Jira' +
@@ -132,11 +143,13 @@ describe('TCS: CONDEC-170', () => {
   );
   xit(
     '(R11) A decision knowledge element documented within the description or a comment of a ' +
-      'Jira issue can also be deleted in a view on the knowledge graph even if the user does not have the right to change the text of the description/comment, because during deletion in a view the body/text of the description/comment is not updated (see R7).'
+      'Jira issue can also be deleted in a view on the knowledge graph even if the user does ' +
+      'not have the right to change the text of the description/comment, because during' +
+      ' deletion in a view the body/text of the description/comment is not updated (see R7).'
   );
   xit('(R12) If the webhook is activated, it will be fired (CONDEC-185).');
   it(
-    '(E1) Knowledge element with given id and documentation location' +
+    '(E1) Knowledge element with given id and documentation location ' +
       'does not exist in database.',
     async () => {
       const deleteDecisionKnowledgeRequest = {
