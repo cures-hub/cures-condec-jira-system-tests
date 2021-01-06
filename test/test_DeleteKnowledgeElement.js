@@ -185,7 +185,7 @@ describe('TCS: CONDEC-170', () => {
     '(R8) Decision knowledge elements documented in code comments cannot be deleted in Jira' +
       ' (only directly in the code).'
   );
-  it(
+  xit( // Since this would require meta-testing, we omit it here.
     '(R9) When the Jira project is deleted, all knowledge elements are deleted in the database' +
       ' and the knowledge graph.'
   );
