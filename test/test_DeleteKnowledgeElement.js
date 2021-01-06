@@ -11,11 +11,49 @@ const {
 
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
+/**
+ *
+ * @issue How should test cases for SF rules and exceptions be specified?
+ * 
+ * @decision Specify test cases for all rules and exceptions, including those
+ * that will not be tested!
+ * @pro Test cases can easily be implemented later
+ * @con Test files grow in size, leading to poor readability
+ * 
+ * @alternative Specify only test cases for rules and exceptions that will be
+ * tested!
+ * @pro Code is concise and easy to read
+ * @con Not all rules/exceptions end up in the system test description. It can be hard to
+ * find them later.
+ * 
+ * @issue Which naming convention should system test cases follow?
+ * @decision Test cases should be named using the exact text of the
+ * rule/exception they test!
+ * @con If the text changes, it will be hard to find the test case again
+
+ * @decision Describe blocks should be named TCS: <issue-key of SF to test>
+ * @pro It is easy to find the requirement associated with a test
+ * @con A test case can actually test more than one SF at once, but this cannot
+ * be documented here
+ */
 
 describe('TCS: CONDEC-170', () => {
   before(async () => {
     await setUpJira();
   });
+  // This is tested in the tests for linking and unlinking
+  xit(
+    '(R1) All links (=edges) to and from the deleted knowledge element (=node) ' +
+      'are deleted as well (CONDEC-172).'
+  );
+  it(
+    '(R2) If a Jira issue is deleted, all decision knowledge elements in its description and ' +
+      'comments are deleted in the database and knowledge graph.'
+  );
+  it(
+    '(R3) If a Jira issue is deleted, the knowledge element (=node) that represents this Jira' +
+      ' issue is deleted in the knowledge graph.'
+  );
   it(
     '(R4) If a Jira issue comment is deleted, all decision knowledge ' +
       'elements in its body are deleted in the database and knowledge graph. ',
@@ -63,106 +101,63 @@ describe('TCS: CONDEC-170', () => {
     }
   );
 
-  it('should delete child elements of a decision knowledge issue that is deleted', async () => {
-    const createdIssue = await createJiraIssue(
-      'Task',
-      'Write a definition of ready for tasks'
-    );
-    const commentString = `{issue}Which language should we use to define tasks?{issue}
-        {decision}Use English to define tasks!{decision}
-        {alternative}Use German to define tasks!{alternative}`;
-    await jira.addComment(createdIssue.key, commentString);
-    const searchPayload = {
-      searchTerm: '',
-      selectedElement: createdIssue.key,
-      projectKey: JSONConfig.projectKey,
-    };
-
-    // We get the graph here in order to access the decision elements ID, so we know what to delete
-    const treantGraph = await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
-      searchPayload,
-      localCredentialsObject
-    );
-
-    // Then save the issue, decision, and alternative ids for later
-    const issue = treantGraph.data.nodeStructure.children[0];
-    const decisionID = issue.children[0].HTMLid;
-    const alternativeID = issue.children[1].HTMLid;
-
-    const deleteDecisionKnowledgeRequest = {
-      method: 'delete',
-      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteDecisionKnowledgeElement.json`,
-      headers: {
-        Authorization: `Basic ${base64LocalCredentials}`,
-        'Content-Type': 'application/json',
-      },
-      data: {
-        id: treantGraph.data.nodeStructure.children[0].HTMLid, // Child of the root element
-        projectKey: JSONConfig.projectKey,
-        documentationLocation:
-          treantGraph.data.nodeStructure.children[0].text.documentationLocation,
-      },
-    };
-
-    await axios.request(deleteDecisionKnowledgeRequest);
-
-    const treantGraphAfterDeletion = await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/view/getTreant.json`,
-      searchPayload,
-      localCredentialsObject
-    );
-
-    // The graph for this element should not contain the child elements anymore
-    // eslint-disable-next-line no-unused-expressions
-    chai.expect(treantGraphAfterDeletion.data.nodeStructure.children).to.be
-      .empty;
-
-    // The child elements should still exist in the database after their parent was deleted
-    const allKnowledgeElementsAfterDeletion = await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/knowledgeElements.json`,
-      { projectKey: JSONConfig.projectKey, searchTerm: '' },
-      localCredentialsObject
-    );
-
-    chai
-      .expect(allKnowledgeElementsAfterDeletion.data)
-      .to.be.an('array')
-      .that.contains.something.like({
-        id: decisionID,
-        type: 'Decision',
-        summary: 'Use English to define tasks!',
-      });
-    chai
-      .expect(allKnowledgeElementsAfterDeletion.data)
-      .to.be.an('array')
-      .that.contains.something.like({
-        id: alternativeID,
-        type: 'Alternative',
-        summary: 'Use German to define tasks!',
-      });
-  });
-  it('(E1) Knowledge element with given id and documentation location does not exist in database.', async () => {
-    const deleteDecisionKnowledgeRequest = {
-      method: 'delete',
-      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteDecisionKnowledgeElement.json`,
-      headers: {
-        Authorization: `Basic ${base64LocalCredentials}`,
-        'Content-Type': 'application/json',
-      },
-      data: {
-        id: -1, // this ID won't exist as ConDec only gives positive ids
-        projectKey: JSONConfig.projectKey,
-        documentationLocation: 's',
-      },
-    };
-    try {
-      await axios.request(deleteDecisionKnowledgeRequest);
-    } catch (err) {
-      chai.expect(err.response.status).to.equal(500);
-      chai
-        .expect(err.response.data.error)
-        .to.include('Deletion of decision knowledge element failed.');
+  it(
+    '(R5) If a decision knowledge element is deleted in the description or ' +
+      'a comment of a Jira issue (through deleting in the body/text),' +
+      ' it is deleted in the database and knowledge graph.'
+  );
+  it(
+    '(R6) If a decision knowledge element is deleted in a view on the knowledge graph, it is ' +
+      'deleted in the database and in the knowledge graph (i.e. datastructure).'
+  );
+  it(
+    '(R7) If a decision knowledge element documented in the description or a comment of a Jira' +
+      'issue is deleted in a view on the knowledge graph, it is not removed from the description' +
+      ' or comment (i.e. the body/text of the description/comment is not changed).'
+  );
+  it(
+    '(R8) Decision knowledge elements documented in code comments cannot be deleted in Jira' +
+      ' (only directly in the code).'
+  );
+  it(
+    '(R9) When the Jira project is deleted, all knowledge elements are deleted in the database' +
+      ' and the knowledge graph.'
+  );
+  it(
+    '(R10) A Jira issue can only be deleted in a view on the knowledge graph if the user has ' +
+      'the rights to delete Jira issues (CONDEC-852, integrity).'
+  );
+  it(
+    '(R11) A decision knowledge element documented within the description or a comment of a ' +
+      'Jira issue can also be deleted in a view on the knowledge graph even if the user does not have the right to change the text of the description/comment, because during deletion in a view the body/text of the description/comment is not updated (see R7).'
+  );
+  it('(R12) If the webhook is activated, it will be fired (CONDEC-185).');
+  it(
+    '(E1) Knowledge element with given id and documentation location' +
+      'does not exist in database.',
+    async () => {
+      const deleteDecisionKnowledgeRequest = {
+        method: 'delete',
+        url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteDecisionKnowledgeElement.json`,
+        headers: {
+          Authorization: `Basic ${base64LocalCredentials}`,
+          'Content-Type': 'application/json',
+        },
+        data: {
+          id: -1, // this ID won't exist as ConDec only gives positive ids
+          projectKey: JSONConfig.projectKey,
+          documentationLocation: 's',
+        },
+      };
+      try {
+        await axios.request(deleteDecisionKnowledgeRequest);
+      } catch (err) {
+        chai.expect(err.response.status).to.equal(500);
+        chai
+          .expect(err.response.data.error)
+          .to.include('Deletion of decision knowledge element failed.');
+      }
     }
-  });
+  );
+  it('(E2) The user does not have the rights for deletion.');
 });
