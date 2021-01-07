@@ -34,7 +34,10 @@ const base64LocalCredentials = Buffer.from(
  */
 const deleteProject = async (projectKeyOrId) => {
   await axios
-    .delete(`${JSONConfig.fullUrl}/rest/api/2/project/${projectKeyOrId}`, localCredentialsObject)
+    .delete(
+      `${JSONConfig.fullUrl}/rest/api/2/project/${projectKeyOrId}`,
+      localCredentialsObject
+    )
     .then((res) => assert(res.status === 204));
 };
 
@@ -88,7 +91,11 @@ const setIssueStrategy = async (useIssueStrategy) => {
  * @param  {?string} issueDescription - optional - if not specified, the issue description will be empty
  *
  */
-const createJiraIssue = async (issueTypeName, issueSummary, issueDescription='') => {
+const createJiraIssue = async (
+  issueTypeName,
+  issueSummary,
+  issueDescription = ''
+) => {
   const createdIssue = await jira.addNewIssue({
     fields: {
       project: {
@@ -126,7 +133,8 @@ const setUpJira = async (useIssueStrategy = false) => {
       key: JSONConfig.projectKey,
       name: 'ConDec Test',
       projectTypeKey: 'business',
-      projectTemplateKey: 'com.atlassian.jira-core-project-templates:jira-core-project-management',
+      projectTemplateKey:
+        'com.atlassian.jira-core-project-templates:jira-core-project-management',
       description: 'A project for testing the ConDec Jira plugin',
       lead: 'admin',
     });
@@ -157,7 +165,53 @@ const getKnowledgeElements = async (searchTerm = '') => {
     return results.data;
   } catch (err) {
     console.error(err);
-    throw new Error('Getting knowledge elements did not work')
+    throw new Error('Getting knowledge elements did not work');
+  }
+};
+/**
+ * 
+ * @param {string} newElementSummary - a summary for the new element
+ * @param {string} newElementType - the type of the new element - must be a valid
+ * type active on the Jira instance. Valid values include 'Alternative',
+ * 'Decision', 'Issue', 'Pro', 'Con'
+ * @param {string} newElementLocation - i or s. i creates an issue, s creates an
+ * issue comment
+ * @param {?number|string} existingElementId - optional. If specified, must be number or string representing the
+ * id of the existing element to link to. If not specified, the new element will
+ * not be linked.
+ * @param {?string} existingElementLocation - optional. If specified, must be i
+ * or s, depending on the location of the existing element. If not specified,
+ * the new element will not be linked to an existing element
+ * @param {?string} newElementDescription - optional, empty if not specified.
+ */
+const createDecisionKnowledgeElement = async (
+  newElementSummary,
+  newElementType,
+  newElementLocation,
+  existingElementId=0,
+  existingElementLocation=null,
+  newElementDescription = ''
+) => {
+  try {
+    const result = await axios.post(
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/` +
+        'createDecisionKnowledgeElement.json' +
+        `?idOfExistingElement=${existingElementId}` +
+        `&documentationLocationOfExistingElement=${existingElementLocation}`,
+      {
+        summary: newElementSummary,
+        type: newElementType,
+        projectKey: JSONConfig.projectKey,
+        description: newElementDescription,
+        documentationLocation: newElementLocation,
+      }, localCredentialsObject
+    );
+    return result.data;
+  } catch (err) {
+    console.error(err);
+    throw new Error(
+      `Creation of decision knowledge element with summary ${newElementSummary} failed with message: ${err.message}`
+    );
   }
 };
 module.exports = {
@@ -168,5 +222,6 @@ module.exports = {
   getIssueTypes,
   localCredentialsObject,
   base64LocalCredentials,
-  getKnowledgeElements
+  getKnowledgeElements,
+  createDecisionKnowledgeElement,
 };
