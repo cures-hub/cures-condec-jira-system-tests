@@ -17,7 +17,7 @@ chai.use(require('chai-things'));
 /**
  * CONDEC-171: Link knowledge elements
  */
-describe.only('TCS: CONDEC-171', () => {
+describe('TCS: CONDEC-171', () => {
   before(async () => {
     await setUpJira(true); // turn issue strategy on
   });
@@ -90,7 +90,7 @@ describe.only('TCS: CONDEC-171', () => {
         .expect(jiraIssue.fields.issuelinks)
         .to.be.an('Array')
         .with.lengthOf(0);
-      
+
       // Check that the comment's key contains the issue key - this means they
       // are linked in the ConDec database
       chai
@@ -99,23 +99,23 @@ describe.only('TCS: CONDEC-171', () => {
     }
   );
 
-  // This is currently failing
+  // This is currently failing, as it should not be allowed to link an element
+  // to itself
   it('(R3) The source element must be different to the destination/target element.', async () => {
     const alternative = await createJiraIssue(
       'Alternative',
       'Dummy Alternative'
     );
 
-    // This should fail, but it doesn't!
     // Link the alternative to itself
     const link = await axios.post(
       `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json` +
         `?projectKey=${JSONConfig.projectKey}` +
-        '&documentationLocationOfParent=i' +
-        '&documentationLocationOfChild=i' +
         `&idOfParent=${alternative.id}` +
+        '&documentationLocationOfParent=i' +
         `&idOfChild=${alternative.id}` +
-        '&linkTypeName=relates',
+        '&documentationLocationOfChild=i' +
+        '&linkTypeName=Relates',
       undefined,
       localCredentialsObject
     );
