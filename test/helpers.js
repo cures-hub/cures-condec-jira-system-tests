@@ -168,6 +168,23 @@ const getKnowledgeElements = async (searchTerm = '') => {
     throw new Error('Getting knowledge elements did not work');
   }
 };
+const getSpecificKnowledgeElement = async (id, documentationLocation) => {
+  try {
+    const result = await axios.get(
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/` +
+        'getDecisionKnowledgeElement.json' +
+        `?projectKey=${JSONConfig.projectKey}` +
+        `&id=${id}` +
+        `&documentationLocation=${documentationLocation}`,
+
+      localCredentialsObject
+    );
+    return result.data;
+  } catch (err) {
+    console.error(err.message);
+    throw new Error(`An error occurred while getting element with id ${id}`);
+  }
+};
 /**
  *
  * @param {string} newElementSummary - a summary for the new element
@@ -217,12 +234,12 @@ const createDecisionKnowledgeElement = async (
 };
 
 /**
- * 
- * @param {number | string} parentElementId 
- * @param {string} parentElementLocation 
+ *
+ * @param {number | string} parentElementId
+ * @param {string} parentElementLocation
  * @param {Object} updatedElement - should contain the element with properties
  * to update set
- * 
+ *
  * @returns {Promise<Object>}
  */
 const updateDecisionKnowledgeElement = async (
@@ -245,7 +262,7 @@ const updateDecisionKnowledgeElement = async (
       },
       localCredentialsObject
     );
-    return res.data
+    return res.data;
   } catch (err) {
     console.error(err.message);
     throw new Error(
@@ -265,4 +282,5 @@ module.exports = {
   getKnowledgeElements,
   createDecisionKnowledgeElement,
   updateDecisionKnowledgeElement,
+  getSpecificKnowledgeElement,
 };
