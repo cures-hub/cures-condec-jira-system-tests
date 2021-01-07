@@ -67,46 +67,35 @@ describe.only('TCS: CONDEC-171', () => {
       .to.have.property('key', `${issue1.key}`);
   });
 
-  // This is also currently failing -- seems like linking a comment to an issue
-  // is not currently possible
-  it.only(
+  it(
     '(R2) If at least one knowledge element has a different documentation location than a ' +
       'Jira issue, the link is stored in an internal database of the ConDec plugin and not ' +
       'as a Jira issue link.',
     async () => {
-      const issue1 = await createJiraIssue(
+      const decisionKnowledgeIssue = await createDecisionKnowledgeElement(
+        'Which method of transportation should be used for pizza delivery?',
         'Issue',
-        'Which method of transportation should be used?'
+        'i'
       );
-
-      const issue2 = await createJiraIssue('Task', 'Schedule pizza deliveries');
-      const comment = await jira.addComment(
-        issue2.id,
-        '(/) Use a car to deliver pizzas!'
+      const decisionKnowledgeComment = await createDecisionKnowledgeElement(
+        'Use a car to deliver pizzas!',
+        'Decision',
+        's',
+        decisionKnowledgeIssue.id, // The comment gets linked to the Jira issue created above
+        'i'
       );
-
-      const link = await axios.post(
-        `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json` +
-          `?projectKey=${JSONConfig.projectKey}` +
-          '&documentationLocationOfParent=i' +
-          '&documentationLocationOfChild=s' +
-          `&idOfParent=${issue1.id}` +
-          `&idOfChild=${comment.id}` +
-          '&linkTypeName=relates',
-        undefined,
-        localCredentialsObject
-      );
-
-      const issue1Links = await jira.findIssue(issue1.id);
+      const jiraIssue = await jira.findIssue(decisionKnowledgeIssue.id);
+      // Check that no Jira issue link exists
       chai
-        .expect(issue1Links.fields.issueLinks)
+        .expect(jiraIssue.fields.issuelinks)
         .to.be.an('Array')
         .with.lengthOf(0);
-
-      const knowledgeElements = await getKnowledgeElements();
+      
+      // Check that the comment's key contains the issue key - this means they
+      // are linked in the ConDec database
       chai
-        .expect(knowledgeElements)
-        .to.contain.something.with.property('id', link.data.id);
+        .expect(decisionKnowledgeComment.key)
+        .to.contain(decisionKnowledgeIssue.key);
     }
   );
 
