@@ -291,6 +291,35 @@ describe('TCS: CONDEC-172', () => {
       'has the rights to delete links between Jira issues (CONDEC-852, integrity).'
   );
   xit('(R5) If the webhook is activated, it will be fired (CONDEC-185).');
-  it('(E1) Link with given id does not exist in database.');
+  it('(E1) Link with given id does not exist in database.', async () => {
+    const issue = await createDecisionKnowledgeElement('How should files be organized?', 'Issue', 'i');
+    // Create a decision that is not linked to the issue
+    const decision = await createDecisionKnowledgeElement('Organize files alphabetically!', 'Decision', 'i');
+    
+    const payload = {
+      // THESE ELEMENTS MUST BE PASSED IN THIS ORDER!!
+      idOfSourceElement: issue.id,
+      idOfDestinationElement: decision.id,
+      documentationLocationOfSourceElement: 'i',
+      documentationLocationOfDestinationElement: 'i',
+    };
+    const deleteLinkRequest = {
+      method: 'delete',
+      url:
+        `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink.json` +
+        `?projectKey=${JSONConfig.projectKey}`,
+      headers: {
+        Authorization: `Basic ${base64LocalCredentials}`,
+        'Content-Type': 'application/json',
+      },
+      data: payload,
+    };
+    try {
+      await axios(deleteLinkRequest);
+      
+    } catch (err) {
+      chai.expect(err.message).to.eql('Request failed with status code 500');
+    }
+  });
   xit('(E2) The user does not have the rights for unlinking.');
 });
