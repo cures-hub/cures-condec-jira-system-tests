@@ -168,8 +168,25 @@ const getKnowledgeElements = async (searchTerm = '') => {
     throw new Error('Getting knowledge elements did not work');
   }
 };
+const getSpecificKnowledgeElement = async (id, documentationLocation) => {
+  try {
+    const result = await axios.get(
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/` +
+        'getDecisionKnowledgeElement.json' +
+        `?projectKey=${JSONConfig.projectKey}` +
+        `&id=${id}` +
+        `&documentationLocation=${documentationLocation}`,
+
+      localCredentialsObject
+    );
+    return result.data;
+  } catch (err) {
+    console.error(err.message);
+    throw new Error(`An error occurred while getting element with id ${id}`);
+  }
+};
 /**
- * 
+ *
  * @param {string} newElementSummary - a summary for the new element
  * @param {string} newElementType - the type of the new element - must be a valid
  * type active on the Jira instance. Valid values include 'Alternative',
@@ -188,8 +205,8 @@ const createDecisionKnowledgeElement = async (
   newElementSummary,
   newElementType,
   newElementLocation,
-  existingElementId=0,
-  existingElementLocation=null,
+  existingElementId = 0,
+  existingElementLocation = null,
   newElementDescription = ''
 ) => {
   try {
@@ -204,7 +221,8 @@ const createDecisionKnowledgeElement = async (
         projectKey: JSONConfig.projectKey,
         description: newElementDescription,
         documentationLocation: newElementLocation,
-      }, localCredentialsObject
+      },
+      localCredentialsObject
     );
     return result.data;
   } catch (err) {
@@ -214,6 +232,43 @@ const createDecisionKnowledgeElement = async (
     );
   }
 };
+
+/**
+ *
+ * @param {number | string} parentElementId
+ * @param {string} parentElementLocation
+ * @param {Object} updatedElement - should contain the element with properties
+ * to update set
+ *
+ * @returns {Promise<Object>}
+ */
+const updateDecisionKnowledgeElement = async (
+  parentElementId,
+  parentElementLocation,
+  updatedElement
+) => {
+  try {
+    const res = await axios.post(
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge` +
+        `/updateDecisionKnowledgeElement.json?idOfParentElement=${parentElementId}&documentationLocationOfParentElement=${parentElementLocation}`,
+      {
+        id: updatedElement.id,
+        summary: updatedElement.summary,
+        type: updatedElement.type,
+        projectKey: JSONConfig.projectKey,
+        description: updatedElement.description,
+        documentationLocation: updatedElement.documentationLocation,
+        status: updatedElement.status,
+      },
+      localCredentialsObject
+    );
+    return res.data;
+  } catch (err) {
+    console.error(err.message);
+    return err;
+  }
+};
+
 module.exports = {
   deleteProject,
   jira,
@@ -224,4 +279,6 @@ module.exports = {
   base64LocalCredentials,
   getKnowledgeElements,
   createDecisionKnowledgeElement,
+  updateDecisionKnowledgeElement,
+  getSpecificKnowledgeElement,
 };

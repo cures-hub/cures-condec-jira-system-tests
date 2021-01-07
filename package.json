@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "System tests for the ConDec Jira Plugin",
   "scripts": {
-    "start": "mocha --no-timeouts --recursive",
-    "test": "mocha --no-timeouts --recursive",
+    "start": "mocha --no-timeouts --recursive --slow 6000",
+    "test": "mocha --no-timeouts --recursive --slow 6000",
     "report": "mocha --no-timeouts --recursive --reporter mocha-junit-reporter"
   },
   "author": "Julia Baum",
