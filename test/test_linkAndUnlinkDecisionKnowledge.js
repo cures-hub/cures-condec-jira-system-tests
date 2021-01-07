@@ -240,8 +240,57 @@ describe('TCS: CONDEC-172', () => {
         .with.length(0);
     }
   );
-  it(
+  xit( // not sure how to test that the link is deleted in the database
     '(R2) If at least on knowledge element of the link (=edge) is not documented in a separate ' +
-      'Jira issue, the link is deleted in a link database that comes with the ConDec plugin. '
+      'Jira issue, the link is deleted in a link database that comes with the ConDec plugin.'
   );
+  // This test is currently failing, it seems as if the issue gets deleted and
+  // not just unlinked
+  it(
+    '(R3) If an issue (=decision problem) is unlinked from a decision and if the issue has ' +
+      'no other decisions in state "decided" linked, the state of this issue is set to "unresolved".',
+    async () => {
+      const issue = await createDecisionKnowledgeElement(
+        'Which qualifications should be considered in hiring a new developer?',
+        'Issue',
+        'i'
+      );
+
+      const comment = await createDecisionKnowledgeElement(
+        'Consider the amount of experience the candidate has!',
+        'Decision',
+        's',
+        issue.id,
+        'i'
+      );
+      const payload = {
+        idOfSourceElement: comment.id,
+        idOfDestinationElement: issue.id,
+        documentationLocationOfSourceElement: 's',
+        documentationLocationOfDestinationElement: 'i',
+      };
+      const deleteLinkRequest = {
+        method: 'delete',
+        url:
+          `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink.json` +
+          `?projectKey=${JSONConfig.projectKey}`,
+        headers: {
+          Authorization: `Basic ${base64LocalCredentials}`,
+          'Content-Type': 'application/json',
+        },
+        data: payload,
+      };
+      const response = await axios.request(deleteLinkRequest);
+      chai.expect(response.status).to.eql(200);
+      const knowledgeElements = await getKnowledgeElements();
+      chai.expect(knowledgeElements).to.be.an('Array').that.contains.something.like({'id': issue.id, 'status': 'unresolved'})
+    }
+  );
+  xit(
+    '(R4) A Jira issue link can only be deleted in a view on the knowledge graph if the user ' +
+      'has the rights to delete links between Jira issues (CONDEC-852, integrity).'
+  );
+  xit('(R5) If the webhook is activated, it will be fired (CONDEC-185).');
+  it('(E1) Link with given id does not exist in database.');
+  xit('(E2) The user does not have the rights for unlinking.');
 });

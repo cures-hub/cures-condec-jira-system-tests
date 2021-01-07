@@ -176,13 +176,13 @@ const getKnowledgeElements = async (searchTerm = '') => {
  * 'Decision', 'Issue', 'Pro', 'Con'
  * @param {string} newElementLocation - i or s. i creates an issue, s creates an
  * issue comment
- * @param {?string} newElementDescription - optional, empty if not specified.
  * @param {?number|string} existingElementId - optional. If specified, must be number or string representing the
  * id of the existing element to link to. If not specified, the new element will
  * not be linked.
  * @param {?string} existingElementLocation - optional. If specified, must be i
  * or s, depending on the location of the existing element. If not specified,
  * the new element will not be linked to an existing element
+ * @param {?string} newElementDescription - optional, empty if not specified.
  */
 const createDecisionKnowledgeElement = async (
   newElementSummary,
