@@ -155,11 +155,14 @@ const setUpJira = async (useIssueStrategy = false) => {
  *
  * @param {string} searchTerm=''
  */
-const getKnowledgeElements = async (searchTerm = '') => {
+const getKnowledgeElements = async (
+  searchTerm = '',
+  selectedElement = null
+) => {
   try {
     const results = await axios.post(
       `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/knowledgeElements.json`,
-      { projectKey: JSONConfig.projectKey, searchTerm },
+      { projectKey: JSONConfig.projectKey, searchTerm, selectedElement },
       localCredentialsObject
     );
     return results.data;
