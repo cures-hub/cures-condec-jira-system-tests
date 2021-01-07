@@ -8,10 +8,12 @@ const {
   localCredentialsObject,
   base64LocalCredentials,
   getKnowledgeElements,
+  createDecisionKnowledgeElement,
 } = require('./helpers.js');
 
 chai.use(require('chai-like'));
-chai.use(require('chai-things'))
+chai.use(require('chai-things'));
+
 /**
  * CONDEC-171: Link knowledge elements
  */
@@ -65,18 +67,23 @@ describe.only('TCS: CONDEC-171', () => {
       .to.have.property('key', `${issue1.key}`);
   });
 
-
   // This is also currently failing -- seems like linking a comment to an issue
   // is not currently possible
-  it(
+  it.only(
     '(R2) If at least one knowledge element has a different documentation location than a ' +
       'Jira issue, the link is stored in an internal database of the ConDec plugin and not ' +
       'as a Jira issue link.',
     async () => {
-      const issue1 = await createJiraIssue('Issue', 'Which method of transportation should be used?');
-      
+      const issue1 = await createJiraIssue(
+        'Issue',
+        'Which method of transportation should be used?'
+      );
+
       const issue2 = await createJiraIssue('Task', 'Schedule pizza deliveries');
-      const comment = await jira.addComment(issue2.id, '(/) Use a car to deliver pizzas!');
+      const comment = await jira.addComment(
+        issue2.id,
+        '(/) Use a car to deliver pizzas!'
+      );
 
       const link = await axios.post(
         `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json` +
@@ -90,11 +97,16 @@ describe.only('TCS: CONDEC-171', () => {
         localCredentialsObject
       );
 
-    const issue1Links = await jira.findIssue(issue1.id);
-    chai.expect(issue1Links.fields.issueLinks).to.be.an('Array').with.lengthOf(0);
-    
-    const knowledgeElements = await getKnowledgeElements();
-    chai.expect(knowledgeElements).to.contain.something.with.property('id', link.data.id)
+      const issue1Links = await jira.findIssue(issue1.id);
+      chai
+        .expect(issue1Links.fields.issueLinks)
+        .to.be.an('Array')
+        .with.lengthOf(0);
+
+      const knowledgeElements = await getKnowledgeElements();
+      chai
+        .expect(knowledgeElements)
+        .to.contain.something.with.property('id', link.data.id);
     }
   );
 
@@ -121,7 +133,32 @@ describe.only('TCS: CONDEC-171', () => {
     chai.expect(link.status).not.to.eql(200);
   });
   it(
-    '(R4) If an issue (=decision problem) is linked to a decision in state "decided", the state of this issue is set to "resolved".'
+    '(R4) If an issue (=decision problem) is linked to a decision in state "decided", ' +
+      'the state of this issue is set to "resolved".',
+    async () => {
+      const issue1 = await createJiraIssue(
+        'Issue',
+        'Which board games should be played?'
+      );
+      const decisionElement = await createDecisionKnowledgeElement(
+        'Settlers of Catan should be played!',
+        'Decision',
+        's',
+        issue1.id,
+        'i'
+      );
+      chai.expect(decisionElement).to.have.property('status', 'decided');
+      const knowledgeElements = await getKnowledgeElements();
+
+      chai
+        .expect(knowledgeElements)
+        .to.be.an('Array')
+        .that.contains.something.like({
+          id: Number(issue1.id),
+          status: 'resolved',
+          summary: 'Which board games should be played?',
+        });
+    }
   );
   xit(
     '(R5) A Jira issue link can only be created in a view on the knowledge graph if the user has the rights to link Jira issues (CONDEC-852, integrity).'
