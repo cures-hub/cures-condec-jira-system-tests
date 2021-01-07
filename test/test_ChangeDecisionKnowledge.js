@@ -66,15 +66,8 @@ describe('TCS: CONDEC-169', () => {
       );
       const updatePayload = Object.assign(issue, { type: 'Alternative' });
 
-      await updateDecisionKnowledgeElement(
-        0,
-        null,
-        updatePayload
-      );
-      const updatedIssue = await getSpecificKnowledgeElement(
-        issue.id,
-        'i'
-      );
+      await updateDecisionKnowledgeElement(0, null, updatePayload);
+      const updatedIssue = await getSpecificKnowledgeElement(issue.id, 'i');
       chai.expect(updatedIssue).to.be.like({
         id: issue.id,
         type: 'Decision',
@@ -82,7 +75,60 @@ describe('TCS: CONDEC-169', () => {
       });
     }
   );
+  it(
+    '(R3) If the status of a decision is set to "challenged" or "rejected", the status ' +
+      'of the linked issue (=decision problem) is set to "unresolved" (if the issue does ' +
+      'not have any other decisions in status "decided" linked).',
+    async () => {
+      // First part: check for status 'challenged'
+      const issue1 = await createDecisionKnowledgeElement(
+        'Which font should be used in the user interface?',
+        'Issue',
+        'i'
+      );
+      const decision1 = await createDecisionKnowledgeElement(
+        'Use Wingdings for the user interface font!',
+        'Decision',
+        'i',
+        issue1.id,
+        'i'
+      );
+      const update1Payload = Object.assign(decision1, { status: 'challenged' });
+      await updateDecisionKnowledgeElement(0, null, update1Payload);
 
+      const issue1AfterUpdate = await getSpecificKnowledgeElement(
+        issue1.id,
+        'i'
+      );
+      chai
+        .expect(issue1AfterUpdate)
+        .to.be.like({ id: issue1.id, status: 'unresolved' });
+
+      // Second part: check for status 'rejected'
+      const issue2 = await createDecisionKnowledgeElement(
+        'Which color scheme should be used for the website?',
+        'Issue',
+        'i'
+      );
+      const decision2 = await createDecisionKnowledgeElement(
+        'Use a dark color scheme for the website!',
+        'Decision',
+        'i',
+        issue2.id,
+        'i'
+      );
+      const update2Payload = Object.assign(decision2, { status: 'rejected' });
+      await updateDecisionKnowledgeElement(0, null, update2Payload);
+
+      const issue2AfterUpdate = await getSpecificKnowledgeElement(
+        issue2.id,
+        'i'
+      );
+      chai
+        .expect(issue2AfterUpdate)
+        .to.be.like({ id: issue2.id, status: 'unresolved' });
+    }
+  );
   // seems like the system doesn't allow changing the location...
   xit(`(R4) should delete comment and create Jira issue instead when an element's location is
   changed from comment to Jira issue`, async () => {
