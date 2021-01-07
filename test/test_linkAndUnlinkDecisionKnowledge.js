@@ -153,9 +153,28 @@ describe('TCS: CONDEC-171', () => {
     '(R5) A Jira issue link can only be created in a view on the knowledge graph if the user has the rights to link Jira issues (CONDEC-852, integrity).'
   );
   xit('(R6) If the webhook is activated, it will be fired (CONDEC-185).');
-  it(
-    '(E1) Source and/or destination/target element with given id does not exist in database.'
-  );
+  it('(E1) Source and/or destination/target element with given id does not exist in database.', async () => {
+    const issue = await createDecisionKnowledgeElement(
+      'Dummy issue',
+      'Issue',
+      'i'
+    );
+    try {
+      await axios.post(
+        `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json` +
+          `?projectKey=${JSONConfig.projectKey}` +
+          `&idOfParent=${issue.id}` +
+          '&documentationLocationOfParent=i' +
+          `&idOfChild=-1` + // id -1 does not exist
+          '&documentationLocationOfChild=i' +
+          '&linkTypeName=Relates',
+        undefined,
+        localCredentialsObject
+      );
+    } catch (err) {
+      chai.expect(err.message).to.eql('Request failed with status code 400');
+    }
+  });
   it('(E2) The user does not have the rights for linking.');
 });
 
