@@ -7,7 +7,6 @@ const {
   getKnowledgeElements,
   updateDecisionKnowledgeElement,
   getSpecificKnowledgeElement,
-  jira,
 } = require('./helpers.js');
 
 chai.use(require('chai-like'));
@@ -205,8 +204,6 @@ describe('TCS: CONDEC-169', () => {
         documentationLocation: 'i',
       });
       await updateDecisionKnowledgeElement(0, null, updatePayload);
-
-      const decisionJiraIssue = await jira.findIssue(decision.id);
     }
   );
 
