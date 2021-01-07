@@ -175,7 +175,7 @@ describe('TCS: CONDEC-171', () => {
       chai.expect(err.message).to.eql('Request failed with status code 400');
     }
   });
-  it('(E2) The user does not have the rights for linking.');
+  xit('(E2) The user does not have the rights for linking.');
 });
 
 /**
