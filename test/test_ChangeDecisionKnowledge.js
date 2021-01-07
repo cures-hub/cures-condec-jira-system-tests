@@ -7,6 +7,7 @@ const {
   getKnowledgeElements,
   updateDecisionKnowledgeElement,
   getSpecificKnowledgeElement,
+  jira,
 } = require('./helpers.js');
 
 chai.use(require('chai-like'));
@@ -182,10 +183,32 @@ describe('TCS: CONDEC-169', () => {
       chai.expect(issue2AfterUpdate.status).to.eql('resolved');
     }
   );
-  it(
+  // Seems like this rule isn't implemented yet...
+  xit(
     '(R5) If the documentation location of a decision knowledge element in the description or a ' +
       'comment of a Jira issue is changed to "Jira issue", a new Jira issue is created. ' +
-      'The part of text/sentence in the description or comment is not removed (CONDEC-170, R7).'
+      'The part of text/sentence in the description or comment is not removed (CONDEC-170, R7).',
+    async () => {
+      const issue = await createDecisionKnowledgeElement(
+        'Which CSS style should be used?',
+        'Issue',
+        'i'
+      );
+      const decision = await createDecisionKnowledgeElement(
+        'Use SCSS (sassy CSS)!',
+        'Decision',
+        's',
+        issue.id,
+        issue.documentationLocation
+      );
+      const updatePayload = Object.assign(decision, {
+        documentationLocation: 'i',
+      });
+      await updateDecisionKnowledgeElement(0, null, updatePayload);
+
+      const decisionJiraIssue = await jira.findIssue(decision.id);
+      console.log(decisionJiraIssue);
+    }
   );
   it(
     '(R6) If the decision knowledge element is documented in the description or a comment of a Jira issue, the respective description or comment is updated and also the database entry and the node in the knowledge graph (CONDEC-123).'
