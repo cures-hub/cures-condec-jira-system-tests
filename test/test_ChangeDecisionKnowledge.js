@@ -207,21 +207,39 @@ describe('TCS: CONDEC-169', () => {
       await updateDecisionKnowledgeElement(0, null, updatePayload);
 
       const decisionJiraIssue = await jira.findIssue(decision.id);
-      console.log(decisionJiraIssue);
     }
   );
-  it(
-    '(R6) If the decision knowledge element is documented in the description or a comment of a Jira issue, the respective description or comment is updated and also the database entry and the node in the knowledge graph (CONDEC-123).'
+
+  // This will be tested in the test cases for CONDEC-123
+  xit(
+    '(R6) If the decision knowledge element is documented in the description or a comment of a Jira' +
+      ' issue, the respective description or comment is updated and also the database entry' +
+      ' and the node in the knowledge graph (CONDEC-123).'
   );
-  it(
-    '(R7) Decision knowledge elements documented in the description or a comment of a Jira issue can be changed to "irrelevant". Then, their knowledge type is changed to "other" and the tags/annotations are removed (CONDEC-123). '
+  // This will be tested in the test cases for CONDEC-123
+  xit(
+    '(R7) Decision knowledge elements documented in the description or a comment of a ' +
+      'Jira issue can be changed to "irrelevant". Then, their knowledge type is changed' +
+      ' to "other" and the tags/annotations are removed (CONDEC-123).'
   );
-  it(
-    '(R8) A Jira issue (i.e. a decision knowledge element documented as an entire Jira issue) can only be changed in a view on the knowledge graph if the user has the rights to change Jira issues (CONDEC-852, integrity).'
+  xit(
+    '(R8) A Jira issue (i.e. a decision knowledge element documented as an entire Jira issue)' +
+      ' can only be changed in a view on the knowledge graph if the user has the rights to change ' +
+      'Jira issues (CONDEC-852, integrity).'
   );
-  it('(R9) If the webhook is activated, it will be fired (CONDEC-185).');
+  xit('(R9) If the webhook is activated, it will be fired (CONDEC-185).');
   it(
-    '(E1) Decision knowledge element with given id and documentation location does not exist in database.'
+    '(E1) Decision knowledge element with given id and documentation location ' +
+      'does not exist in database.',
+    async () => {
+      const issue = createDecisionKnowledgeElement('Dummy issue', 'Issue', 'i');
+      const updatePayload = Object.assign(issue, { id: -1 });
+      try {
+        await updateDecisionKnowledgeElement(0, null, updatePayload);
+      } catch (err) {
+        chai.expect(err.message).to.eql('Request failed with status code 404');
+      }
+    }
   );
-  it('(E2) The user does not have the rights for changing.');
+  xit('(E2) The user does not have the rights for changing.');
 });

@@ -265,9 +265,7 @@ const updateDecisionKnowledgeElement = async (
     return res.data;
   } catch (err) {
     console.error(err.message);
-    throw new Error(
-      `An error occurred while updating element with id ${updatedElement.id}`
-    );
+    return err;
   }
 };
 
