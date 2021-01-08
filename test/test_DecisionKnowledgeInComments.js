@@ -5,6 +5,9 @@ const {
   createJiraIssue,
   jira,
   getKnowledgeElements,
+  setSentenceIrrelevant,
+  createDecisionKnowledgeElement,
+  getSpecificKnowledgeElement,
 } = require('./helpers.js');
 
 chai.use(require('chai-like'));
@@ -142,4 +145,52 @@ describe('TCS: CONDEC-123', () => {
         '{issue} Should we add a back button to the website?{issue}{alternative} Add a back button that is visible on the same spot on every page{alternative}'
       );
   });
+  xit(
+    // This will be tested with the tests for CONDEC-291
+    '(R3) Links are automatically established between the classified decision knowledge element and the parent Jira issue that the comment/description belongs to or to another decision knowledge element (CONDEC-291). '
+  );
+
+  // This is currently failing because non-classified text in comments is
+  // ignored and not added to the knowledge graph.
+  it('(R4) If a part of text/sentence is not classified as a decision knowledge element, its knowledge type is "other" and it is "irrelevant".', async () => {
+    const issue = await createJiraIssue('Task', 'Enhance user experience');
+    await jira.addComment(
+      issue.id,
+      "I don't think we should use cookies to track our users.\n{issue}How can we enhance user experience without compromising privacy?{issue}"
+    );
+    const knowledgeElements = await getKnowledgeElements('', issue.key);
+    // contain.something.like is an idiom for a list element containing an
+    // Object with a matching subset
+    chai.expect(knowledgeElements).to.contain.something.like({
+      summary: "I don't think we should use cookies to track our users.",
+      status: 'irrelevant',
+      type: 'Other',
+    });
+  });
+  it('(R5) If a decision knowledge element in a view on the knowledge graph is set irrelevant, its knowledge type is changed to "other" and the macro tags are removed from the description/the comment (CONDEC-169).', async () => {
+    const jiraIssue = await createJiraIssue('Task', 'Implement dark mode');
+
+    const decisionKnowledgeElement = await createDecisionKnowledgeElement(
+      'Should the default text be green?',
+      'Issue',
+      's',
+      jiraIssue.id,
+      'i'
+    );
+    await setSentenceIrrelevant(decisionKnowledgeElement.id);
+
+    const decisionKnowledgeElementAfterUpdate = await getSpecificKnowledgeElement(
+      decisionKnowledgeElement.id,
+      's'
+    );
+    chai.expect(decisionKnowledgeElementAfterUpdate.type).to.eql('Other');
+
+    const issueAfterUpdate = await jira.findIssue(jiraIssue.id);
+    chai
+      .expect(issueAfterUpdate.fields.comment.comments[0].body)
+      .to.not.contain('{issue}');
+  });
+  xit(
+    ' (R6) If the automatic text classifier is activated, it is automatically retrained when a validated decision knowledge element is created or changed (CONDEC-175).'
+  );
 });
