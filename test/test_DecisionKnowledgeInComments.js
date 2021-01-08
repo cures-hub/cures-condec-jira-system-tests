@@ -126,4 +126,20 @@ describe('TCS: CONDEC-123', () => {
       });
     }
   );
+  it('(R2) If a sentence is manually classified with an icon/emoji, the icon/emoji is automatically replaced with the macro tags, e.g. "(!) How to...?" is replaced with "{issue} How to...? {issue}".', async () => {
+    const issue = await createJiraIssue('Task', 'Enable website navigation');
+
+    await jira.addComment(
+      issue.id,
+      '(!) Should we add a back button to the website?' +
+        '(on) Add a back button that is visible on the same spot on every page'
+    );
+    const issueAfterCommenting = await jira.findIssue(issue.id);
+    chai
+      .expect(issueAfterCommenting.fields.comment.comments[0])
+      .to.have.property(
+        'body',
+        '{issue} Should we add a back button to the website?{issue}{alternative} Add a back button that is visible on the same spot on every page{alternative}'
+      );
+  });
 });
