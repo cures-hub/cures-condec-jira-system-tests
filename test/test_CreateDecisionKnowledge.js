@@ -1,7 +1,5 @@
-const { default: axios } = require('axios');
+const axios = require('axios');
 const chai = require('chai');
-const { By, Builder } = require('selenium-webdriver');
-const firefox = require('selenium-webdriver/firefox');
 
 const JSONConfig = require('../config.json');
 const {
@@ -57,23 +55,35 @@ describe('TCS: CONDEC-168', () => {
   );
   it('(R3) A new alternative has the status "idea".', async () => {
     const issue = await createJiraIssue('Issue', 'Dummy issue for R3');
-    await jira.addComment(issue.id, '{alternative}dummy alternative for R3{alternative}');
+    await jira.addComment(
+      issue.id,
+      '{alternative}dummy alternative for R3{alternative}'
+    );
     const knowledgeElements = await getKnowledgeElements();
-    chai.expect(knowledgeElements).to.be.an('Array').that.contains.something.like({
-      summary: 'dummy alternative for R3',
-      status: 'idea',
-      type: 'Alternative',
-    });
+    chai
+      .expect(knowledgeElements)
+      .to.be.an('Array')
+      .that.contains.something.like({
+        summary: 'dummy alternative for R3',
+        status: 'idea',
+        type: 'Alternative',
+      });
   });
   it('(R4) A new decision has the status "decided".', async () => {
     const issue = await createJiraIssue('Issue', 'Dummy issue for R4');
-    await jira.addComment(issue.id, '{decision}dummy decision for R4{decision}');
+    await jira.addComment(
+      issue.id,
+      '{decision}dummy decision for R4{decision}'
+    );
     const knowledgeElements = await getKnowledgeElements();
-    chai.expect(knowledgeElements).to.be.an('Array').that.contains.something.like({
-      summary: 'dummy decision for R4',
-      status: 'decided',
-      type: 'Decision',
-    });
+    chai
+      .expect(knowledgeElements)
+      .to.be.an('Array')
+      .that.contains.something.like({
+        summary: 'dummy decision for R4',
+        status: 'decided',
+        type: 'Decision',
+      });
   });
   it(
     '(R5) A new issue (=decision problem), i.e. an issue without linked decision has' +
@@ -81,11 +91,14 @@ describe('TCS: CONDEC-168', () => {
     async () => {
       await createJiraIssue('Issue', 'Dummy issue for R5');
       const knowledgeElements = await getKnowledgeElements();
-      chai.expect(knowledgeElements).to.be.an('Array').that.contains.something.like({
-        summary: 'Dummy issue for R5',
-        status: 'unresolved',
-        type: 'Issue',
-      });
+      chai
+        .expect(knowledgeElements)
+        .to.be.an('Array')
+        .that.contains.something.like({
+          summary: 'Dummy issue for R5',
+          status: 'unresolved',
+          type: 'Issue',
+        });
     }
   );
   xit(
@@ -99,30 +112,10 @@ describe('TCS: CONDEC-168', () => {
   xit('(R7) If the webhook is activated, it will be fired (CONDEC-185).');
 
   // Currently there is no way to trigger this through the UI, so we don't test it here.
-  xit('(E1) A decision knowledge element with the same summary and description already exists.');
+  xit(
+    '(E1) A decision knowledge element with the same summary and description already exists.'
+  );
 
   // This will be tested elsewhere
   xit('(E2) The user does not have the rights for creation.');
-
-  // Currently disabled since Selenium tests run very slow and require complex setup
-  xit('should create a decision knowledge issue via the create issue interface', async () => {
-    const options = new firefox.Options();
-    options.setProfile(JSONConfig.firefoxProfilePath);
-    const driver = await new Builder().forBrowser('firefox').setFirefoxOptions(options).build();
-
-    // always wait for up to 10 seconds
-    await driver.manage().setTimeouts({ implicit: 10000 });
-    try {
-      const issue = await createJiraIssue('Issue', 'What to do with decision knowledge?');
-
-      // make sure the created issue has the correct type in the GUI
-      await driver.get(`${JSONConfig.fullUrl}/browse/${issue.key}`);
-      chai.assert.equal(await driver.findElement(By.id('type-val')).getText(), 'Issue');
-    } catch (err) {
-      console.error(err);
-      throw err;
-    } finally {
-      driver.quit();
-    }
-  });
 });
