@@ -80,18 +80,18 @@ describe('TCS: CONDEC-168', () => {
     '(R5) A new issue (=decision problem), i.e. an issue without linked decision has' +
       ' the status "unresolved".',
     async () => {
-      await createJiraIssue('Issue', 'Dummy issue for R5');
-      const knowledgeElements = await getKnowledgeElements();
-      chai
-        .expect(knowledgeElements)
-        .to.be.an('Array')
-        .that.contains.something.like({
-          summary: 'Dummy issue for R5',
-          status: 'unresolved',
-          type: 'Issue',
-        });
+      const issue = await createDecisionKnowledgeElement(
+        'Dummy issue for R5',
+        'Issue',
+        'i'
+      ); // by default this issue is unlinked
+
+      chai.expect(issue).to.have.prooperty('summary', 'Dummy issue for R5');
+      chai.expect(issue).to.have.property('status', 'unresolved');
+      chai.expect(issue).to.have.property('type', 'Issue');
     }
   );
+
   xit(
     // This will be tested elsewhere
     '(R6) A Jira issue (i.e. a decision knowledge element documented as an entire Jira issue) can' +
