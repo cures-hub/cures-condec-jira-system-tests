@@ -15,6 +15,7 @@ describe('TCS: CONDEC-123', () => {
     await setUpJira();
   });
   it(
+    // This is currently failing, see bugs: CONDEC-857 and CONDEC-858
     '(R1) (part 1) Macro tags can be used to manually classify/annotate' +
       ' text as an decision knowledge element',
     /*
@@ -71,6 +72,7 @@ describe('TCS: CONDEC-123', () => {
     }
   );
   it(
+    // This is currently failing, see bugs: CONDEC-857 and CONDEC-858
     '(R1) (part 2) Icons/emojis can be used to manually classify/annotate' +
       ' text as an decision knowledge element',
     async () => {
