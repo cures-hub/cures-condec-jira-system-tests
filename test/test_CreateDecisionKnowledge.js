@@ -1,13 +1,10 @@
-const axios = require('axios');
 const chai = require('chai');
 
-const JSONConfig = require('../config.json');
 const {
   setUpJira,
   createJiraIssue,
   jira,
   getKnowledgeElements,
-  localCredentialsObject,
   createDecisionKnowledgeElement,
 } = require('./helpers.js');
 
