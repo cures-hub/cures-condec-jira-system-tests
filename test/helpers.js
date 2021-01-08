@@ -121,7 +121,6 @@ const createJiraIssue = async (
  */
 const setSentenceIrrelevant = async (sentenceId) => {
   try {
-    console.log(sentenceId);
     await axios.post(
       `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/setSentenceIrrelevant.json`,
       {
