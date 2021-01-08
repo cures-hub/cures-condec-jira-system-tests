@@ -1,13 +1,10 @@
-const axios = require('axios');
 const chai = require('chai');
 
-const JSONConfig = require('../config.json');
 const {
   setUpJira,
   createJiraIssue,
   jira,
-  getKnowledgeElements,
-  localCredentialsObject,
+  createDecisionKnowledgeElement,
 } = require('./helpers.js');
 
 chai.use(require('chai-like'));
@@ -20,7 +17,7 @@ describe('TCS: CONDEC-168', () => {
     await setUpJira(true);
   });
   xit(
-    // This will be tested elsewhere
+    // This is out of scope of test plan v1
     '(R1) If the decision knowledge element is created within an existing knowledge element ' +
       '(Jira issue or code file), a link is created between an existing knowledge' +
       ' element and the new element (CONDEC-291). '
@@ -31,17 +28,12 @@ describe('TCS: CONDEC-168', () => {
       ' knowledge element.',
     async () => {
       const task = await createJiraIssue('Task', 'Dummy task for R2');
-      await axios.post(
-        `${JSONConfig.fullUrl}/rest/condec/latest/knowledge` +
-          `/createDecisionKnowledgeElement.json?idOfExistingElement=${task.id}` +
-          `&documentationLocationOfExistingElement=i`,
-        {
-          type: 'Issue',
-          projectKey: JSONConfig.projectKey,
-          description: 'Dummy decision knowledge issue for R2',
-          documentationLocation: 's',
-        },
-        localCredentialsObject
+      await createDecisionKnowledgeElement(
+        'Dummy decision knowledge issue for R2',
+        'Issue',
+        's',
+        task.id,
+        'i'
       );
       const taskAfterUpdate = await jira.findIssue(task.key);
 
@@ -49,58 +41,56 @@ describe('TCS: CONDEC-168', () => {
         .expect(taskAfterUpdate.fields.comment.comments)
         .to.be.an('Array')
         .that.contains.something.like({
-          body: '{issue}\nDummy decision knowledge issue for R2{issue}',
+          body: '{issue}Dummy decision knowledge issue for R2\n{issue}',
         });
     }
   );
   it('(R3) A new alternative has the status "idea".', async () => {
     const issue = await createJiraIssue('Issue', 'Dummy issue for R3');
-    await jira.addComment(
+    const alternative = await createDecisionKnowledgeElement(
+      'dummy alternative for R3',
+      'Alternative',
+      's',
       issue.id,
-      '{alternative}dummy alternative for R3{alternative}'
+      'i'
     );
-    const knowledgeElements = await getKnowledgeElements();
+
     chai
-      .expect(knowledgeElements)
-      .to.be.an('Array')
-      .that.contains.something.like({
-        summary: 'dummy alternative for R3',
-        status: 'idea',
-        type: 'Alternative',
-      });
+      .expect(alternative)
+      .to.have.property('summary', 'dummy alternative for R3');
+    chai.expect(alternative).to.have.property('status', 'idea');
+    chai.expect(alternative).to.have.property('type', 'Alternative');
   });
+
   it('(R4) A new decision has the status "decided".', async () => {
     const issue = await createJiraIssue('Issue', 'Dummy issue for R4');
-    await jira.addComment(
+    const decision = await createDecisionKnowledgeElement(
+      'dummy decision for R4',
+      'Decision',
+      's',
       issue.id,
-      '{decision}dummy decision for R4{decision}'
+      'i'
     );
-    const knowledgeElements = await getKnowledgeElements();
-    chai
-      .expect(knowledgeElements)
-      .to.be.an('Array')
-      .that.contains.something.like({
-        summary: 'dummy decision for R4',
-        status: 'decided',
-        type: 'Decision',
-      });
+    chai.expect(decision).to.have.property('summary', 'dummy decision for R4');
+    chai.expect(decision).to.have.property('status', 'decided');
+    chai.expect(decision).to.have.property('type', 'Decision');
   });
   it(
     '(R5) A new issue (=decision problem), i.e. an issue without linked decision has' +
       ' the status "unresolved".',
     async () => {
-      await createJiraIssue('Issue', 'Dummy issue for R5');
-      const knowledgeElements = await getKnowledgeElements();
-      chai
-        .expect(knowledgeElements)
-        .to.be.an('Array')
-        .that.contains.something.like({
-          summary: 'Dummy issue for R5',
-          status: 'unresolved',
-          type: 'Issue',
-        });
+      const issue = await createDecisionKnowledgeElement(
+        'Dummy issue for R5',
+        'Issue',
+        'i'
+      ); // by default this issue is unlinked
+
+      chai.expect(issue).to.have.property('summary', 'Dummy issue for R5');
+      chai.expect(issue).to.have.property('status', 'unresolved');
+      chai.expect(issue).to.have.property('type', 'Issue');
     }
   );
+
   xit(
     // This will be tested elsewhere
     '(R6) A Jira issue (i.e. a decision knowledge element documented as an entire Jira issue) can' +

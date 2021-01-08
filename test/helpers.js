@@ -111,7 +111,6 @@ const createJiraIssue = async (
       },
     },
   });
-  console.info(`Created issue: ${createdIssue.key}`);
   return createdIssue;
 };
 
@@ -143,7 +142,6 @@ const setSentenceIrrelevant = async (sentenceId) => {
  * issue persistence strategy
  */
 const setUpJira = async (useIssueStrategy = false) => {
-  console.info('Setting up jira...');
   try {
     // delete existing project with the configured key (if it exists)
     const allProjects = await jira.listProjects();
@@ -165,8 +163,6 @@ const setUpJira = async (useIssueStrategy = false) => {
     await activateConDec();
     // explicitly set whether to use the issue persistence strategy or not
     await setIssueStrategy(useIssueStrategy);
-
-    console.info('Successfully set up Jira!');
   } catch (err) {
     console.error(err);
     throw err;
