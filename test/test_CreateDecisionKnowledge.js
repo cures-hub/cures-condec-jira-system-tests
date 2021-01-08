@@ -10,7 +10,7 @@ const {
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
 
-describe.only('TCS: CONDEC-168', () => {
+describe('TCS: CONDEC-168', () => {
   // reset Jira project for every test case, to ensure no interference
   beforeEach(async () => {
     // explicitly use issue persistence strategy here
