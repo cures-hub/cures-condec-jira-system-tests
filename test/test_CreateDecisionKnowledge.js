@@ -48,23 +48,21 @@ describe('TCS: CONDEC-168', () => {
   );
   it('(R3) A new alternative has the status "idea".', async () => {
     const issue = await createJiraIssue('Issue', 'Dummy issue for R3');
-    await createDecisionKnowledgeElement(
+    const alternative = await createDecisionKnowledgeElement(
       'dummy alternative for R3',
       'Alternative',
       's',
       issue.id,
       'i'
     );
-    const knowledgeElements = await getKnowledgeElements();
+
     chai
-      .expect(knowledgeElements)
-      .to.be.an('Array')
-      .that.contains.something.like({
-        summary: 'dummy alternative for R3',
-        status: 'idea',
-        type: 'Alternative',
-      });
+      .expect(alternative)
+      .to.have.property('summary', 'dummy alternative for R3');
+    chai.expect(alternative).to.have.property('status', 'idea');
+    chai.expect(alternative).to.have.property('type', 'Alternative');
   });
+
   it('(R4) A new decision has the status "decided".', async () => {
     const issue = await createJiraIssue('Issue', 'Dummy issue for R4');
     await jira.addComment(
