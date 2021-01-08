@@ -65,19 +65,16 @@ describe('TCS: CONDEC-168', () => {
 
   it('(R4) A new decision has the status "decided".', async () => {
     const issue = await createJiraIssue('Issue', 'Dummy issue for R4');
-    await jira.addComment(
+    const decision = await createDecisionKnowledgeElement(
+      'dummy decision for R4',
+      'Decision',
+      's',
       issue.id,
-      '{decision}dummy decision for R4{decision}'
+      'i'
     );
-    const knowledgeElements = await getKnowledgeElements();
-    chai
-      .expect(knowledgeElements)
-      .to.be.an('Array')
-      .that.contains.something.like({
-        summary: 'dummy decision for R4',
-        status: 'decided',
-        type: 'Decision',
-      });
+    chai.expect(decision).to.have.property('summary', 'dummy decision for R4');
+    chai.expect(decision).to.have.property('status', 'decided');
+    chai.expect(decision).to.have.property('type', 'Decision');
   });
   it(
     '(R5) A new issue (=decision problem), i.e. an issue without linked decision has' +
