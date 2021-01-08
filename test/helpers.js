@@ -114,6 +114,29 @@ const createJiraIssue = async (
   console.info(`Created issue: ${createdIssue.key}`);
   return createdIssue;
 };
+
+/**
+ * Set decision knowledge in a sentence (comment or Jira issue description) as irrelevant
+ * @param {string|number} sentenceId
+ */
+const setSentenceIrrelevant = async (sentenceId) => {
+  try {
+    console.log(sentenceId);
+    await axios.post(
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/setSentenceIrrelevant.json`,
+      {
+        projectKey: JSONConfig.projectKey,
+        documentationLocation: 's',
+        id: String(sentenceId),
+      },
+      localCredentialsObject
+    );
+  } catch (err) {
+    console.error(err.message);
+    throw err;
+  }
+};
+
 /**
  * Set up the configured Jira instance in order to be able to run system tests against it.
  *
@@ -284,4 +307,5 @@ module.exports = {
   createDecisionKnowledgeElement,
   updateDecisionKnowledgeElement,
   getSpecificKnowledgeElement,
+  setSentenceIrrelevant,
 };
