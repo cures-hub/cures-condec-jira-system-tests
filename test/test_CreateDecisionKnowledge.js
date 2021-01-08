@@ -8,6 +8,7 @@ const {
   jira,
   getKnowledgeElements,
   localCredentialsObject,
+  createDecisionKnowledgeElement,
 } = require('./helpers.js');
 
 chai.use(require('chai-like'));
@@ -31,17 +32,12 @@ describe('TCS: CONDEC-168', () => {
       ' knowledge element.',
     async () => {
       const task = await createJiraIssue('Task', 'Dummy task for R2');
-      await axios.post(
-        `${JSONConfig.fullUrl}/rest/condec/latest/knowledge` +
-          `/createDecisionKnowledgeElement.json?idOfExistingElement=${task.id}` +
-          `&documentationLocationOfExistingElement=i`,
-        {
-          type: 'Issue',
-          projectKey: JSONConfig.projectKey,
-          description: 'Dummy decision knowledge issue for R2',
-          documentationLocation: 's',
-        },
-        localCredentialsObject
+      await createDecisionKnowledgeElement(
+        'Dummy decision knowledge issue for R2',
+        'Issue',
+        's',
+        task.id,
+        'i'
       );
       const taskAfterUpdate = await jira.findIssue(task.key);
 
@@ -49,7 +45,7 @@ describe('TCS: CONDEC-168', () => {
         .expect(taskAfterUpdate.fields.comment.comments)
         .to.be.an('Array')
         .that.contains.something.like({
-          body: '{issue}\nDummy decision knowledge issue for R2{issue}',
+          body: '{issue}Dummy decision knowledge issue for R2\n{issue}',
         });
     }
   );
