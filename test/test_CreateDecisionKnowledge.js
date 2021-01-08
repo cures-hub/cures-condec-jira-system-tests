@@ -4,21 +4,20 @@ const {
   setUpJira,
   createJiraIssue,
   jira,
-  getKnowledgeElements,
   createDecisionKnowledgeElement,
 } = require('./helpers.js');
 
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
 
-describe('TCS: CONDEC-168', () => {
+describe.only('TCS: CONDEC-168', () => {
   // reset Jira project for every test case, to ensure no interference
   beforeEach(async () => {
     // explicitly use issue persistence strategy here
     await setUpJira(true);
   });
   xit(
-    // This will be tested elsewhere
+    // This is out of scope of test plan v1
     '(R1) If the decision knowledge element is created within an existing knowledge element ' +
       '(Jira issue or code file), a link is created between an existing knowledge' +
       ' element and the new element (CONDEC-291). '
@@ -86,7 +85,7 @@ describe('TCS: CONDEC-168', () => {
         'i'
       ); // by default this issue is unlinked
 
-      chai.expect(issue).to.have.prooperty('summary', 'Dummy issue for R5');
+      chai.expect(issue).to.have.property('summary', 'Dummy issue for R5');
       chai.expect(issue).to.have.property('status', 'unresolved');
       chai.expect(issue).to.have.property('type', 'Issue');
     }
