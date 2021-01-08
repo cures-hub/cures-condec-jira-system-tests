@@ -48,9 +48,12 @@ describe('TCS: CONDEC-168', () => {
   );
   it('(R3) A new alternative has the status "idea".', async () => {
     const issue = await createJiraIssue('Issue', 'Dummy issue for R3');
-    await jira.addComment(
+    await createDecisionKnowledgeElement(
+      'dummy alternative for R3',
+      'Alternative',
+      's',
       issue.id,
-      '{alternative}dummy alternative for R3{alternative}'
+      'i'
     );
     const knowledgeElements = await getKnowledgeElements();
     chai
