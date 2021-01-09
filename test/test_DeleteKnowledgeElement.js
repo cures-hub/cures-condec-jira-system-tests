@@ -15,33 +15,35 @@ chai.use(require('chai-things'));
 /**
  *
  * @issue How should test cases for SF rules and exceptions be specified?
- * 
+ *
  * @decision Specify test cases for all rules and exceptions, including those
  * that will not be tested!
  * @pro Test cases can easily be implemented later
  * @con Test files grow in size, leading to poor readability
- * 
+ *
  * @alternative Specify only test cases for rules and exceptions that will be
  * tested!
  * @pro Code is concise and easy to read
  * @con Not all rules/exceptions end up in the system test description. It can be hard to
  * find them later.
- * 
+ *
  * @decision Disable test cases that will not be implemented using `xit`
  * @pro Test cases that are disabled don't show up in junit reports
- * 
+ *
  * @issue Which naming convention should system test cases follow?
  * @decision Test cases should be named using the exact text of the
  * rule/exception they test!
  * @con If the text changes, it will be hard to find the test case again
-
- * @decision Describe blocks should be named TCS: <issue-key of SF to test>
- * @pro It is easy to find the requirement associated with a test
- * @con A test case can actually test more than one SF at once, but this cannot
- * be documented here
+ *
+ * @alternative Describe blocks should be named TCS: <issue-key of SF to test>
+ * @pro It is easy to find the requirement associated with a test in Jira
+ * @con It is not obvious which system function is being tested, unless you know
+ * the issue key
+ * @decision  Describe blocks should be named TCS: <name of SF to test>
+ * @pro It is obvious which functionality is tested
  */
 
-describe('TCS: CONDEC-170', () => {
+describe('TCS: Delete knowledge element', () => {
   before(async () => {
     await setUpJira();
   });
