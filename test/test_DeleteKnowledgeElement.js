@@ -105,15 +105,16 @@ describe.only('TCS: Delete knowledge element', () => {
     '(R3) If a Jira issue is deleted, the knowledge element (=node) that represents this Jira' +
       ' issue is deleted in the knowledge graph.',
     async () => {
+      // Precondition: Jira issue exists
       const issue = await createJiraIssue(
         'Task',
-        'Develop strategy for fast and cost-effective pizza delivery',
-        '{issue}Which method of transportation to use?{issue}\n{decision}Use a moped!{decision}'
+        'Develop strategy for fast and cost-effective pizza delivery'
       );
+      // Step 1: delete the Jira issue
       await jira.deleteIssue(issue.id);
-      // Check knowledge elements are not in the database
-      const knowledgeElements = await getKnowledgeElements();
 
+      const knowledgeElements = await getKnowledgeElements();
+      // Step 2: Verify that the issue is no longer in the database
       chai
         .expect(knowledgeElements)
         .to.not.contain.something.that.has.property(
@@ -126,25 +127,22 @@ describe.only('TCS: Delete knowledge element', () => {
     '(R4) If a Jira issue comment is deleted, all decision knowledge ' +
       'elements in its body are deleted in the database and knowledge graph. ',
     async () => {
-      // Create a task in Jira with a decision knowledge comment
+      // Precondition: Jira issue exists with a comment containing decision knowledge
       const createdIssue = await createJiraIssue(
         'Task',
         'Plan the tasks from June until October'
       );
-      const commentString =
-        '{issue}Which language should we use to define tasks?{issue}';
       const addedComment = await jira.addComment(
         createdIssue.key,
-        commentString
+        '{issue}Which language should we use to define tasks?{issue}'
       );
-
-      // Delete the comment
+      // Step 1: Delete the comment
       await axios.delete(
         `${JSONConfig.fullUrl}/rest/api/2/issue/${createdIssue.key}/comment/${addedComment.id}`,
         localCredentialsObject
       );
 
-      // Check that the documented decision knowledge from the comment does not appear in the graphs
+      // Step 2: Verify that the deleted decision knowledge from the comment does not appear in the graphs
       const searchPayload = {
         searchTerm: '',
         selectedElement: createdIssue.key,
@@ -166,6 +164,16 @@ describe.only('TCS: Delete knowledge element', () => {
       chai.expect(visGraph.data.edges).to.be.empty;
       // eslint-disable-next-line no-unused-expressions
       chai.expect(treantGraph.data.nodeStructure.children).to.be.empty;
+
+      // Step 3: Verify that the deleted decision knowledge does not exist in
+      // the database
+      const knowledgeElements = await getKnowledgeElements();
+      chai
+        .expect(knowledgeElements)
+        .to.not.contain.something.with.property(
+          'summary',
+          'Which language should we use to define tasks?'
+        );
     }
   );
 
