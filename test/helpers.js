@@ -83,6 +83,33 @@ const setIssueStrategy = async (useIssueStrategy) => {
 };
 
 /**
+ * Delete a decision knowledge element
+ *
+ * @param {number|string} idOfElementToDelete
+ */
+const deleteDecisionKnowledgeElement = async (idOfElementToDelete) => {
+  const deletionRequestPayload = {
+    method: 'delete',
+    url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteDecisionKnowledgeElement.json`,
+    headers: {
+      Authorization: `Basic ${base64LocalCredentials}`,
+      'Content-Type': 'application/json',
+    },
+    data: {
+      id: idOfElementToDelete, // this ID won't exist as ConDec only gives positive ids
+      projectKey: JSONConfig.projectKey,
+      documentationLocation: 's',
+    },
+  };
+  try {
+    const result = await axios.request(deletionRequestPayload);
+    return result.data;
+  } catch (err) {
+    return err;
+  }
+};
+
+/**
  * Creates a Jira issue with the project, user, and Jira instance configured in the `config.json`.
  * The user is used as the reporter of the issue.
  *
@@ -303,4 +330,5 @@ module.exports = {
   updateDecisionKnowledgeElement,
   getSpecificKnowledgeElement,
   setSentenceIrrelevant,
+  deleteDecisionKnowledgeElement,
 };
