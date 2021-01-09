@@ -205,14 +205,69 @@ describe('TCS: Delete knowledge element', () => {
     }
   );
 
-  xit(
+  it(
     '(R6) If a decision knowledge element is deleted in a view on the knowledge graph, it is ' +
-      'deleted in the database and in the knowledge graph (i.e. datastructure).'
+      'deleted in the database and in the knowledge graph (i.e. datastructure).',
+    async () => {
+      // Precondition: decision knowledge elements exist
+      const jiraIssue = await createJiraIssue(
+        'Task',
+        'Order coffee from suppliers'
+      );
+      const knowledgeElement = await createDecisionKnowledgeElement(
+        'Which suppliers should be contacted?',
+        'Issue',
+        's',
+        jiraIssue.id,
+        'i'
+      );
+
+      // Step 1: delete decision knowledge element in a view on the knowledge
+      // graph (= call the deleteDecisionKnowledgeElement REST endpoint)
+      await deleteDecisionKnowledgeElement(knowledgeElement.id, 's');
+
+      // Step 2: verify the element is no longer in the database (and therefore
+      // also no longer in the knowledge graph)
+
+      const knowledgeElementsInDatabase = await getKnowledgeElements();
+      chai
+        .expect(knowledgeElementsInDatabase)
+        .to.not.contain.something.that.has.property('id', knowledgeElement.id);
+    }
   );
-  xit(
+  it(
     '(R7) If a decision knowledge element documented in the description or a comment of a Jira' +
       'issue is deleted in a view on the knowledge graph, it is not removed from the description' +
-      ' or comment (i.e. the body/text of the description/comment is not changed).'
+      ' or comment (i.e. the body/text of the description/comment is not changed).',
+    async () => {
+      // Precondition: Jira issue exists with decision knowledge in its description or comment
+
+      const jiraIssue = await createJiraIssue(
+        'Task',
+        'Set up eBay storefront for the Moo company'
+      );
+      const knowledgeElement = await createDecisionKnowledgeElement(
+        "Accept only currencies we don't have to pay fees for!",
+        'Issue',
+        's', // this issue will be created in a comment
+        jiraIssue.id,
+        'i'
+      );
+      // Step 1: delete the decision knowledge element via a view on the
+      // knowledge graph (= call the deleteDecisionKnowledgeElement REST
+      // endpoint)
+      await deleteDecisionKnowledgeElement(knowledgeElement.id, 's');
+
+      // Step 2: verify the element is not deleted from the issue comment
+      const jiraIssueAfterKnowledgeDeletion = await jira.findIssue(
+        jiraIssue.key
+      );
+      chai
+        .expect(jiraIssueAfterKnowledgeDeletion.fields.comment.comments[0].body)
+        .to.eql(
+          "{issue}Accept only currencies we don't have to pay fees for!\n{issue}"
+        );
+    }
   );
   xit(
     '(R8) Decision knowledge elements documented in code comments cannot be deleted in Jira' +
