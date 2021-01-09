@@ -85,9 +85,10 @@ const setIssueStrategy = async (useIssueStrategy) => {
 /**
  * Delete a decision knowledge element
  *
- * @param {number|string} idOfElementToDelete
+ * @param {number|string} id
+ * @param {number|string} documentationLocation
  */
-const deleteDecisionKnowledgeElement = async (idOfElementToDelete) => {
+const deleteDecisionKnowledgeElement = async (id, documentationLocation) => {
   const deletionRequestPayload = {
     method: 'delete',
     url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteDecisionKnowledgeElement.json`,
@@ -96,9 +97,9 @@ const deleteDecisionKnowledgeElement = async (idOfElementToDelete) => {
       'Content-Type': 'application/json',
     },
     data: {
-      id: idOfElementToDelete, // this ID won't exist as ConDec only gives positive ids
+      id,
       projectKey: JSONConfig.projectKey,
-      documentationLocation: 's',
+      documentationLocation,
     },
   };
   try {

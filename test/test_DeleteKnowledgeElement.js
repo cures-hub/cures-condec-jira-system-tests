@@ -239,7 +239,7 @@ describe('TCS: Delete knowledge element', () => {
       'does not exist in database.',
     async () => {
       // Step 1: try to delete the element with id -1 (this id does not exist)
-      const result = await deleteDecisionKnowledgeElement(-1);
+      const result = await deleteDecisionKnowledgeElement(-1, 's');
 
       // Step 2: Verify that this results in a 500 error with the message that
       // deletion failed
