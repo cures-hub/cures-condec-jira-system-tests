@@ -86,7 +86,8 @@ const setIssueStrategy = async (useIssueStrategy) => {
  * Delete a decision knowledge element
  *
  * @param {number|string} id
- * @param {number|string} documentationLocation
+ * @param {string} documentationLocation - 'i' or 's', depending on the location of
+ * the element to remove
  */
 const deleteDecisionKnowledgeElement = async (id, documentationLocation) => {
   const deletionRequestPayload = {
