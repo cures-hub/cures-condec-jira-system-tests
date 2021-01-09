@@ -46,18 +46,23 @@ describe('TCS: CONDEC-168', () => {
     }
   );
   it('(R3) A new alternative has the status "idea".', async () => {
-    const issue = await createJiraIssue('Issue', 'Dummy issue for R3');
+    // Precondition: Jira issue exists
+    const issue = await createJiraIssue(
+      'Issue',
+      'Which platforms should the app support?'
+    );
+    // Step 1: create a new alternative
     const alternative = await createDecisionKnowledgeElement(
-      'dummy alternative for R3',
+      'The app should support Android!',
       'Alternative',
       's',
       issue.id,
       'i'
     );
-
+    // Step 2: verify that the new alternative has the status 'idea'
     chai
       .expect(alternative)
-      .to.have.property('summary', 'dummy alternative for R3');
+      .to.have.property('summary', 'The app should support Android!');
     chai.expect(alternative).to.have.property('status', 'idea');
     chai.expect(alternative).to.have.property('type', 'Alternative');
   });
