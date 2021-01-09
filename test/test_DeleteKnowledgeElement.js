@@ -8,9 +8,12 @@ const {
   localCredentialsObject,
   base64LocalCredentials,
   getKnowledgeElements,
+  createDecisionKnowledgeElement,
 } = require('./helpers.js');
 
+// chai-like provides the 'like' function, which searches for an object's subset
 chai.use(require('chai-like'));
+// chai-things allows us to use 'something' syntax to access array elements without knowing their indices
 chai.use(require('chai-things'));
 /**
  *
@@ -43,7 +46,7 @@ chai.use(require('chai-things'));
  * @pro It is obvious which functionality is tested
  */
 
-describe('TCS: Delete knowledge element', () => {
+describe.only('TCS: Delete knowledge element', () => {
   before(async () => {
     await setUpJira();
   });
@@ -56,14 +59,25 @@ describe('TCS: Delete knowledge element', () => {
     '(R2) If a Jira issue is deleted, all decision knowledge elements in its description and ' +
       'comments are deleted in the database and knowledge graph.',
     async () => {
+      // Step 1: Create an issue with decision knowledge in its description
       const issue = await createJiraIssue(
         'Task',
         'Develop strategy for maximizing joy',
         '{issue}Which method of transportation to use?{issue}\n{alternative}Use a bicycle!{alternative}'
       );
+      // Step 2: add a comment containing decision knowledge
+      await createDecisionKnowledgeElement(
+        'Use a tricycle!',
+        'Decision',
+        's',
+        issue.id,
+        'i'
+      );
+
+      // Step 3: delete the decision knowledge element
       await jira.deleteIssue(issue.id);
 
-      // Check knowledge elements are not in the database
+      // Step 4: Check knowledge elements are not in the database
       // (if they are not in the database, they also can't be in the knowledge graph)
       const knowledgeElements = await getKnowledgeElements();
       chai
@@ -77,6 +91,13 @@ describe('TCS: Delete knowledge element', () => {
         .to.not.contain.something.that.has.property(
           'summary',
           'Which method of transportation to use?'
+        );
+
+      chai
+        .expect(knowledgeElements)
+        .to.not.contain.something.that.has.property(
+          'summary',
+          'Use a tricycle!'
         );
     }
   );
