@@ -6,9 +6,9 @@ const {
   setUpJira,
   createJiraIssue,
   localCredentialsObject,
-  base64LocalCredentials,
   getKnowledgeElements,
   createDecisionKnowledgeElement,
+  deleteDecisionKnowledgeElement,
 } = require('./helpers.js');
 
 // chai-like provides the 'like' function, which searches for an object's subset
@@ -46,7 +46,7 @@ chai.use(require('chai-things'));
  * @pro It is obvious which functionality is tested
  */
 
-describe.only('TCS: Delete knowledge element', () => {
+describe('TCS: Delete knowledge element', () => {
   before(async () => {
     await setUpJira();
   });
@@ -238,27 +238,15 @@ describe.only('TCS: Delete knowledge element', () => {
     '(E1) Knowledge element with given id and documentation location ' +
       'does not exist in database.',
     async () => {
-      const deleteDecisionKnowledgeRequest = {
-        method: 'delete',
-        url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteDecisionKnowledgeElement.json`,
-        headers: {
-          Authorization: `Basic ${base64LocalCredentials}`,
-          'Content-Type': 'application/json',
-        },
-        data: {
-          id: -1, // this ID won't exist as ConDec only gives positive ids
-          projectKey: JSONConfig.projectKey,
-          documentationLocation: 's',
-        },
-      };
-      try {
-        await axios.request(deleteDecisionKnowledgeRequest);
-      } catch (err) {
-        chai.expect(err.response.status).to.equal(500);
-        chai
-          .expect(err.response.data.error)
-          .to.include('Deletion of decision knowledge element failed.');
-      }
+      // Step 1: try to delete the element with id -1 (this id does not exist)
+      const result = await deleteDecisionKnowledgeElement(-1);
+
+      // Step 2: Verify that this results in a 500 error with the message that
+      // deletion failed
+      chai.expect(result.response.status).to.equal(500);
+      chai
+        .expect(result.response.data.error)
+        .to.include('Deletion of decision knowledge element failed.');
     }
   );
   xit('(E2) The user does not have the rights for deletion.');
