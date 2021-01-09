@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 /**
  * Helper functions for the ConDec Jira system tests
  */
