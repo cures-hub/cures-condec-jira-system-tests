@@ -182,14 +182,19 @@ describe.only('TCS: Delete knowledge element', () => {
       'a comment of a Jira issue (through deleting in the body/text),' +
       ' it is deleted in the database and knowledge graph.',
     async () => {
+      // Precondition: a Jira issue exists with decision knowledge in its
+      // description or comment
       const issue = await createJiraIssue(
         'Task',
         'Buy mugs for serving coffee',
         '(!) How large to make the mugs?'
       );
+      // Step 1: delete the decision knowledge element from the
+      // description/comment of the Jira issue
       await jira.updateIssue(issue.id, {
         update: { description: [{ set: 'foo' }] },
       });
+      // Step 2: verify that the knowledge element no longer exists
       const knowledgeElements = await getKnowledgeElements();
       chai
         .expect(knowledgeElements)
@@ -197,12 +202,9 @@ describe.only('TCS: Delete knowledge element', () => {
           'description',
           'How large to make the mugs?'
         );
-      chai.expect(knowledgeElements).to.contain.something.like({
-        summary: 'Buy mugs for serving coffee',
-        description: 'foo',
-      });
     }
   );
+
   xit(
     '(R6) If a decision knowledge element is deleted in a view on the knowledge graph, it is ' +
       'deleted in the database and in the knowledge graph (i.e. datastructure).'
