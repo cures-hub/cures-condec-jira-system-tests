@@ -10,7 +10,7 @@ const {
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
 
-describe('TCS: Test create decision knowledge', () => {
+describe('TCS: Test create decision knowledge element', () => {
   // reset Jira project for every test case, to ensure no interference
   beforeEach(async () => {
     // explicitly use issue persistence strategy here
