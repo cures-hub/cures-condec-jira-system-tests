@@ -17,18 +17,37 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
   before(async () => {
     await setUpJira();
   });
+
+  /**
+   * TCS: Test manually classify text as decision knowledge should classify elements in specific macro tags as decision knowledge (R1)
+   *
+   * Precondition: Jira issue exists
+   *
+   * Step 1: Add a comment to the jira issue containing the macro tags: {issue},
+   * {decision}, {alternative}, {pro}, {con} (see below for example)
+   *
+   * Step 2: Verify that the knowledge elements are stored in the ConDec database
+   *
+   * Postcondition: The knowledge elements are stored in the ConDec database
+   */
   it(// This is currently failing, see bugs: CONDEC-857 and CONDEC-858
-  'should classify elements in specific macro tags as decision knowledge (R1)' /*
-      - {issue} How to implement ...? {issue}; icon: (!)
-      - {decision} Use ... to implement ...! {decision}; icon: (/)
-      - {alternative} Use ... to implement ...! {alternative}; icon: (on)
-      - {pro} Improves security. {pro}; icon: (+)
-      - {con} Reduces usability. {con}; icon: (-) 
-     */, async () => {
+  'should classify elements in specific macro tags as decision knowledge (R1)', async () => {
+    /*
+    The macro tags are:
+      - {issue} How to implement ...? {issue}
+      - {decision} Use ... to implement ...! {decision}
+      - {alternative} Use ... to implement ...! {alternative}
+      - {pro} Improves security. {pro}
+      - {con} Reduces usability. {con}
+     */
+
+    // Precondition: Jira issue exists
     const issue1 = await createJiraIssue(
       'Task',
       'Create a blog page for the Moo company'
     );
+
+    // Step 1: Add a comment to the jira issue containing the macro tags
     await jira.addComment(
       issue1.id,
       '{issue}Which site generator should be used to make the blog?{issue}\n' +
@@ -37,6 +56,7 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
         '{con}Jekyll has a learning curve{con}\n' +
         '{alternative}Use WordPress to make the blog!{alternative}\n'
     );
+    // Step 2: Verify that the knowledge elements are stored in the ConDec database
     const knowledgeElements1 = await getKnowledgeElements('', issue1.key);
 
     const expectedPartialElements = [
@@ -66,16 +86,36 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
       chai.expect(knowledgeElements1).to.contain.something.like(partialElement);
     });
   });
+
+  /**
+   * TCS: Test manually classify text as decision knowledge should classify elements marked with specific Jira icons as decision knowledge (R1)
+   *
+   * Precondition: Jira issue exists
+   *
+   * Step 1: Add a Jira issue comment
+   *
+   * Step 2: Verify the elements from the comment are stored as decision knowledge in the ConDec database
+   *
+   * Postcondition: The elements from the comment are stored as decision knowledge in the ConDec database
+   */
   it(// This is currently failing, see bugs: CONDEC-857 and CONDEC-858
   'should classify elements marked with specific Jira icons as decision knowledge (R1)', async () => {
-    // Jira project exists and ConDec plugin is activated/enabled for the
-    // project, Jira issue exists
+    /*
+    The icons are:
+    (!) - issue
+    (/) - decision
+    (on) - alternative
+    (+) - pro
+    (-) - con
+     */
+
+    // Precondition: Jira issue exists
     const issue2 = await createJiraIssue(
       'Task',
       'Decide on the domain name for the blog'
     );
     // Step 1: add a comment containing manually classified decision knowledge
-    // with Jira emoji
+    // with Jira icons
     await jira.addComment(
       issue2.id,
       '(!) Which domain registrar should be used?\n' +
@@ -84,8 +124,8 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
         '(on) Use GoDaddy for registering the domain name!\n' +
         '(-) GoDaddy has high fees'
     );
-    // Step 2: examine the knowledge elements that are in the database. Make
-    // sure all of the added elements exist
+    // Step 2: Verify the elements from the comment are stored as decision
+    // knowledge in the ConDec database
     const knowledgeElements2 = await getKnowledgeElements('', issue2.key);
     const expectedPartialElements = [
       {
@@ -114,14 +154,31 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
       chai.expect(knowledgeElements2).to.contain.something.like(partialElement);
     });
   });
-  it('should replace Jira emoji with macro tags in Jira issue comments (R2)', async () => {
+
+  /**
+   * TCS: Test manually classify text as decision knowledge should replace Jira icons with macro tags in Jira issue comments (R2)
+   *
+   * Precondition: Jira issue exists
+   *
+   * Step 1: Add a comment to the Jira issue containing decision knowledge marked by Jira icons
+   *
+   * Step 2: Verify that the text of the comment has changed to use the macro syntax
+   *
+   * Postcondition: The text of the comment has changed to use the macro syntax
+   */
+  it('should replace Jira icons with macro tags in Jira issue comments (R2)', async () => {
+    // Precondition: Jira issue exists
     const issue = await createJiraIssue('Task', 'Enable website navigation');
 
+    // Step 1: Add a comment to the Jira issue containing decision knowledge
+    // marked by Jira icons
     await jira.addComment(
       issue.id,
       '(!) Should we add a back button to the website?' +
         '(on) Add a back button that is visible on the same spot on every page'
     );
+
+    // Step 2: Verify that the text of the comment has changed to use the macro syntax
     const issueAfterCommenting = await jira.findIssue(issue.id);
     chai
       .expect(issueAfterCommenting.fields.comment.comments[0])
@@ -131,26 +188,61 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
       );
   });
 
+  /**
+   * TCS: Test manually classify text as decision knowledge'should set knowledge type of parts of a sentence not annotated as decision knowledge to "other" and property "relevant" to false (R4)
+   *
+   * Precondition: Jira issue exists
+   *
+   * Step 1: Add a comment to the Jira issue containing some decision knowledge
+   *     elements and some text not marked as decision knowledge
+   *
+   * Step 2: Verify that the knowledge type of the untagged part of the sentence
+   *     is 'other' and the 'relevant' property of the element is set to false
+   *
+   * Postcondition: The knowledge type of the untagged part of the sentence is 'other'
+   *     and the 'relevant' property of the element is set to false
+   *
+   */
   // This is currently failing because non-classified text in comments is
   // ignored and not added to the knowledge graph.
-  it('should set knowledge type of parts of a sentence not annotated as decision knowledge to "other" with status "irrelevant" (R4)', async () => {
+  it('should set knowledge type of parts of a sentence not annotated as decision knowledge to "other" and property "relevant" to false (R4)', async () => {
+    // Precondition: Jira issue exists
     const issue = await createJiraIssue('Task', 'Enhance user experience');
+
+    // Step 1: Add a comment to the Jira issue containing some decision
+    // knowledge elements and some text not marked as decision knowledge
     await jira.addComment(
       issue.id,
       "I don't think we should use cookies to track our users.\n{issue}How can we enhance user experience without compromising privacy?{issue}"
     );
+
+    // Step 2: Verify that the knowledge type of the untagged part of the
+    // sentence is 'other' and the 'relevant' property of the element is set to false
     const knowledgeElements = await getKnowledgeElements('', issue.key);
-    // contain.something.like is an idiom for a list element containing an
-    // Object with a matching subset
+
     chai.expect(knowledgeElements).to.contain.something.like({
       summary: "I don't think we should use cookies to track our users.",
-      status: 'irrelevant',
+      relevant: 'false',
       type: 'Other',
     });
   });
-  it('should remove macro tags from a manually annotated Jira comment when it is marked as irrelevant in a view on the knowledge graph (R5)', async () => {
-    const jiraIssue = await createJiraIssue('Task', 'Implement dark mode');
 
+  /**
+   * TCS: Test manually classify text as decision knowledge
+   *
+   * Precondition: Jira issue exists and has a comment containing a decision knowledge element
+   *
+   * Step 1: Set the sentence as irrelevant on a view on the knowledge graph
+   *     (=call the REST endpoint setSentenceIrrelevant)
+   *
+   * Step 2: Verify that the knowledge element in the comment no longer contains the macro tags
+   *
+   * Postcondition: Verify that the knowledge element in the comment no longer
+   *     contains the macro tags
+   */
+  it('should remove macro tags from a manually annotated Jira comment when it is marked as irrelevant in a view on the knowledge graph (R5)', async () => {
+    // Precondition: Jira issue exists and has a comment containing a decision knowledge element
+    const jiraIssue = await createJiraIssue('Task', 'Implement dark mode');
     const decisionKnowledgeElement = await createDecisionKnowledgeElement(
       'Should the default text be green?',
       'Issue',
@@ -158,8 +250,10 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
       jiraIssue.id,
       'i'
     );
+    // Step 1: Set the knowledge elelemnt as irrelevant on a view on the knowledge graph (=call the REST endpoint setSentenceIrrelevant)
     await setSentenceIrrelevant(decisionKnowledgeElement.id);
-
+    // Step 2: Verify that the knowledge element in the comment no longer
+    // contains the macro tags
     const decisionKnowledgeElementAfterUpdate = await getSpecificKnowledgeElement(
       decisionKnowledgeElement.id,
       's'
