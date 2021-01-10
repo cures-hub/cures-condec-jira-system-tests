@@ -49,9 +49,9 @@ npm start
 npm test -- path/to/your/test/file
 ```
 
-### Run just one test case
+### Run just one `it` or `describe`
 
-Add `.only()` to your test case definition
+Add `.only()` to your `it` or `describe` block
 
 Example:
 
@@ -83,7 +83,7 @@ If you want to write new automated system tests, you should read this section!
 
 - Tests should be in a `describe` block in the form `describe('TCS: Test <SF NAME>')`, where you replace `<SF NAME>` with the name of the system function you are testing.
   
-- Each describe should include a before method that calls the `setUpJira` function - this is how we can be sure Jira is set up and the ConDec plugin is reset.
+- Each `describe` should include a `before` method that calls the `setUpJira` function - this is how we can be sure Jira is set up and the ConDec plugin is reset.
   
 - inside the describe block, there should be an `it` block for each test case. The `it` block should be named using should/when syntax describing the rule or exception you are testing. The rule or exception number should be added to the end of the name.
 
@@ -99,7 +99,7 @@ If you want to write new automated system tests, you should read this section!
    * Precondition: Jira issue exists
    *
    * Step 1: Create a decision knowledge element with the documentation location
-   *    'Jira issue text' (= docuementation location 's' in the backend)
+   *    'Jira issue text' (= documentation location 's' in the backend)
    *
    * Step 2: Verify that the Jira issue has a comment containing the added
    *     decision knowledge element
