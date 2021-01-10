@@ -12,7 +12,7 @@ const {
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
 
-describe.only('TCS: Test change decision knowledge element', () => {
+describe('TCS: Test change decision knowledge element', () => {
   before(async () => {
     await setUpJira(true); // These tests need the Jira issue strategy, so we explicitly set it here
   });
@@ -20,13 +20,17 @@ describe.only('TCS: Test change decision knowledge element', () => {
   /**
    * TCS: Test change decision knowledge element should change the status to "decided" when an alternative is changed to a decision (R1)
    *
-   * Precondition:
+   * Precondition: Decision knowledge element with type "Alternative" exists
    *
-   * Postcondition:
+   * Step 1: Update the alternative to have type "Decision"
+   *
+   * Step 2: Verify that the alternative changed to a decision with status decided
+   *
+   * Postcondition: The alternative changed to a decision with status decided
    *
    */
   it('should change the status to "decided" when an alternative is changed to a decision (R1)', async () => {
-    // Create a Jira issue and a comment containing decision knowledge
+    // Precondition: Decision knowledge element with type "Alternative" exists
     const jiraTask = await createJiraIssue(
       'Task',
       'Enable persistence of user data'
@@ -46,8 +50,12 @@ describe.only('TCS: Test change decision knowledge element', () => {
       jiraTask.id,
       'i'
     );
+
+    // Step 1: Update the alternative to have type "Decision"
     const updatedAlternative = Object.assign(alternative, { type: 'Decision' });
     await updateDecisionKnowledgeElement(issue.id, 'i', updatedAlternative);
+
+    // Step 2: Verify that the alternative changed to a decision with status decided
     const decisionKnowledgeAfterChange = await getKnowledgeElements();
     chai
       .expect(decisionKnowledgeAfterChange)
@@ -60,25 +68,38 @@ describe.only('TCS: Test change decision knowledge element', () => {
   });
 
   /**
-   * TCS: Test change decision knowledge element
+   * TCS: Test change decision knowledge element should change the decision's status to 'rejected' when a user tries to change it to an alternative
    *
    * Precondition: A decision knowledge element exists with type 'Decision'
    *
-   * Postcondition: The knowledge element has type 'Decision' and status 'rejected'.
+   * Step 1: Try to update the decision by changing its knowledge type to 'Alternative'
+   *
+   * Step 2: Verify that the knowledge element has type 'Decision' and status 'rejected'
+   *
+   * Postcondition: The knowledge element has type 'Decision' and status 'rejected'
    *
    */
   it("should change the decision's status to 'rejected' when a user tries to change it to an alternative", async () => {
-    const issue = await createDecisionKnowledgeElement(
+    // Precondition: A decision knowledge element exists with type 'Decision'
+    const knowledgElement = await createDecisionKnowledgeElement(
       'Only users with admin rights should be able to set the toggle!',
       'Decision',
       'i'
     );
-    const updatePayload = Object.assign(issue, { type: 'Alternative' });
+    // Step 1: Try to update the decision by changing its knowledge type to 'Alternative'
+    const updatePayload = Object.assign(knowledgElement, {
+      type: 'Alternative',
+    });
 
     await updateDecisionKnowledgeElement(0, null, updatePayload);
-    const updatedIssue = await getSpecificKnowledgeElement(issue.id, 'i');
-    chai.expect(updatedIssue).to.be.like({
-      id: issue.id,
+
+    // Step 2: Verify that the knowledge element has type 'Decision' and status 'rejected'
+    const updatedKnowledgeElement = await getSpecificKnowledgeElement(
+      knowledgElement.id,
+      'i'
+    );
+    chai.expect(updatedKnowledgeElement).to.be.like({
+      id: knowledgElement.id,
       type: 'Decision',
       status: 'rejected',
     });
