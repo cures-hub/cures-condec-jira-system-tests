@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 /**
  * Helper functions for the ConDec Jira system tests
  */
@@ -80,6 +78,35 @@ const setIssueStrategy = async (useIssueStrategy) => {
       localCredentialsObject
     )
     .then((res) => assert(res.status === 200));
+};
+
+/**
+ * Delete a decision knowledge element
+ *
+ * @param {number|string} id
+ * @param {string} documentationLocation - 'i' or 's', depending on the location of
+ * the element to remove
+ */
+const deleteDecisionKnowledgeElement = async (id, documentationLocation) => {
+  const deletionRequestPayload = {
+    method: 'delete',
+    url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteDecisionKnowledgeElement.json`,
+    headers: {
+      Authorization: `Basic ${base64LocalCredentials}`,
+      'Content-Type': 'application/json',
+    },
+    data: {
+      id,
+      projectKey: JSONConfig.projectKey,
+      documentationLocation,
+    },
+  };
+  try {
+    const result = await axios.request(deletionRequestPayload);
+    return result.data;
+  } catch (err) {
+    return err;
+  }
 };
 
 /**
@@ -303,4 +330,5 @@ module.exports = {
   updateDecisionKnowledgeElement,
   getSpecificKnowledgeElement,
   setSentenceIrrelevant,
+  deleteDecisionKnowledgeElement,
 };
