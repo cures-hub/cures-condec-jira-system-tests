@@ -10,18 +10,13 @@ const {
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
 
-describe('TCS: CONDEC-168', () => {
+describe.only('TCS: CONDEC-168', () => {
   // reset Jira project for every test case, to ensure no interference
   beforeEach(async () => {
     // explicitly use issue persistence strategy here
     await setUpJira(true);
   });
-  xit(
-    // This is out of scope of test plan v1
-    '(R1) If the decision knowledge element is created within an existing knowledge element ' +
-      '(Jira issue or code file), a link is created between an existing knowledge' +
-      ' element and the new element (CONDEC-291). '
-  );
+
   it(
     '(R2) If the documentation location of the new decision knowledge element is "Jira issue ' +
       'text", a new comment in an existing Jira issue is created, which contains the new decision' +
@@ -95,22 +90,4 @@ describe('TCS: CONDEC-168', () => {
       chai.expect(issue).to.have.property('type', 'Issue');
     }
   );
-
-  xit(
-    // This will be tested elsewhere
-    '(R6) A Jira issue (i.e. a decision knowledge element documented as an entire Jira issue) can' +
-      ' only be created in a view on the knowledge graph if the user has the rights to create Jira' +
-      ' issues (CONDEC-852, integrity).'
-  );
-
-  // This will be tested elsewhere
-  xit('(R7) If the webhook is activated, it will be fired (CONDEC-185).');
-
-  // Currently there is no way to trigger this through the UI, so we don't test it here.
-  xit(
-    '(E1) A decision knowledge element with the same summary and description already exists.'
-  );
-
-  // This will be tested elsewhere
-  xit('(E2) The user does not have the rights for creation.');
 });
