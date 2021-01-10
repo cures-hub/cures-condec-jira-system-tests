@@ -57,6 +57,7 @@ describe('TCS: Test delete knowledge element', () => {
   before(async () => {
     await setUpJira();
   });
+
   /**
    * TCS: Test delete knowledge element should remove knowledge elements from issue description and comments from the database when a Jira issue is deleted (R2)
    *
@@ -106,6 +107,7 @@ describe('TCS: Test delete knowledge element', () => {
       .expect(knowledgeElements)
       .to.not.contain.something.that.has.property('summary', 'Use a tricycle!');
   });
+
   /**
    * TCS: Test delete knowledge element should delete the knowledge element representing a Jira issue from the graph when the Jira issue is deleted (R3)
    *
@@ -135,6 +137,7 @@ describe('TCS: Test delete knowledge element', () => {
         'Develop strategy for fast and cost-effective pizza delivery'
       );
   });
+
   /**
    * TCS: Test delete knowledge element should delete all decision knowledge from the database that was in the body of a Jira issue comment when the comment is deleted (R4)
    *
@@ -175,6 +178,7 @@ describe('TCS: Test delete knowledge element', () => {
         'Which language should we use to define tasks?'
       );
   });
+
   /**
    * TCS: Test delete knowledge element should delete a knowledge element from the database when it is removed from the description of a Jira issue (R5)
    *
@@ -209,8 +213,11 @@ describe('TCS: Test delete knowledge element', () => {
         'How large to make the mugs?'
       );
   });
+
   /**
-   * TCS: Test delete knowledge element should delete a knowledge element from the database and knowledge graph when deletion is triggered in a view on the knowledge graph (R6)
+   * TCS: Test delete knowledge element should delete a knowledge element from
+   *    the database and knowledge graph when deletion is triggered in a view on
+   *    the knowledge graph (R6)
    *
    * Precondition: A decision knowledge element exists
    *
@@ -251,10 +258,10 @@ describe('TCS: Test delete knowledge element', () => {
    *
    * Precondition: Jira issue exists with decision knowledge in its comment
    *
-   * Step 1: delete the decision knowledge element via a view on the knowledge
+   * Step 1: Delete the decision knowledge element via a view on the knowledge
    *    graph (= call the deleteDecisionKnowledgeElement REST endpoint)
    *
-   * Step 2: verify the element is not deleted from the issue comment
+   * Step 2: Verify the element is not deleted from the issue comment
    *
    * Postcondition: Element is removed from knowledge graph and database.
    *    Element still exists in its original documentation location
@@ -272,12 +279,12 @@ describe('TCS: Test delete knowledge element', () => {
       jiraIssue.id,
       'i'
     );
-    // Step 1: delete the decision knowledge element via a view on the
+    // Step 1: Delete the decision knowledge element via a view on the
     // knowledge graph (= call the deleteDecisionKnowledgeElement REST
     // endpoint)
     await deleteDecisionKnowledgeElement(knowledgeElement.id, 's');
 
-    // Step 2: verify the element is not deleted from the issue comment
+    // Step 2: Verify the element is not deleted from the issue comment
     const jiraIssueAfterKnowledgeDeletion = await jira.findIssue(jiraIssue.key);
     chai
       .expect(jiraIssueAfterKnowledgeDeletion.fields.comment.comments[0].body)
@@ -285,13 +292,17 @@ describe('TCS: Test delete knowledge element', () => {
         "{issue}Accept only currencies we don't have to pay fees for!\n{issue}"
       );
   });
+
   /**
    * TCS: Test delete knowledge element should not allow a nonexistent element
    * to be deleted (E1)
    *
    * Precondition: none
-   * Step 1: trigger deletion of element with id -1 (this id does not exist)
+   *
+   * Step 1: Trigger deletion of element with id -1 (this id does not exist)
+   *
    * Step 2: Verify that this results in a 500 error with the message that deletion failed
+   *
    * Postcondition: Nothing changed
    */
   it('should not allow a nonexistent element to be deleted (E1)', async () => {
