@@ -149,10 +149,7 @@ describe('TCS: CONDEC-171', () => {
         });
     }
   );
-  xit(
-    '(R5) A Jira issue link can only be created in a view on the knowledge graph if the user has the rights to link Jira issues (CONDEC-852, integrity).'
-  );
-  xit('(R6) If the webhook is activated, it will be fired (CONDEC-185).');
+
   it('(E1) Source and/or destination/target element with given id does not exist in database.', async () => {
     const issue = await createDecisionKnowledgeElement(
       'Dummy issue',
@@ -175,7 +172,6 @@ describe('TCS: CONDEC-171', () => {
       chai.expect(err.message).to.eql('Request failed with status code 400');
     }
   });
-  xit('(E2) The user does not have the rights for linking.');
 });
 
 /**
@@ -240,10 +236,7 @@ describe('TCS: CONDEC-172', () => {
         .with.length(0);
     }
   );
-  xit( // not sure how to test that the link is deleted in the database
-    '(R2) If at least on knowledge element of the link (=edge) is not documented in a separate ' +
-      'Jira issue, the link is deleted in a link database that comes with the ConDec plugin.'
-  );
+
   // This test is currently failing, it seems as if the issue gets deleted and
   // not just unlinked
   it(
@@ -283,19 +276,26 @@ describe('TCS: CONDEC-172', () => {
       const response = await axios.request(deleteLinkRequest);
       chai.expect(response.status).to.eql(200);
       const knowledgeElements = await getKnowledgeElements();
-      chai.expect(knowledgeElements).to.be.an('Array').that.contains.something.like({'id': issue.id, 'status': 'unresolved'})
+      chai
+        .expect(knowledgeElements)
+        .to.be.an('Array')
+        .that.contains.something.like({ id: issue.id, status: 'unresolved' });
     }
   );
-  xit(
-    '(R4) A Jira issue link can only be deleted in a view on the knowledge graph if the user ' +
-      'has the rights to delete links between Jira issues (CONDEC-852, integrity).'
-  );
-  xit('(R5) If the webhook is activated, it will be fired (CONDEC-185).');
+
   it('(E1) Link with given id does not exist in database.', async () => {
-    const issue = await createDecisionKnowledgeElement('How should files be organized?', 'Issue', 'i');
+    const issue = await createDecisionKnowledgeElement(
+      'How should files be organized?',
+      'Issue',
+      'i'
+    );
     // Create a decision that is not linked to the issue
-    const decision = await createDecisionKnowledgeElement('Organize files alphabetically!', 'Decision', 'i');
-    
+    const decision = await createDecisionKnowledgeElement(
+      'Organize files alphabetically!',
+      'Decision',
+      'i'
+    );
+
     const payload = {
       // THESE ELEMENTS MUST BE PASSED IN THIS ORDER!!
       idOfSourceElement: issue.id,
@@ -316,10 +316,8 @@ describe('TCS: CONDEC-172', () => {
     };
     try {
       await axios(deleteLinkRequest);
-      
     } catch (err) {
       chai.expect(err.message).to.eql('Request failed with status code 500');
     }
   });
-  xit('(E2) The user does not have the rights for unlinking.');
 });
