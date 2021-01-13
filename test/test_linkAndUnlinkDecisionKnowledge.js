@@ -17,11 +17,11 @@ chai.use(require('chai-things'));
 /**
  * CONDEC-171: Link knowledge elements
  */
-describe('TCS: CONDEC-171', () => {
+describe('TCS: Test link knowledge elements', () => {
   before(async () => {
     await setUpJira(true); // turn issue strategy on
   });
-  it('(R1) If both the source and destination elements (=nodes) are Jira issues (documentation location is Jira issue), a Jira issue link is created.', async () => {
+  it('should create a Jira issue link when both the source and destination elements are Jira issues (R1)', async () => {
     const issue1 = await createJiraIssue('Issue', 'Issue 1');
     const issue2 = await createJiraIssue('Alternative', 'Issue 2');
 
@@ -67,41 +67,33 @@ describe('TCS: CONDEC-171', () => {
       .to.have.property('key', `${issue1.key}`);
   });
 
-  it(
-    '(R2) If at least one knowledge element has a different documentation location than a ' +
-      'Jira issue, the link is stored in an internal database of the ConDec plugin and not ' +
-      'as a Jira issue link.',
-    async () => {
-      const decisionKnowledgeIssue = await createDecisionKnowledgeElement(
-        'Which method of transportation should be used for pizza delivery?',
-        'Issue',
-        'i'
-      );
-      const decisionKnowledgeComment = await createDecisionKnowledgeElement(
-        'Use a car to deliver pizzas!',
-        'Decision',
-        's',
-        decisionKnowledgeIssue.id, // The comment gets linked to the Jira issue created above
-        'i'
-      );
-      const jiraIssue = await jira.findIssue(decisionKnowledgeIssue.id);
-      // Check that no Jira issue link exists
-      chai
-        .expect(jiraIssue.fields.issuelinks)
-        .to.be.an('Array')
-        .with.lengthOf(0);
+  it('should store the link between elements with documentation location "i" and documentation location "s" in the ConDec database, not a Jira issue link (R2)', async () => {
+    const decisionKnowledgeIssue = await createDecisionKnowledgeElement(
+      'Which method of transportation should be used for pizza delivery?',
+      'Issue',
+      'i'
+    );
+    const decisionKnowledgeComment = await createDecisionKnowledgeElement(
+      'Use a car to deliver pizzas!',
+      'Decision',
+      's',
+      decisionKnowledgeIssue.id, // The comment gets linked to the Jira issue created above
+      'i'
+    );
+    const jiraIssue = await jira.findIssue(decisionKnowledgeIssue.id);
+    // Check that no Jira issue link exists
+    chai.expect(jiraIssue.fields.issuelinks).to.be.an('Array').with.lengthOf(0);
 
-      // Check that the comment's key contains the issue key - this means they
-      // are linked in the ConDec database
-      chai
-        .expect(decisionKnowledgeComment.key)
-        .to.contain(decisionKnowledgeIssue.key);
-    }
-  );
+    // Check that the comment's key contains the issue key - this means they
+    // are linked in the ConDec database
+    chai
+      .expect(decisionKnowledgeComment.key)
+      .to.contain(decisionKnowledgeIssue.key);
+  });
 
   // This is currently failing, as it should not be allowed to link an element
   // to itself
-  it('(R3) The source element must be different to the destination/target element.', async () => {
+  it('should not allow an element to be linked to itself (R3) The source element must be different to the destination/target element.', async () => {
     const alternative = await createJiraIssue(
       'Alternative',
       'Dummy Alternative'
@@ -121,36 +113,32 @@ describe('TCS: CONDEC-171', () => {
     );
     chai.expect(link.status).not.to.eql(200);
   });
-  it(
-    '(R4) If an issue (=decision problem) is linked to a decision in state "decided", ' +
-      'the state of this issue is set to "resolved".',
-    async () => {
-      const issue1 = await createJiraIssue(
-        'Issue',
-        'Which board games should be played?'
-      );
-      const decisionElement = await createDecisionKnowledgeElement(
-        'Settlers of Catan should be played!',
-        'Decision',
-        's',
-        issue1.id,
-        'i'
-      );
-      chai.expect(decisionElement).to.have.property('status', 'decided');
-      const knowledgeElements = await getKnowledgeElements();
+  it('should set the status of an issue to "resolved" when it is linked to a decision with status "decided" (R4)', async () => {
+    const issue1 = await createJiraIssue(
+      'Issue',
+      'Which board games should be played?'
+    );
+    const decisionElement = await createDecisionKnowledgeElement(
+      'Settlers of Catan should be played!',
+      'Decision',
+      's',
+      issue1.id,
+      'i'
+    );
+    chai.expect(decisionElement).to.have.property('status', 'decided');
+    const knowledgeElements = await getKnowledgeElements();
 
-      chai
-        .expect(knowledgeElements)
-        .to.be.an('Array')
-        .that.contains.something.like({
-          id: Number(issue1.id),
-          status: 'resolved',
-          summary: 'Which board games should be played?',
-        });
-    }
-  );
+    chai
+      .expect(knowledgeElements)
+      .to.be.an('Array')
+      .that.contains.something.like({
+        id: Number(issue1.id),
+        status: 'resolved',
+        summary: 'Which board games should be played?',
+      });
+  });
 
-  it('(E1) Source and/or destination/target element with given id does not exist in database.', async () => {
+  it('should not allow an element that does not exist in the database to be linked (E1)', async () => {
     const issue = await createDecisionKnowledgeElement(
       'Dummy issue',
       'Issue',
@@ -177,7 +165,7 @@ describe('TCS: CONDEC-171', () => {
 /**
  * CONDEC-172: Unlink knowledge elements
  */
-describe('TCS: CONDEC-172', () => {
+describe('TCS: Test unlink knowledge elements', () => {
   before(async () => {
     await setUpJira(true); // turn issue strategy on
   });
