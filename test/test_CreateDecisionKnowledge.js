@@ -10,7 +10,10 @@ const {
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
 
-describe('TCS: Test create decision knowledge', () => {
+/**
+ * CONDEC-168: Create decision knowledge element
+ */
+describe('TCS: Test create decision knowledge element', () => {
   // reset Jira project for every test case, to ensure no interference
   beforeEach(async () => {
     // explicitly use issue persistence strategy here
@@ -18,7 +21,7 @@ describe('TCS: Test create decision knowledge', () => {
   });
 
   /**
-   * TCS: Test create decision knowledge should create a new comment for an existing Jira issue when the documentation location "Jira issue text" is selected (R2)
+   * TCS: Test create decision knowledge element should create a new comment for an existing Jira issue when the documentation location "Jira issue text" is selected (R2)
    *
    * Precondition: Jira issue exists
    *
@@ -57,7 +60,7 @@ describe('TCS: Test create decision knowledge', () => {
   });
 
   /**
-   * TCS: Test create decision knowledge should give a new alternative the status "idea" (R3)
+   * TCS: Test create decision knowledge element should give a new alternative the status "idea" (R3)
    *
    * Precondition: Jira issue exists
    *
@@ -90,7 +93,7 @@ describe('TCS: Test create decision knowledge', () => {
   });
 
   /**
-   * TCS: Test create decision knowledge should give a new decision the status "decided" (R4)
+   * TCS: Test create decision knowledge element should give a new decision the status "decided" (R4)
    *
    * Precondition: Jira issue exists
    *
@@ -120,7 +123,7 @@ describe('TCS: Test create decision knowledge', () => {
   });
 
   /**
-   * TCS: Test create decision knowledge should give a new decision knowledge issue without a linked decision the status "unresolved" (R5)
+   * TCS: Test create decision knowledge element should give a new decision knowledge issue without a linked decision the status "unresolved" (R5)
    *
    * Precondition: None
    *

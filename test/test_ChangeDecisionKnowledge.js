@@ -11,13 +11,28 @@ const {
 
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
-
-describe('TCS: CONDEC-169', () => {
+/**
+ * CONDEC-169: Change decision knowledge element
+ */
+describe('TCS: Test change decision knowledge element', () => {
   before(async () => {
     await setUpJira(true); // These tests need the Jira issue strategy, so we explicitly set it here
   });
-  it('(R1) If an alternative is changed to a decision, its status is changed to "decided".', async () => {
-    // Create a Jira issue and a comment containing decision knowledge
+
+  /**
+   * TCS: Test change decision knowledge element should change the status to "decided" when an alternative is changed to a decision (R1)
+   *
+   * Precondition: Decision knowledge element with type "Alternative" exists
+   *
+   * Step 1: Update the alternative to have type "Decision"
+   *
+   * Step 2: Verify that the alternative changed to a decision with status decided
+   *
+   * Postcondition: The alternative changed to a decision with status decided
+   *
+   */
+  it('should change the status to "decided" when an alternative is changed to a decision (R1)', async () => {
+    // Precondition: Decision knowledge element with type "Alternative" exists
     const jiraTask = await createJiraIssue(
       'Task',
       'Enable persistence of user data'
@@ -37,8 +52,12 @@ describe('TCS: CONDEC-169', () => {
       jiraTask.id,
       'i'
     );
+
+    // Step 1: Update the alternative to have type "Decision"
     const updatedAlternative = Object.assign(alternative, { type: 'Decision' });
     await updateDecisionKnowledgeElement(issue.id, 'i', updatedAlternative);
+
+    // Step 2: Verify that the alternative changed to a decision with status decided
     const decisionKnowledgeAfterChange = await getKnowledgeElements();
     chai
       .expect(decisionKnowledgeAfterChange)
@@ -50,193 +69,257 @@ describe('TCS: CONDEC-169', () => {
       });
   });
 
-  it(
-    '(R2) If the user tries to change a decision to an alternative, ' +
-      'the knowledge type cannot be changed (i.e. it stays a decision), ' +
-      'but the status of the decision is changed to "rejected". ',
-    async () => {
-      const issue = await createDecisionKnowledgeElement(
-        'Only users with admin rights should be able to set the toggle!',
-        'Decision',
-        'i'
-      );
-      const updatePayload = Object.assign(issue, { type: 'Alternative' });
+  /**
+   * TCS: Test change decision knowledge element should change the decision's status to 'rejected' when a user tries to change it to an alternative
+   *
+   * Precondition: A decision knowledge element exists with type 'Decision'
+   *
+   * Step 1: Try to update the decision by changing its knowledge type to 'Alternative'
+   *
+   * Step 2: Verify that the knowledge element has type 'Decision' and status 'rejected'
+   *
+   * Postcondition: The knowledge element has type 'Decision' and status 'rejected'
+   *
+   */
+  it('should change the decision\'s status to "rejected" when a user tries to change it to an alternative (R2)', async () => {
+    // Precondition: A decision knowledge element exists with type 'Decision'
+    const knowledgElement = await createDecisionKnowledgeElement(
+      'Only users with admin rights should be able to set the toggle!',
+      'Decision',
+      'i'
+    );
+    // Step 1: Try to update the decision by changing its knowledge type to 'Alternative'
+    const updatePayload = Object.assign(knowledgElement, {
+      type: 'Alternative',
+    });
 
-      await updateDecisionKnowledgeElement(0, null, updatePayload);
-      const updatedIssue = await getSpecificKnowledgeElement(issue.id, 'i');
-      chai.expect(updatedIssue).to.be.like({
-        id: issue.id,
-        type: 'Decision',
-        status: 'rejected',
-      });
-    }
-  );
-  it(
-    '(R3) If the status of a decision is set to "challenged" or "rejected", the status ' +
-      'of the linked issue (=decision problem) is set to "unresolved" (if the issue does ' +
-      'not have any other decisions in status "decided" linked).',
-    async () => {
-      // First part: check for status 'challenged'
-      const issue1 = await createDecisionKnowledgeElement(
-        'Which font should be used in the user interface?',
-        'Issue',
-        'i'
-      );
-      const decision1 = await createDecisionKnowledgeElement(
-        'Use Wingdings for the user interface font!',
-        'Decision',
-        'i',
-        issue1.id,
-        'i'
-      );
-      const update1Payload = Object.assign(decision1, { status: 'challenged' });
-      await updateDecisionKnowledgeElement(0, null, update1Payload);
+    await updateDecisionKnowledgeElement(0, null, updatePayload);
 
-      const issue1AfterUpdate = await getSpecificKnowledgeElement(
-        issue1.id,
-        'i'
-      );
-      chai
-        .expect(issue1AfterUpdate)
-        .to.be.like({ id: issue1.id, status: 'unresolved' });
+    // Step 2: Verify that the knowledge element has type 'Decision' and status 'rejected'
+    const updatedKnowledgeElement = await getSpecificKnowledgeElement(
+      knowledgElement.id,
+      'i'
+    );
+    chai.expect(updatedKnowledgeElement).to.be.like({
+      id: knowledgElement.id,
+      type: 'Decision',
+      status: 'rejected',
+    });
+  });
 
-      // Second part: check for status 'rejected'
-      const issue2 = await createDecisionKnowledgeElement(
-        'Which color scheme should be used for the website?',
-        'Issue',
-        'i'
-      );
-      const decision2 = await createDecisionKnowledgeElement(
-        'Use a dark color scheme for the website!',
-        'Decision',
-        'i',
-        issue2.id,
-        'i'
-      );
-      const update2Payload = Object.assign(decision2, { status: 'rejected' });
-      await updateDecisionKnowledgeElement(0, null, update2Payload);
+  /**
+   * TCS: Test change decision knowledge element should change the status of an issue to "unresolved" when the linked decision changes status to "challenged" and there is no other "decided" decision linked (R3)
+   *
+   * Precondition: A Jira issue exists with a linked Decision element and no other linked decision element
+   *
+   * Step 1: Update the decision's status to "challenged"
+   *
+   * Step 2: Verify that the issue has status "unresolved"
+   *
+   * Postcondition: The issue has status "unresolved"
+   *
+   */
+  it('should change the status of an issue to "unresolved" when the linked decision changes status to "challenged" and there is no other "decided" decision linked (R3)', async () => {
+    // Precondition: Decision knowledge Issue exists with linked decision
+    const issue = await createDecisionKnowledgeElement(
+      'Which font should be used in the user interface?',
+      'Issue',
+      'i'
+    );
+    const decision = await createDecisionKnowledgeElement(
+      'Use Wingdings for the user interface font!',
+      'Decision',
+      'i',
+      issue.id,
+      'i'
+    );
 
-      const issue2AfterUpdate = await getSpecificKnowledgeElement(
-        issue2.id,
-        'i'
-      );
-      chai
-        .expect(issue2AfterUpdate)
-        .to.be.like({ id: issue2.id, status: 'unresolved' });
-    }
-  );
-  it(
-    '(R4) If the status of a decision is set to "decided" or if an alternative is changed to a ' +
-      'decision (with status "decided"), the status of the linked issue (=decision problem) ' +
-      'is set to "resolved".',
-    async () => {
-      // Case one: decision has status decided when linked to an issue
-      const issue1 = await createDecisionKnowledgeElement(
-        'Which options should be available for setting font size?',
-        'Issue',
-        'i'
-      );
-      const decision = await createDecisionKnowledgeElement(
-        'Options for small, medium, and large should be available!',
-        'Decision',
-        'i',
-        issue1.id,
-        'i'
-      );
-      const issue1AfterAddingDecision = await getSpecificKnowledgeElement(
-        issue1.id,
-        'i'
-      );
-      chai.expect(decision.status).to.eql('decided');
-      chai.expect(issue1AfterAddingDecision.status).to.eql('resolved');
+    // Step 1: Update the decision's status to "challenged"
+    const updatePayload = Object.assign(decision, { status: 'challenged' });
+    await updateDecisionKnowledgeElement(0, null, updatePayload);
 
-      // Case two: alternative is changed to decision
-      const issue2 = await createDecisionKnowledgeElement(
-        'Which standards should be enforced for password creation?',
-        'Issue',
-        'i'
-      );
-      const alternative = await createDecisionKnowledgeElement(
-        'A password should have at least 8 characters!',
-        'Alternative',
-        'i',
-        issue2.id,
-        'i'
-      );
+    // Step 2: Verify that the issue has status "unresolved"
+    const issue1AfterUpdate = await getSpecificKnowledgeElement(issue.id, 'i');
+    chai
+      .expect(issue1AfterUpdate)
+      .to.be.like({ id: issue.id, status: 'unresolved' });
+  });
 
-      const updatePayload = Object.assign(alternative, {
-        type: 'Decision',
-        status: 'decided',
-      });
-      await updateDecisionKnowledgeElement(0, null, updatePayload);
-      const alternativeAfterUpdate = await getSpecificKnowledgeElement(
-        alternative.id,
-        'i'
-      );
-      const issue2AfterUpdate = await getSpecificKnowledgeElement(
-        issue2.id,
-        'i'
-      );
-      chai.expect(alternativeAfterUpdate.status).to.eql('decided'); // this currently fails, the decision has the status 'idea'
-      chai.expect(alternativeAfterUpdate.type).to.eql('Decision');
-      chai.expect(issue2AfterUpdate.status).to.eql('resolved');
-    }
-  );
+  /**
+   * TCS: Test change decision knowledge element should change the status of an issue to "unresolved" when the linked decision changes status to "rejected" and there is no other "decided" decision linked (R3)
+   *
+   * Precondition: A Jira issue exists with a linked decision element and no other linked decision element
+   *
+   * Step 1: Update the decision's status to "rejected"
+   *
+   * Step 2: Verify that the issue has status "unresolved"
+   *
+   * Postcondition: The issue has status "unresolved"
+   *
+   */
+  it('should change the status of an issue to "unresolved" when the linked decision changes status to "rejected" and there is no other "decided" decision linked (R3)', async () => {
+    // Precondition: A Jira issue exists with a linked decision element and no other linked decision element
+    const issue = await createDecisionKnowledgeElement(
+      'Which color scheme should be used for the website?',
+      'Issue',
+      'i'
+    );
+    const decision = await createDecisionKnowledgeElement(
+      'Use a dark color scheme for the website!',
+      'Decision',
+      'i',
+      issue.id,
+      'i'
+    );
+    // Step 1: Update the decision's status to "rejected"
+    const updatePayload = Object.assign(decision, { status: 'rejected' });
+    await updateDecisionKnowledgeElement(0, null, updatePayload);
+    // Step 2: Verify that the issue has status "unresolved"
+    const issueAfterUpdate = await getSpecificKnowledgeElement(issue.id, 'i');
+    chai
+      .expect(issueAfterUpdate)
+      .to.be.like({ id: issue.id, status: 'unresolved' });
+  });
+
+  /**
+   * TCS: Test change decision knowledge element should change the status of an issue to "resolved" when a linked decision is set to status "decided" (R4)
+   *
+   * Precondition: A decision knowledge issue exists
+   *
+   * Step 1: Add a decision element (this has the status "decided" by default)
+   *
+   * Step 2: Verify that the decision knowledge issue has the status "resolved"
+   *
+   * Postcondition: The decision knowledge issue has the status "resolved"
+   *
+   */
+  it('should change the status of an issue to "resolved" when a linked decision is set to status "decided" (R4)', async () => {
+    // Precondition: A decision knowledge issue exists
+    const issue = await createDecisionKnowledgeElement(
+      'Which options should be available for setting font size?',
+      'Issue',
+      'i'
+    );
+    // Step 1: Add a decision element (this has the status "decided" by default)
+    const decision = await createDecisionKnowledgeElement(
+      'Options for small, medium, and large should be available!',
+      'Decision',
+      'i',
+      issue.id,
+      'i'
+    );
+    // Step 2: Verify that the decision knowledge issue has the status "resolved"
+    const issueAfterAddingDecision = await getSpecificKnowledgeElement(
+      issue.id,
+      'i'
+    );
+    chai.expect(decision.status).to.eql('decided');
+    chai.expect(issueAfterAddingDecision.status).to.eql('resolved');
+  });
+
+  /**
+   * TCS: Test change decision knowledge element should change the status of an issue to "resolved" when a linked alternative is changed to a decision with the status "decided" (R4)
+   *
+   * Precondition: A decision knowledge issue exists with a linked alternative
+   *
+   * Step 1: Update the Alternative to have type decision with status "decided"
+   *
+   * Step 2: Verify that the alternative has changed to a decision, and has status "decided". Verify that the issue has the status "resolved"
+   *
+   * Postcondition: The alternative has changed to a decision, and has status "decided". The issue has the status "resolved"
+   *
+   */
+  it('should change the status of an issue to "resolved" when a linked alternative is changed to a decision with the status "decided" (R4)', async () => {
+    // Precondition: A decision knowledge issue exists with a linked alternative
+    const issue = await createDecisionKnowledgeElement(
+      'Which standards should be enforced for password creation?',
+      'Issue',
+      'i'
+    );
+    const alternative = await createDecisionKnowledgeElement(
+      'A password should have at least 8 characters!',
+      'Alternative',
+      'i',
+      issue.id,
+      'i'
+    );
+    // Step 1: Update the Alternative to have type decision with status "decided"
+    const updatePayload = Object.assign(alternative, {
+      type: 'Decision',
+      status: 'decided',
+    });
+    await updateDecisionKnowledgeElement(0, null, updatePayload);
+    // Step 2: Verify that the alternative has changed to a decision, and has
+    // status "decided". Verify that the issue has the status "resolved"
+    const alternativeAfterUpdate = await getSpecificKnowledgeElement(
+      alternative.id,
+      'i'
+    );
+    const issueAfterUpdate = await getSpecificKnowledgeElement(issue.id, 'i');
+    chai.expect(alternativeAfterUpdate.status).to.eql('decided'); // this currently fails, the decision has the status 'idea'
+    chai.expect(alternativeAfterUpdate.type).to.eql('Decision');
+    chai.expect(issueAfterUpdate.status).to.eql('resolved');
+  });
+
+  /**
+   * TCS: Test change decision knowledge element should open a Jira issue when the documentation location of a decision knowledge element changes from Jira issue text to Jira issue (R5)
+   *
+   * Precondition: Decision knowledge element exists in the comment of a Jira issue
+   *
+   * Step 1: Update the documentation location of the element from Jira issue
+   *    text ('s') to Jira issue ('i')
+   *
+   * Step 2: Verify that there is a new Jira representing the converted decision
+   *    knowledge element
+   *
+   * Postcondition: New Jira issue exists and represents the converted decision
+   *    knowledge element. The comment containing the decision knowledge element
+   *    has not changed
+   *
+   */
   // Seems like this rule isn't implemented yet...
-  xit(
-    '(R5) If the documentation location of a decision knowledge element in the description or a ' +
-      'comment of a Jira issue is changed to "Jira issue", a new Jira issue is created. ' +
-      'The part of text/sentence in the description or comment is not removed (CONDEC-170, R7).',
-    async () => {
-      const issue = await createDecisionKnowledgeElement(
-        'Which CSS style should be used?',
-        'Issue',
-        'i'
-      );
-      const decision = await createDecisionKnowledgeElement(
-        'Use SCSS (sassy CSS)!',
-        'Decision',
-        's',
-        issue.id,
-        issue.documentationLocation
-      );
-      const updatePayload = Object.assign(decision, {
-        documentationLocation: 'i',
-      });
-      await updateDecisionKnowledgeElement(0, null, updatePayload);
-    }
-  );
+  xit('should open a Jira issue when the documentation location of a decision knowledge element changes from Jira issue text to Jira issue (R5)', async () => {
+    const issue = await createDecisionKnowledgeElement(
+      'Which CSS style should be used?',
+      'Issue',
+      'i'
+    );
+    const decision = await createDecisionKnowledgeElement(
+      'Use SCSS (sassy CSS)!',
+      'Decision',
+      's',
+      issue.id,
+      issue.documentationLocation
+    );
+    const updatePayload = Object.assign(decision, {
+      documentationLocation: 'i',
+    });
+    await updateDecisionKnowledgeElement(0, null, updatePayload);
 
-  // This will be tested in the test cases for CONDEC-123
-  xit(
-    '(R6) If the decision knowledge element is documented in the description or a comment of a Jira' +
-      ' issue, the respective description or comment is updated and also the database entry' +
-      ' and the node in the knowledge graph (CONDEC-123).'
-  );
-  // This will be tested in the test cases for CONDEC-123
-  xit(
-    '(R7) Decision knowledge elements documented in the description or a comment of a ' +
-      'Jira issue can be changed to "irrelevant". Then, their knowledge type is changed' +
-      ' to "other" and the tags/annotations are removed (CONDEC-123).'
-  );
-  xit(
-    '(R8) A Jira issue (i.e. a decision knowledge element documented as an entire Jira issue)' +
-      ' can only be changed in a view on the knowledge graph if the user has the rights to change ' +
-      'Jira issues (CONDEC-852, integrity).'
-  );
-  xit('(R9) If the webhook is activated, it will be fired (CONDEC-185).');
-  it(
-    '(E1) Decision knowledge element with given id and documentation location ' +
-      'does not exist in database.',
-    async () => {
-      const issue = createDecisionKnowledgeElement('Dummy issue', 'Issue', 'i');
-      const updatePayload = Object.assign(issue, { id: -1 });
-      try {
-        await updateDecisionKnowledgeElement(0, null, updatePayload);
-      } catch (err) {
-        chai.expect(err.message).to.eql('Request failed with status code 404');
-      }
+    // TODO: implement the rest
+  });
+
+  /**
+   * TCS: Test change decision knowledge element should not allow a decision knowledge element with invalid id to be updated (E1)
+   *
+   * Precondition: none
+   *
+   * Step 1: Attempt to trigger update of an element with an invalid id
+   *
+   * Step 2: Verify that this results in a 404 error.
+   *
+   * Postcondition: Nothing changed, the request results in a 404 error
+   *
+   */
+  it('should not allow a decision knowledge element with invalid id to be updated (E1)', async () => {
+    // Step 1: Attempt to trigger update of an element with an invalid id
+    const issue = createDecisionKnowledgeElement('Dummy issue', 'Issue', 'i');
+    const updatePayload = Object.assign(issue, { id: -1 });
+    try {
+      await updateDecisionKnowledgeElement(0, null, updatePayload);
+    } catch (err) {
+      // Step 2: Verify that this results in a 404 error
+      chai.expect(err.message).to.eql('Request failed with status code 404');
     }
-  );
-  xit('(E2) The user does not have the rights for changing.');
+  });
 });
