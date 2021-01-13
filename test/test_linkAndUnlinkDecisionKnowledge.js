@@ -364,7 +364,7 @@ describe('TCS: Test unlink knowledge elements', () => {
    *
    * Postcondition: Nothing changed
    */
-  it.only("should not allow unlinking of a link that doesn't exist (E1)", async () => {
+  it("should not allow unlinking of a link that doesn't exist (E1)", async () => {
     const issue = await createDecisionKnowledgeElement(
       'How should files be organized?',
       'Issue',

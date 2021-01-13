@@ -12,7 +12,12 @@ const {
 
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
-
+/**
+ * CONDEC-123: Manually classify text in the description or comments of a Jira issue as decision knowledge
+ *
+ * For readability we shorten the name to "Manually classify text as decision
+ * knowledge" here
+ */
 describe('TCS: Test manually classify text as decision knowledge', () => {
   before(async () => {
     await setUpJira();

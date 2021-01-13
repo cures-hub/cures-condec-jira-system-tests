@@ -11,7 +11,9 @@ const {
 
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
-
+/**
+ * CONDEC-169: Change decision knowledge element
+ */
 describe('TCS: Test change decision knowledge element', () => {
   before(async () => {
     await setUpJira(true); // These tests need the Jira issue strategy, so we explicitly set it here

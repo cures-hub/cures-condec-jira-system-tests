@@ -10,6 +10,9 @@ const {
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
 
+/**
+ * CONDEC-168: Create decision knowledge element
+ */
 describe('TCS: Test create decision knowledge element', () => {
   // reset Jira project for every test case, to ensure no interference
   beforeEach(async () => {

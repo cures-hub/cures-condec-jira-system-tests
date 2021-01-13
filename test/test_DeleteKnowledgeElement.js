@@ -53,6 +53,9 @@ chai.use(require('chai-things'));
  * @pro It is obvious which functionality is tested
  */
 
+/**
+ * CONDEC-170: Delete knowledge element
+ */
 describe('TCS: Test delete knowledge element', () => {
   before(async () => {
     await setUpJira();
