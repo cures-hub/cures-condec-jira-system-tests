@@ -34,7 +34,7 @@ describe('TCS: Test create decision knowledge element', () => {
    * Postcondition: The Jira issue has a comment containing the added decision
    *     knowledge element
    */
-  it('should create a new comment for an existing Jira issue when the documentation location "Jira issue text" is selected (R2)', async () => {
+  it('should create a new comment for an existing Jira issue when the documentation location Jira issue text is selected (R2)', async () => {
     // Precondition: Jira issue exists
     const task = await createJiraIssue('Task', 'Dummy task for R2');
 
@@ -70,7 +70,7 @@ describe('TCS: Test create decision knowledge element', () => {
    *
    * Postcondition: The new alternative has the status idea
    */
-  it('should give a new alternative the status "idea" (R3)', async () => {
+  it('should give a new alternative the status idea (R3)', async () => {
     // Precondition: Jira issue exists
     const issue = await createJiraIssue(
       'Issue',
@@ -103,7 +103,7 @@ describe('TCS: Test create decision knowledge element', () => {
    *
    * Postcondition: The decision has the status "decided"
    */
-  it('should give a new decision the status "decided" (R4)', async () => {
+  it('should give a new decision the status decided (R4)', async () => {
     // Precondition: Jira issue exists
     const issue = await createJiraIssue('Issue', 'Dummy issue for R4');
 
@@ -133,7 +133,7 @@ describe('TCS: Test create decision knowledge element', () => {
    *
    * Postcondition: The status of the new issue is "unresolved"
    */
-  it('should give a new decision knowledge issue without a linked decision the status "unresolved" (R5)', async () => {
+  it('should give a new decision knowledge issue without a linked decision the status unresolved (R5)', async () => {
     const issue = await createDecisionKnowledgeElement(
       'Dummy issue for R5',
       'Issue',

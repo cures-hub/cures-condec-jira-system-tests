@@ -210,7 +210,7 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
    */
   // This is currently failing because non-classified text in comments is
   // ignored and not added to the knowledge graph.
-  it('should set knowledge type of parts of a sentence not annotated as decision knowledge to "other" and property "relevant" to false (R4)', async () => {
+  it('should set knowledge type of parts of a sentence not annotated as decision knowledge to other and property relevant to false (R4)', async () => {
     // Precondition: Jira issue exists
     const issue = await createJiraIssue('Task', 'Enhance user experience');
 

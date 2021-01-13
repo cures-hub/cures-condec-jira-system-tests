@@ -31,7 +31,7 @@ describe('TCS: Test change decision knowledge element', () => {
    * Postcondition: The alternative changed to a decision with status decided
    *
    */
-  it('should change the status to "decided" when an alternative is changed to a decision (R1)', async () => {
+  it('should change the status to decided when an alternative is changed to a decision (R1)', async () => {
     // Precondition: Decision knowledge element with type "Alternative" exists
     const jiraTask = await createJiraIssue(
       'Task',
@@ -81,7 +81,7 @@ describe('TCS: Test change decision knowledge element', () => {
    * Postcondition: The knowledge element has type 'Decision' and status 'rejected'
    *
    */
-  it('should change the decision\'s status to "rejected" when a user tries to change it to an alternative (R2)', async () => {
+  it("should change the decision's status to rejected when a user tries to change it to an alternative (R2)", async () => {
     // Precondition: A decision knowledge element exists with type 'Decision'
     const knowledgElement = await createDecisionKnowledgeElement(
       'Only users with admin rights should be able to set the toggle!',
@@ -119,7 +119,7 @@ describe('TCS: Test change decision knowledge element', () => {
    * Postcondition: The issue has status "unresolved"
    *
    */
-  it('should change the status of an issue to "unresolved" when the linked decision changes status to "challenged" and there is no other "decided" decision linked (R3)', async () => {
+  it('should change the status of an issue to unresolved when the linked decision changes status to challenged and there is no other "decided" decision linked (R3)', async () => {
     // Precondition: Decision knowledge Issue exists with linked decision
     const issue = await createDecisionKnowledgeElement(
       'Which font should be used in the user interface?',
@@ -157,7 +157,7 @@ describe('TCS: Test change decision knowledge element', () => {
    * Postcondition: The issue has status "unresolved"
    *
    */
-  it('should change the status of an issue to "unresolved" when the linked decision changes status to "rejected" and there is no other "decided" decision linked (R3)', async () => {
+  it('should change the status of an issue to unresolved when the linked decision changes status to rejected and there is no other "decided" decision linked (R3)', async () => {
     // Precondition: A Jira issue exists with a linked decision element and no other linked decision element
     const issue = await createDecisionKnowledgeElement(
       'Which color scheme should be used for the website?',
@@ -193,7 +193,7 @@ describe('TCS: Test change decision knowledge element', () => {
    * Postcondition: The decision knowledge issue has the status "resolved"
    *
    */
-  it('should change the status of an issue to "resolved" when a linked decision is set to status "decided" (R4)', async () => {
+  it('should change the status of an issue to resolved when a linked decision is set to status decided (R4)', async () => {
     // Precondition: A decision knowledge issue exists
     const issue = await createDecisionKnowledgeElement(
       'Which options should be available for setting font size?',
@@ -229,7 +229,7 @@ describe('TCS: Test change decision knowledge element', () => {
    * Postcondition: The alternative has changed to a decision, and has status "decided". The issue has the status "resolved"
    *
    */
-  it('should change the status of an issue to "resolved" when a linked alternative is changed to a decision with the status "decided" (R4)', async () => {
+  it('should change the status of an issue to resolved when a linked alternative is changed to a decision with the status decided (R4)', async () => {
     // Precondition: A decision knowledge issue exists with a linked alternative
     const issue = await createDecisionKnowledgeElement(
       'Which standards should be enforced for password creation?',

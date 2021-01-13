@@ -93,7 +93,7 @@ describe('TCS: Test link knowledge elements', () => {
    * Postcondition: No Jira link was created and that the ConDec link is
    * stored in the ConDec database
    */
-  it('should store the link between elements with documentation location "i" and documentation location "s" in the ConDec database, not a Jira issue link (R2)', async () => {
+  it('should store the link between elements with documentation location i and documentation location s in the ConDec database, not a Jira issue link (R2)', async () => {
     const decisionKnowledgeIssue = await createDecisionKnowledgeElement(
       'Which method of transportation should be used for pizza delivery?',
       'Issue',
@@ -131,7 +131,7 @@ describe('TCS: Test link knowledge elements', () => {
    */
   // This is currently failing, as it should not be allowed to link an element
   // to itself
-  it('should not allow an element with documentation location "i" to be linked to itself (R3)', async () => {
+  it('should not allow an element with documentation location i to be linked to itself (R3)', async () => {
     const alternative = await createJiraIssue(
       'Alternative',
       'Dummy Alternative'
@@ -163,7 +163,7 @@ describe('TCS: Test link knowledge elements', () => {
    *
    * Postcondition: The decision knowledge issue has status "resolved"
    */
-  it('should set the status of an issue to "resolved" when it is linked to a decision with status "decided" (R4)', async () => {
+  it('should set the status of an issue to resolved when it is linked to a decision with status decided (R4)', async () => {
     const issue1 = await createJiraIssue(
       'Issue',
       'Which board games should be played?'
@@ -312,7 +312,7 @@ describe('TCS: Test unlink knowledge elements', () => {
    */
   // This test is currently failing, it seems as if the issue gets deleted and
   // not just unlinked
-  it('should set the status of an issue to "unresolved" when it is unlinked from a "decided" decision and has no other "decided" decisions linked (R3)', async () => {
+  it('should set the status of an issue to unresolved when it is unlinked from a decided decision and has no other decided decisions linked (R3)', async () => {
     const issue = await createDecisionKnowledgeElement(
       'Which qualifications should be considered in hiring a new developer?',
       'Issue',
