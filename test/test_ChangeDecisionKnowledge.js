@@ -79,7 +79,7 @@ describe('TCS: Test change decision knowledge element', () => {
    * Postcondition: The knowledge element has type 'Decision' and status 'rejected'
    *
    */
-  it("should change the decision's status to 'rejected' when a user tries to change it to an alternative", async () => {
+  it('should change the decision\'s status to "rejected" when a user tries to change it to an alternative (R2)', async () => {
     // Precondition: A decision knowledge element exists with type 'Decision'
     const knowledgElement = await createDecisionKnowledgeElement(
       'Only users with admin rights should be able to set the toggle!',
