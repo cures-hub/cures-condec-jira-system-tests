@@ -222,11 +222,10 @@ const getKnowledgeElements = async (
  * @param {Object} filterSettings
  */
 const filterKnowledgeElements = async (filterSettings) => {
+  Object.assign(filterSettings, {
+    projectKey: JSONConfig.projectKey,
+  });
   try {
-    Object.assign(filterSettings, {
-      projectKey: JSONConfig.projectKey,
-    });
-
     const results = await axios.post(
       `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/knowledgeElements.json`,
       filterSettings,
