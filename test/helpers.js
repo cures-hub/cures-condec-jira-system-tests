@@ -216,6 +216,27 @@ const getKnowledgeElements = async (
     throw new Error('Getting knowledge elements did not work');
   }
 };
+/**
+ * Get knowledge elements matching certain filter settings
+ *
+ * @param {Object} filterSettings
+ */
+const filterKnowledgeElements = async (filterSettings) => {
+  Object.assign(filterSettings, {
+    projectKey: JSONConfig.projectKey,
+  });
+  try {
+    const results = await axios.post(
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/knowledgeElements.json`,
+      filterSettings,
+      localCredentialsObject
+    );
+    return results.data;
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+};
 const getSpecificKnowledgeElement = async (id, documentationLocation) => {
   try {
     const result = await axios.get(
@@ -331,4 +352,5 @@ module.exports = {
   getSpecificKnowledgeElement,
   setSentenceIrrelevant,
   deleteDecisionKnowledgeElement,
+  filterKnowledgeElements,
 };
