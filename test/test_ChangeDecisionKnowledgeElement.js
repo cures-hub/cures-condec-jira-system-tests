@@ -262,44 +262,6 @@ describe('TCS: Test change decision knowledge element', () => {
   });
 
   /**
-   * TCS: Test change decision knowledge element should open a Jira issue when the documentation location of a decision knowledge element changes from Jira issue text to Jira issue (R5)
-   *
-   * Precondition: Decision knowledge element exists in the comment of a Jira issue
-   *
-   * Step 1: Update the documentation location of the element from Jira issue
-   *    text ('s') to Jira issue ('i')
-   *
-   * Step 2: Verify that there is a new Jira representing the converted decision
-   *    knowledge element
-   *
-   * Postcondition: New Jira issue exists and represents the converted decision
-   *    knowledge element. The comment containing the decision knowledge element
-   *    has not changed
-   *
-   */
-  // Seems like this rule isn't implemented yet...
-  xit('should open a Jira issue when the documentation location of a decision knowledge element changes from Jira issue text to Jira issue (R5)', async () => {
-    const issue = await createDecisionKnowledgeElement(
-      'Which CSS style should be used?',
-      'Issue',
-      'i'
-    );
-    const decision = await createDecisionKnowledgeElement(
-      'Use SCSS (sassy CSS)!',
-      'Decision',
-      's',
-      issue.id,
-      issue.documentationLocation
-    );
-    const updatePayload = Object.assign(decision, {
-      documentationLocation: 'i',
-    });
-    await updateDecisionKnowledgeElement(0, null, updatePayload);
-
-    // TODO: implement the rest
-  });
-
-  /**
    * TCS: Test change decision knowledge element should not allow a decision knowledge element with invalid id to be updated (E1)
    *
    * Precondition: none
