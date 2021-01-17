@@ -32,10 +32,7 @@ const base64LocalCredentials = Buffer.from(
  */
 const deleteProject = async (projectKeyOrId) => {
   await axios
-    .delete(
-      `${JSONConfig.fullUrl}/rest/api/2/project/${projectKeyOrId}`,
-      localCredentialsObject
-    )
+    .delete(`${JSONConfig.fullUrl}/rest/api/2/project/${projectKeyOrId}`, localCredentialsObject)
     .then((res) => assert(res.status === 204));
 };
 
@@ -43,10 +40,7 @@ const deleteProject = async (projectKeyOrId) => {
  * Get all configured issue types
  */
 const getIssueTypes = async () => {
-  const issueTypes = await axios.get(
-    `${JSONConfig.fullUrl}/rest/api/2/issuetype`,
-    localCredentialsObject
-  );
+  const issueTypes = await axios.get(`${JSONConfig.fullUrl}/rest/api/2/issuetype`, localCredentialsObject);
   return issueTypes.data;
 };
 /**
@@ -118,11 +112,7 @@ const deleteDecisionKnowledgeElement = async (id, documentationLocation) => {
  * @param  {?string} issueDescription - optional - if not specified, the issue description will be empty
  *
  */
-const createJiraIssue = async (
-  issueTypeName,
-  issueSummary,
-  issueDescription = ''
-) => {
+const createJiraIssue = async (issueTypeName, issueSummary, issueDescription = '') => {
   const createdIssue = await jira.addNewIssue({
     fields: {
       project: {
@@ -180,8 +170,7 @@ const setUpJira = async (useIssueStrategy = false) => {
       key: JSONConfig.projectKey,
       name: 'ConDec Test',
       projectTypeKey: 'business',
-      projectTemplateKey:
-        'com.atlassian.jira-core-project-templates:jira-core-project-management',
+      projectTemplateKey: 'com.atlassian.jira-core-project-templates:jira-core-project-management',
       description: 'A project for testing the ConDec Jira plugin',
       lead: 'admin',
     });
@@ -200,10 +189,7 @@ const setUpJira = async (useIssueStrategy = false) => {
  *
  * @param {string} searchTerm=''
  */
-const getKnowledgeElements = async (
-  searchTerm = '',
-  selectedElement = null
-) => {
+const getKnowledgeElements = async (searchTerm = '', selectedElement = null) => {
   try {
     const results = await axios.post(
       `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/knowledgeElements.json`,
@@ -311,11 +297,7 @@ const createDecisionKnowledgeElement = async (
  *
  * @returns {Promise<Object>}
  */
-const updateDecisionKnowledgeElement = async (
-  parentElementId,
-  parentElementLocation,
-  updatedElement
-) => {
+const updateDecisionKnowledgeElement = async (parentElementId, parentElementLocation, updatedElement) => {
   try {
     const res = await axios.post(
       `${JSONConfig.fullUrl}/rest/condec/latest/knowledge` +
@@ -333,7 +315,7 @@ const updateDecisionKnowledgeElement = async (
     );
     return res.data;
   } catch (err) {
-    console.error(err.message);
+    console.info(`[INFO] Updating decision knowledge failed with message: ${err.message}`);
     return err;
   }
 };
