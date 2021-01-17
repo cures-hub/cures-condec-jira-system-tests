@@ -65,19 +65,16 @@ describe('TCS: Test delete knowledge element', () => {
   /**
    * TCS: Test delete knowledge element should remove knowledge elements from issue description and comments from the database when a Jira issue is deleted (R2)
    *
-   * Precondition: A Jira issue exists with knowledge elements in its
-   * description and comments
-   *
-   * Step 1: Delete the Jira issue
-   *
-   * Step 2: Verify that the knowledge elements from the Jira issue are not in
-   * the ConDec database
-   *
-   * Postcondition: Knowledge elements from the Jira issue are not in the ConDec
-   * database
+   * System function: Delete knowledge elements
+   * Precondition system: A Jira issue exists with knowledge elements in its description and comments
+   * Precondition GUI: WS1.3 or WS1.4
+   * Test steps:
+      1. Delete the Jira issue
+   * Expected result on GUI: Knowledge from the issue is not visible anymore
+   * Expected exception: None
+   * Postcondition system: The issue is deleted as well as knowledge from its comments and description
    */
   it('should remove knowledge elements from issue description and comments from the database when a Jira issue is deleted (R2)', async () => {
-    // Precondition: A Jira issue exists with knowledge elements in its description and comments
     const issue = await createJiraIssue(
       'Task',
       'Develop strategy for maximizing joy',
@@ -85,11 +82,8 @@ describe('TCS: Test delete knowledge element', () => {
     );
     await createDecisionKnowledgeElement('Use a tricycle!', 'Decision', 's', issue.id, 'i');
 
-    // Step 1: Delete the Jira issue
     await jira.deleteIssue(issue.id);
 
-    // Step 2: Verify that the knowledge elements from the Jira issue are not in
-    // the ConDec database
     const knowledgeElements = await getKnowledgeElements();
     chai.expect(knowledgeElements).to.not.contain.something.that.has.property('summary', 'Use a bicycle!');
     chai
@@ -102,22 +96,20 @@ describe('TCS: Test delete knowledge element', () => {
   /**
    * TCS: Test delete knowledge element should delete the knowledge element representing a Jira issue from the graph when the Jira issue is deleted (R3)
    *
-   * Precondition: Jira issue exists
-   *
-   * Step 1: Delete the Jira issue
-   *
-   * Step 2: Verify that the Jira issue is no longer in the ConDec database
-   *
-   * Postcondition: The Jira issue is no longer in the ConDec database
+   * System function: Delete knowledge element
+   * Precondition system: Jira issue exists
+   * Precondition GUI: WS1.3 or WS1.4
+   * Test steps:
+      1. Delete the Jira issue
+   * Expected result on GUI: The issue is not visible in the knowledge graph
+   * Expected exception: None
+   * Postcondition system: The Jira issue is no longer stored as decision knowledge
    */
   it('should delete the knowledge element representing a Jira issue from the graph when the Jira issue is deleted (R3)', async () => {
-    // Precondition: Jira issue exists
     const issue = await createJiraIssue('Task', 'Develop strategy for fast and cost-effective pizza delivery');
-    // Step 1: Delete the Jira issue
     await jira.deleteIssue(issue.id);
 
     const knowledgeElements = await getKnowledgeElements();
-    // Step 2: Verify that the issue is no longer in the  ConDec database
     chai
       .expect(knowledgeElements)
       .to.not.contain.something.that.has.property(
@@ -129,16 +121,14 @@ describe('TCS: Test delete knowledge element', () => {
   /**
    * TCS: Test delete knowledge element should delete all decision knowledge from the database that was in the body of a Jira issue comment when the comment is deleted (R4)
    *
-   * Precondition: Jira issue exists with a comment containing decision knowledge
-   *
-   * Step 1: Delete the comment
-   *
-   * Step 2: Verify that the decision knowledge from the deleted comment does
-   *     not exist in the database
-   *
-   * Postcondition: decision knowledge from the deleted comment no longer exists
-   *     in the database
-   *
+   * System function: Delete knowledge element
+   * Precondition system: Jira issue exists with a comment containing decision knowledge
+   * Precondition GUI: WS1.3 or WS1.4
+   * Test steps:
+     1. Delete the comment
+   * Expected result on GUI: The decision knowledge from the comment is no longer visible in the graph
+   * Expected exception: None
+   * Postcondition system: The decision knowledge elements from the comment have been deleted
    */
   it('should delete all decision knowledge from the database that was in the body of a Jira issue comment when the comment is deleted (R4)', async () => {
     // Precondition: Jira issue exists with a comment containing decision knowledge
@@ -147,14 +137,10 @@ describe('TCS: Test delete knowledge element', () => {
       createdIssue.key,
       '{issue}Which language should we use to define tasks?{issue}'
     );
-    // Step 1: Delete the comment
     await axios.delete(
       `${JSONConfig.fullUrl}/rest/api/2/issue/${createdIssue.key}/comment/${addedComment.id}`,
       localCredentialsObject
     );
-
-    // Step 2: Verify that the decision knowledge from the deleted comment does not exist in
-    // the database
     const knowledgeElements = await getKnowledgeElements();
     chai
       .expect(knowledgeElements)
@@ -163,26 +149,23 @@ describe('TCS: Test delete knowledge element', () => {
 
   /**
    * TCS: Test delete knowledge element should delete a knowledge element from the database when it is removed from the description of a Jira issue (R5)
-   *
-   * Precondition: A Jira issue exists with decision knowledge in its description
-   *
-   * Step 1: Delete the decision knowledge element from the description of the Jira issue
-   *
-   * Step 2: Verify that the knowledge element no longer exists in the database
-   *
-   * Postcondition: The element is removed from the database
+   * 
+   * System function: Delete knowledge element
+   * Precondition system: A Jira issue exists with decision knowledge in its description
+   * Precondition GUI: WS1.3 or WS1.4
+   * Test steps:
+      1. Delete the decision knowledge element from the description of the Jira issue by editing the issue description
+   * Expected result on GUI: The decision knowledge element is no longer visible on the knowledge graph
+   * Expected exception: None
+   * Postcondition system: The element is no longer stored in the ConDec database
    */
 
   it('should delete a knowledge element from the database when it is removed from the description of a Jira issue (R5)', async () => {
-    // Precondition: a Jira issue exists with decision knowledge in its
-    // description or comment
     const issue = await createJiraIssue('Task', 'Buy mugs for serving coffee', '(!) How large to make the mugs?');
-    // Step 1: delete the decision knowledge element from the
-    // description/comment of the Jira issue
+
     await jira.updateIssue(issue.id, {
       update: { description: [{ set: 'foo' }] },
     });
-    // Step 2: verify that the knowledge element no longer exists in the database
     const knowledgeElements = await getKnowledgeElements();
     chai
       .expect(knowledgeElements)
@@ -194,13 +177,14 @@ describe('TCS: Test delete knowledge element', () => {
    *    the database and knowledge graph when deletion is triggered in a view on
    *    the knowledge graph (R6)
    *
-   * Precondition: A decision knowledge element exists
-   *
-   * Step 1: Delete decision knowledge element in a view on the knowledge graph (= call the deleteDecisionKnowledgeElement REST endpoint)
-   *
-   * Step 2: Verify that the element is no longer in the database
-   *
-   * Postcondition: The element is removed from the database
+   * System function: Delete knowledge element
+   * Precondition system: A decision knowledge element exists
+   * Precondition GUI: WS1.3 or WS1.4
+   * Test steps:
+      1. Delete decision knowledge element in a view on the knowledge graph (= call the deleteDecisionKnowledgeElement REST endpoint)
+   * Expected result on GUI: The knowledge element is no longer visible on the knowledge graph. A success message is shown.
+   * Expected exception: None
+   * Postcondition system: The deleted element no longer exists in the database
    */
   it('should delete a knowledge element from the database when deletion is triggered in a view on the knowledge graph (R6)', async () => {
     // Precondition: Decision knowledge element exists
@@ -212,12 +196,7 @@ describe('TCS: Test delete knowledge element', () => {
       jiraIssue.id,
       'i'
     );
-
-    // Step 1: delete decision knowledge element in a view on the knowledge
-    // graph (= call the deleteDecisionKnowledgeElement REST endpoint)
     await deleteDecisionKnowledgeElement(knowledgeElement.id, 's');
-
-    // Step 2: verify the element is no longer in the database
 
     const knowledgeElementsInDatabase = await getKnowledgeElements();
     chai.expect(knowledgeElementsInDatabase).to.not.contain.something.that.has.property('id', knowledgeElement.id);
@@ -226,15 +205,14 @@ describe('TCS: Test delete knowledge element', () => {
   /**
    * TCS: Test delete knowledge element should not remove knowledge element from comment when it is deleted via a view on the knowledge graph (R7)
    *
-   * Precondition: Jira issue exists with decision knowledge in its comment
-   *
-   * Step 1: Delete the decision knowledge element via a view on the knowledge
-   *    graph (= call the deleteDecisionKnowledgeElement REST endpoint)
-   *
-   * Step 2: Verify the element is not deleted from the issue comment
-   *
-   * Postcondition: Element is removed from knowledge graph and database.
-   *    Element still exists in its original documentation location
+   * System function: Delete knowledge element
+   * Precondition system: Jira issue exists with decision knowledge in its comment
+   * Precondition GUI: WS1.3 or WS1.4
+   * Test steps:
+      1. Delete the decision knowledge element via a view on the knowledge graph (= call the deleteDecisionKnowledgeElement REST endpoint)
+   * Expected result on GUI: The comment still contains the knowledge element. The element is no longer visible on the knowledge graph.
+   * Expected exception: None
+   * Postcondition system: Element is removed from knowledge graph and database. Element still exists in its original documentation location
    */
   it('should not remove knowledge element from comment when it is deleted via a view on the knowledge graph (R7)', async () => {
     // Precondition: Jira issue exists with decision knowledge in its description or comment
@@ -246,12 +224,8 @@ describe('TCS: Test delete knowledge element', () => {
       jiraIssue.id,
       'i'
     );
-    // Step 1: Delete the decision knowledge element via a view on the
-    // knowledge graph (= call the deleteDecisionKnowledgeElement REST
-    // endpoint)
     await deleteDecisionKnowledgeElement(knowledgeElement.id, 's');
 
-    // Step 2: Verify the element is not deleted from the issue comment
     const jiraIssueAfterKnowledgeDeletion = await jira.findIssue(jiraIssue.key);
     chai
       .expect(jiraIssueAfterKnowledgeDeletion.fields.comment.comments[0].body)
@@ -262,13 +236,14 @@ describe('TCS: Test delete knowledge element', () => {
    * TCS: Test delete knowledge element should not allow a nonexistent element
    * to be deleted (E1)
    *
-   * Precondition: none
-   *
-   * Step 1: Trigger deletion of element with id -1 (this id does not exist)
-   *
-   * Expected exception: 500 error with the message that deletion failed
-   *
-   * Postcondition: Nothing changed
+   * System function: Delete knowledge element
+   * Precondition system: none
+   * Precondition GUI: WS1.3 or WS1.4
+   * Test steps:
+      1. Trigger deletion of element with id -1 (this id does not exist)
+   * Expected result on GUI: -- (Triggering this exception is not possible on the GUI)
+   * Expected exception: A 500 error occurs with message: "Deletion of decision knowledge element failed"
+   * Postcondition system: Nothing changed
    */
   it('should not allow a nonexistent element to be deleted (E1)', async () => {
     const result = await deleteDecisionKnowledgeElement(-1, 's');
