@@ -62,7 +62,7 @@ describe('TCS: Test filter knowledge graph', () => {
    * Precondition GUI: W1.3, WS1.4 or WS1.5
    * Test steps:
       1. Apply a filter to filter for the issue by its type
-   * Step 2: Apply a filter to filter for the alternative by its type
+      2. Apply a filter to filter for the alternative by its type
    * Expected result on GUI: Filtering for the issue removes the alternative from the view of the knowledge graph, and vice versa
    * Expected exception: None
    * Postcondition system: Nothing changed
