@@ -98,7 +98,8 @@ If you want to write new automated system tests, you should read this section!
    *
    * Precondition: Jira issue exists
    *
-   * Step 1: Create a decision knowledge element with the documentation location
+   * Test steps:
+      1. Create a decision knowledge element with the documentation location
    *    'Jira issue text' (= documentation location 's' in the backend)
    *
    * Step 2: Verify that the Jira issue has a comment containing the added

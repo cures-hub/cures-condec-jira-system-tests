@@ -21,7 +21,8 @@ describe('TCS: Test create decision knowledge element', () => {
    * System function: Create decision knowledge element
    * Precondition system: Jira issue exists
    * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
-   * Step 1: Create a decision knowledge element with the documentation location 'Jira issue text' (=documentation location 's' in the backend)
+   * Test steps:
+      1. Create a decision knowledge element with the documentation location 'Jira issue text' (=documentation location 's' in the backend)
    * Expected result on GUI: The new knowledge element is visible in the knowledge graph. A comment has been added containing the knowledge element and its type is displayed with a corresponding icon
    * Expected exception: none
    * Postcondition system: The Jira issue has a comment containing the added decision knowledge element
@@ -43,7 +44,8 @@ describe('TCS: Test create decision knowledge element', () => {
    * System function: Create decision knowledge element
    * Precondition system: Decision knowledge element with type issue exists
    * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
-   * Step 1: Create a new alternative for the issue
+   * Test steps:
+      1. Create a new alternative for the issue
    * Expected result on GUI: The alternative is visible on the knowledge graph. A success message is shown.
    * Expected exception: None
    * Postcondition system: The new alternative has the status 'idea'
@@ -68,7 +70,8 @@ describe('TCS: Test create decision knowledge element', () => {
    * System function: Create decision knowledge element
    * Precondition system: Decision knowledge element with type issue exists
    * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
-   * Step 1: Create a new decision for the issue
+   * Test steps:
+      1. Create a new decision for the issue
    * Expected result on GUI: The decision is visible on the knowledge graph. A success message is shown.
    * Expected exception: None
    * Postcondition system: The new decision has the status 'decided'
@@ -89,7 +92,8 @@ describe('TCS: Test create decision knowledge element', () => {
    * System function: Create decision knowledge element
    * Precondition system: None
    * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
-   * Step 1: Create a new decision knowledge issue
+   * Test steps:
+      1. Create a new decision knowledge issue
    * Expected result on GUI: The issue is visible on the knowledge graph. A success message is shown.
    * Expected exception: None
    * Postcondition system: The new issue has the status "unresolved"

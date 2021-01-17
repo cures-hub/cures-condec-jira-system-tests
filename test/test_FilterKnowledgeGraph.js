@@ -24,7 +24,8 @@ describe('TCS: Test filter knowledge graph', () => {
    * System function: Filter knowledge graph
    * Precondition system: A Jira issue exists. Two decision knowledge elements are linked to the issue, each having a different summary
    * Precondition GUI: W1.3, WS1.4 or WS1.5
-   * Step 1: Apply a filter to filter for the first knowledge element by its summary
+   * Test steps:
+      1. Apply a filter to filter for the first knowledge element by its summary
    * Expected result on GUI: Only the element with the summary that was filtered is shown
    * Expected exception: None
    * Postcondition system: Nothing changed
@@ -59,7 +60,8 @@ describe('TCS: Test filter knowledge graph', () => {
    * System function: Filter knowledge graph
    * Precondition system: A Jira issue exists. An issue and an alternative are linked to the Jira issue.
    * Precondition GUI: W1.3, WS1.4 or WS1.5
-   * Step 1: Apply a filter to filter for the issue by its type
+   * Test steps:
+      1. Apply a filter to filter for the issue by its type
    * Step 2: Apply a filter to filter for the alternative by its type
    * Expected result on GUI: Filtering for the issue removes the alternative from the view of the knowledge graph, and vice versa
    * Expected exception: None
@@ -103,7 +105,8 @@ describe('TCS: Test filter knowledge graph', () => {
    *
    * Precondition system: A knowledge element exists, containing text not marked as decision knowledge
    * Precondition GUI: W1.3, WS1.4 or WS1.5
-   * Step 1: Apply the standard filter (no special settings) to the graph
+   * Test steps:
+      1. Apply the standard filter (no special settings) to the graph
    * Expected result on GUI: The irrelevant text is not shown on the knowledge graph
    * Expected exception: None
    * Postcondition system: Nothing changed

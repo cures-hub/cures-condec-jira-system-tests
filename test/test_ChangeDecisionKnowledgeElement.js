@@ -25,7 +25,8 @@ describe('TCS: Test change decision knowledge element', () => {
    * System function: Change decision knowledge element
    * Precondition system: A decision knowledge element with type "Alternative" exists
    * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
-   * Step 1: Update the alternative to have type "Decision"
+   * Test steps:
+      1. Update the alternative to have type "Decision"
    * Expected result on GUI: The updated element is shown with the decision icon and black text. A success message is shown.
    * Expected exception: None
    * Postcondition system: The alternative changed to a decision with status decided
@@ -65,7 +66,8 @@ describe('TCS: Test change decision knowledge element', () => {
    * System function: Change decision knowledge element
    * Precondition system: A decision knowledge element exists with type decision
    * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
-   * Step 1: Try to update the decision by changing its knowledge type to 'Alternative'
+   * Test steps:
+      1. Try to update the decision by changing its knowledge type to 'Alternative'
    * Expected result on GUI: The decision has gray text on the treant view and red text on the graph and treeviewer views. A success message is shown.
    * Expected exception: None
    * Postcondition system: The updated knowledge element still has type 'Decision' and its new status is 'rejected'
@@ -101,7 +103,8 @@ describe('TCS: Test change decision knowledge element', () => {
    * System function: Change decision knowledge element
    * Precondition system: Decision knowledge element of type issue exists with linked element of type decision
    * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
-   * Step 1: Update the decision's status to "challenged"
+   * Test steps:
+      1. Update the decision's status to "challenged"
    * Expected result on GUI: The issue and the decision both have gray text on the treant view, and red text on the graph and treeviewer views.
    * Expected exception: none
    * Postcondition system: The issue has status "unresolved"
@@ -133,7 +136,8 @@ describe('TCS: Test change decision knowledge element', () => {
    * System function: Change decision knowledge element
    * Precondition system: A Jira issue exists with a linked decision element and no other linked decision element
    * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
-   * Step 1: Update the decision's status to "rejected"
+   * Test steps:
+      1. Update the decision's status to "rejected"
    * Expected result on GUI: the decision is displayed with gray text
    * Expected exception: none
    * Postcondition system: The issue has status "unresolved"
@@ -164,7 +168,8 @@ describe('TCS: Test change decision knowledge element', () => {
    * System function: Change decision knowledge element
    * Precondition system: A decision knowledge issue exists
    * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
-   * Step 1: Add a decision element (this has the status "decided" by default)
+   * Test steps:
+      1. Add a decision element (this has the status "decided" by default)
    * Expected result on GUI: The added decision is visible
    * Expected exception: none
    * Postcondition system: The decision knowledge issue has the status "resolved"
@@ -193,7 +198,8 @@ describe('TCS: Test change decision knowledge element', () => {
    * System function: Change decision knowledge element
    * Precondition system: A decision knowledge issue exists with a linked alternative
    * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
-   * Step 1: Update the Alternative to have type decision with status "decided"
+   * Test steps:
+      1. Update the Alternative to have type decision with status "decided"
    * Expected result on GUI: The element that was previously an alternative is now a decision and has the corresponding icon and color
    * Expected exception: none
    * Postcondition system: The alternative has changed to a decision, and has status "decided". The issue has the status "resolved"
@@ -231,7 +237,8 @@ describe('TCS: Test change decision knowledge element', () => {
    * System function: Change decision knowledge element
    * Precondition system: none
    * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
-   * Step 1: Attempt to trigger update of an element with an invalid id
+   * Test steps:
+      1. Attempt to trigger update of an element with an invalid id
    * Expected result on GUI: nothing changed
    * Expected exception: 404 error
    * Postcondition system: Nothing changed
