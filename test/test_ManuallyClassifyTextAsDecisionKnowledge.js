@@ -209,28 +209,17 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
   });
 
   /**
-   * TCS: Test manually classify text as decision knowledge
+   * TCS: Test manually classify text as decision knowledge should remove macro tags from a manually annotated Jira comment when it is marked as irrelevant in a view on the knowledge graph (R5)
    *
    * System function: Manually classify text as decision knowledge
-   * Precondition system:
+   * Precondition system: Jira issue exists and has a comment containing a decision knowledge element
    * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
-   * Step 1:
-   * Expected result on GUI:
-   * Expected exception:
-   * Postcondition system:
-   *
-   * Precondition: Jira issue exists and has a comment containing a decision knowledge element
-   *
-   * Step 1: Set the sentence as irrelevant on a view on the knowledge graph
-   *     (=call the REST endpoint setSentenceIrrelevant)
-   *
-   * Step 2: Verify that the knowledge element in the comment no longer contains the macro tags
-   *
-   * Postcondition: Verify that the knowledge element in the comment no longer
-   *     contains the macro tags
+   * Step 1: Set the sentence as irrelevant on a view on the knowledge graph (=call the REST endpoint setSentenceIrrelevant)
+   * Expected result on GUI: The comment no longer has highlighted text. The element is removed from the knowledge graph. A success message is shown.
+   * Expected exception: None
+   * Postcondition system: The comment no longer contains the macro tags but still contains the original text. The knowledge element from the comment has type "Other".
    */
   it('should remove macro tags from a manually annotated Jira comment when it is marked as irrelevant in a view on the knowledge graph (R5)', async () => {
-    // Precondition: Jira issue exists and has a comment containing a decision knowledge element
     const jiraIssue = await createJiraIssue('Task', 'Implement dark mode');
     const decisionKnowledgeElement = await createDecisionKnowledgeElement(
       'Should the default text be green?',
@@ -239,25 +228,13 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
       jiraIssue.id,
       'i'
     );
-    // Step 1: Set the knowledge elelemnt as irrelevant on a view on the knowledge graph (=call the REST endpoint setSentenceIrrelevant)
     await setSentenceIrrelevant(decisionKnowledgeElement.id);
-    // Step 2: Verify that the knowledge element in the comment no longer
-    // contains the macro tags
+
     const decisionKnowledgeElementAfterUpdate = await getSpecificKnowledgeElement(decisionKnowledgeElement.id, 's');
     chai.expect(decisionKnowledgeElementAfterUpdate.type).to.eql('Other');
 
     const issueAfterUpdate = await jira.findIssue(jiraIssue.id);
     chai.expect(issueAfterUpdate.fields.comment.comments[0].body).to.not.contain('{issue}');
+    chai.expect(issueAfterUpdate.fields.comment.comments[0].body).to.contain('Should the default text be green?');
   });
 });
-/**
- *
- * System function: Manually classify text as decision knowledge
- * Precondition system:
- * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
- * Step 1:
- * Expected result on GUI:
- * Expected exception:
- * Postcondition system:
- *
- */
