@@ -106,11 +106,6 @@ If you want to write new automated system tests, you should read this section!
    * Postcondition system: The new decision has the status 'decided'
    */
   ```
-
-  Note: We check the postcondition here as a test step, to make sure the test fails if the postcondition is not fulfilled.
-
-- In the test implementation, the precondition and test steps should be marked with comments
-
 ### Technology stack
 
 - [Mocha](https://mochajs.org/) - test runner
