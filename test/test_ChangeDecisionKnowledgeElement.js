@@ -220,7 +220,7 @@ describe('TCS: Test change decision knowledge element', () => {
     const alternativeAfterUpdate = await getSpecificKnowledgeElement(alternative.id, 'i');
     const issueAfterUpdate = await getSpecificKnowledgeElement(issue.id, 'i');
 
-    chai.expect(alternativeAfterUpdate.status).to.eql('decided'); // this currently fails, the decision has the status 'idea' --> see Bug CONDEC-
+    chai.expect(alternativeAfterUpdate.status).to.eql('decided');
     chai.expect(alternativeAfterUpdate.type).to.eql('Decision');
     chai.expect(issueAfterUpdate.status).to.eql('resolved');
   });
