@@ -27,7 +27,7 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
   /**
    * TCS: Test manually classify text as decision knowledge should classify elements in specific macro tags as decision knowledge (R1)
    *
-   * System function: Manually classify text in the description or comments of a Jira issue decision knowledge
+   * System function: Manually classify text in the description or comments of a Jira issue as decision knowledge
    * Precondition system: Jira issue exists
    * Precondition GUI: WS1.4.1: Jira issue description or comment, part of Jira issue text (sentence) marked with tags or an icon
    * Step 1: Add a comment to the jira issue containing the macro tags: {issue}, {decision}, {alternative}, {pro}, {con} (see below for example)
@@ -86,12 +86,12 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
   /**
    * TCS: Test manually classify text as decision knowledge should classify elements marked with specific Jira icons as decision knowledge (R1)
    *
-   * System function: Manually classify text in the description or comments of a Jira issue decision knowledge
+   * System function: Manually classify text in the description or comments of a Jira issue as decision knowledge
    * Precondition system: Jira issue exists
    * Precondition GUI: WS1.4.1: Jira issue description or comment, part of Jira issue text (sentence) marked with tags or an icon
    * Step 1: Add a Jira issue comment with one knowledge element tagged for each available icon
    * The icons are:
-        (!) - issue
+        (!) - issu
         (/) - decision
         (on) - alternative
         (+) - pro
@@ -153,7 +153,7 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
   /**
    * TCS: Test manually classify text as decision knowledge should replace Jira icons with macro tags in Jira issue comments (R2)
    *
-   * System function: Manually classify text in the description or comments of a Jira issue decision knowledge
+   * System function: Manually classify text in the description or comments of a Jira issue as decision knowledge
    * Precondition system: Jira issue exists
    * Precondition GUI: WS1.4.1: Jira issue description or comment, part of Jira issue text (sentence) marked with tags or an icon
    * Step 1: Add a comment to the Jira issue containing decision knowledge marked by Jira icons
@@ -182,7 +182,8 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
 
   /**
    * TCS: Test manually classify text as decision knowledge should set knowledge type of parts of a sentence not annotated as decision knowledge to "other" and property "relevant" to false (R4)   *
-   * System function: Manually classify text in the description or comments of a Jira issue decision knowledge
+   *
+   * System function: Manually classify text in the description or comments of a Jira issue as decision knowledge
    * Precondition system: Jira issue exists
    * Precondition GUI: WS1.4.1: Jira issue description or comment, part of Jira issue text (sentence) marked with tags or an icon
    * Step 1: Add a comment to the Jira issue containing some decision knowledge elements and some text not marked as decision knowledge
@@ -211,7 +212,7 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
   /**
    * TCS: Test manually classify text as decision knowledge should remove macro tags from a manually annotated Jira comment when it is marked as irrelevant in a view on the knowledge graph (R5)
    *
-   * System function: Manually classify text in the description or comments of a Jira issue decision knowledge
+   * System function: Manually classify text in the description or comments of a Jira issue as decision knowledge
    * Precondition system: Jira issue exists and has a comment containing a decision knowledge element
    * Precondition GUI: WS1.4.1: Jira issue description or comment, part of Jira issue text (sentence) marked with tags or an icon
    * Step 1: Set the sentence as irrelevant on a view on the knowledge graph (=call the REST endpoint setSentenceIrrelevant)
