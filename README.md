@@ -94,19 +94,16 @@ If you want to write new automated system tests, you should read this section!
 
   ```javascript
   /**
-   * TCS: Test create decision knowledge should create a new comment for an existing Jira issue when the documentation location "Jira issue text" is selected (R2)
+   * TCS: Test create decision knowledge element should give a new decision the status "decided" (R4)
    *
-   * Precondition: Jira issue exists
-   *
+   * System function: Create decision knowledge element
+   * Precondition system: Decision knowledge element with type issue exists
+   * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
    * Test steps:
-   *   1. Create a decision knowledge element with the documentation location
-   *    'Jira issue text' (= documentation location 's' in the backend)
-   *
-   *   2.Verify that the Jira issue has a comment containing the added
-   *     decision knowledge element
-   *
-   * Postcondition: The Jira issue has a comment containing the added decision
-   *     knowledge element
+      1. Create a new decision for the issue
+   * Expected result on GUI: The decision is visible on the knowledge graph. A success message is shown.
+   * Expected exception: None
+   * Postcondition system: The new decision has the status 'decided'
    */
   ```
 
