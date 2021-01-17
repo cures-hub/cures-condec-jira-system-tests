@@ -29,7 +29,7 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
    *
    * System function: Manually classify text in the description or comments of a Jira issue decision knowledge
    * Precondition system: Jira issue exists
-   * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
+   * Precondition GUI: WS1.4.1: Jira issue description or comment, part of Jira issue text (sentence) marked with tags or an icon
    * Step 1: Add a comment to the jira issue containing the macro tags: {issue}, {decision}, {alternative}, {pro}, {con} (see below for example)
    * Expected result on GUI: The comment is displayed with only text between macro tags are present. Each macro is shown with its corresponding icon and background color.
    * Expected exception: none
@@ -88,7 +88,7 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
    *
    * System function: Manually classify text in the description or comments of a Jira issue decision knowledge
    * Precondition system: Jira issue exists
-   * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
+   * Precondition GUI: WS1.4.1: Jira issue description or comment, part of Jira issue text (sentence) marked with tags or an icon
    * Step 1: Add a Jira issue comment with one knowledge element tagged for each available icon
    * The icons are:
         (!) - issue
@@ -155,7 +155,7 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
    *
    * System function: Manually classify text in the description or comments of a Jira issue decision knowledge
    * Precondition system: Jira issue exists
-   * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
+   * Precondition GUI: WS1.4.1: Jira issue description or comment, part of Jira issue text (sentence) marked with tags or an icon
    * Step 1: Add a comment to the Jira issue containing decision knowledge marked by Jira icons
    * Expected result on GUI: The manually classified decision knowledge is displayed with the graphical equivalents of each icon, and each has a corresponding background color.
    * Expected exception: none
@@ -184,7 +184,7 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
    * TCS: Test manually classify text as decision knowledge should set knowledge type of parts of a sentence not annotated as decision knowledge to "other" and property "relevant" to false (R4)   *
    * System function: Manually classify text in the description or comments of a Jira issue decision knowledge
    * Precondition system: Jira issue exists
-   * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
+   * Precondition GUI: WS1.4.1: Jira issue description or comment, part of Jira issue text (sentence) marked with tags or an icon
    * Step 1: Add a comment to the Jira issue containing some decision knowledge elements and some text not marked as decision knowledge
    * Expected result on GUI: The knowledge element is shown on the knowledge graph. The untagged part of the comment is not shown.
    * Expected exception: none
@@ -213,7 +213,7 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
    *
    * System function: Manually classify text in the description or comments of a Jira issue decision knowledge
    * Precondition system: Jira issue exists and has a comment containing a decision knowledge element
-   * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
+   * Precondition GUI: WS1.4.1: Jira issue description or comment, part of Jira issue text (sentence) marked with tags or an icon
    * Step 1: Set the sentence as irrelevant on a view on the knowledge graph (=call the REST endpoint setSentenceIrrelevant)
    * Expected result on GUI: The comment no longer has highlighted text. The element is removed from the knowledge graph. A success message is shown.
    * Expected exception: None
