@@ -87,10 +87,10 @@ If you want to write new automated system tests, you should read this section!
   
 - inside the describe block, there should be an `it` block for each test case. The `it` block should be named using should/when syntax describing the rule or exception you are testing. The rule or exception number should be added to the end of the name.
 
-  Example: 
+  Example:
   `it('should create a new comment for an existing Jira issue when the documentation location "Jira issue text" is selected (R2)'`
 
-- Each test should have a multiline comment preceding it indicating its specification. It should include preconditions, test steps, and postconditions, and should look something like this: 
+- Each test should have a multiline comment preceding it indicating its specification. It should include preconditions, test steps, and postconditions, and should look something like this:
 
   ```javascript
   /**
@@ -99,10 +99,10 @@ If you want to write new automated system tests, you should read this section!
    * Precondition: Jira issue exists
    *
    * Test steps:
-      1. Create a decision knowledge element with the documentation location
+   *   1. Create a decision knowledge element with the documentation location
    *    'Jira issue text' (= documentation location 's' in the backend)
    *
-   * Step 2: Verify that the Jira issue has a comment containing the added
+   *   2.Verify that the Jira issue has a comment containing the added
    *     decision knowledge element
    *
    * Postcondition: The Jira issue has a comment containing the added decision

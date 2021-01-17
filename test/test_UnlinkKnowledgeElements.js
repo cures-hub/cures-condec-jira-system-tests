@@ -9,7 +9,6 @@ const {
   base64LocalCredentials,
   getKnowledgeElements,
   createDecisionKnowledgeElement,
-  filterKnowledgeElements,
 } = require('./helpers.js');
 
 /**
@@ -156,8 +155,7 @@ describe('TCS: Test unlink knowledge elements', () => {
     };
     const deleteLinkRequest = {
       method: 'delete',
-      url:
-        `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink.json` + `?projectKey=${JSONConfig.projectKey}`,
+      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink.json?projectKey=${JSONConfig.projectKey}`,
       headers: {
         Authorization: `Basic ${base64LocalCredentials}`,
         'Content-Type': 'application/json',
