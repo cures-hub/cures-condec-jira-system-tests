@@ -7,6 +7,8 @@ const {
   createDecisionKnowledgeElement,
 } = require('./helpers');
 
+const { defaultIssueType } = require('../config.json');
+
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
 
@@ -34,7 +36,7 @@ describe('TCS: Test filter knowledge graph', () => {
     // Precondition: A Jira issue exists. Two decision knowledge elements are linked to the issue,
     // each having a different summary
 
-    const jiraTask = await createJiraIssue('Task', 'Create a contact form');
+    const jiraTask = await createJiraIssue(defaultIssueType, 'Create a contact form');
 
     const issue = await createDecisionKnowledgeElement(
       'How should the phone number be stored?',
@@ -68,7 +70,7 @@ describe('TCS: Test filter knowledge graph', () => {
    * Postcondition system: Nothing changed
    */
   it('should filter by knowledge type of knowledge elements (R1)', async () => {
-    const jiraTask = await createJiraIssue('Task', 'Create an about page');
+    const jiraTask = await createJiraIssue(defaultIssueType, 'Create an about page');
 
     const issue = await createDecisionKnowledgeElement(
       'Whose picture should be put on the  about page?',
@@ -113,7 +115,7 @@ describe('TCS: Test filter knowledge graph', () => {
    */
   it('should not show irrelevant text when using the default settings (R1)', async () => {
     // Precondition: A knowledge element exists, containing text not marked as decision knowledge
-    const jiraTask = await createJiraIssue('Task', 'Create order form');
+    const jiraTask = await createJiraIssue(defaultIssueType, 'Create order form');
 
     await jira.addComment(
       jiraTask.id,
