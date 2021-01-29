@@ -107,7 +107,9 @@ const deleteDecisionKnowledgeElement = async (id, documentationLocation) => {
  * Creates a Jira issue with the project, user, and Jira instance configured in the `config.json`.
  * The user is used as the reporter of the issue.
  *
- * @param  {string} issueTypeName - must be a valid Jira issue type for the configured instance
+ * @param  {string} issueTypeName - can be overridden by the parameter
+ * "defaultIssueType" in the config.json. This is useful for users using Jira
+ * with a language other than English configured.
  * @param  {string} issueSummary
  * @param  {?string} issueDescription - optional - if not specified, the issue description will be empty
  *
@@ -121,7 +123,9 @@ const createJiraIssue = async (issueTypeName, issueSummary, issueDescription = '
       summary: issueSummary,
       description: issueDescription,
       issuetype: {
-        name: issueTypeName,
+        // Override the hardcoded issue type name in order to work on systems
+        // with different languages
+        name: issueTypeName === JSONConfig.defaultIssueType ? issueTypeName : JSONConfig.defaultIssueType,
       },
       reporter: {
         name: JSONConfig.localJiraUsername,
