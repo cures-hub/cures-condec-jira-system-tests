@@ -123,9 +123,7 @@ const createJiraIssue = async (issueTypeName, issueSummary, issueDescription = '
       summary: issueSummary,
       description: issueDescription,
       issuetype: {
-        // Override the hardcoded issue type name in order to work on systems
-        // with different languages
-        name: issueTypeName === JSONConfig.defaultIssueType ? issueTypeName : JSONConfig.defaultIssueType,
+        name: issueTypeName,
       },
       reporter: {
         name: JSONConfig.localJiraUsername,
