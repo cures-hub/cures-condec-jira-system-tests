@@ -2,6 +2,8 @@ const chai = require('chai');
 
 const { setUpJira, createJiraIssue, jira, createDecisionKnowledgeElement } = require('./helpers.js');
 
+const { defaultIssueType } = require('../config.json');
+
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
 
@@ -28,7 +30,7 @@ describe('TCS: Test create decision knowledge element', () => {
    * Postcondition system: The Jira issue has a comment containing the added decision knowledge element
    */
   it('should create a new comment for an existing Jira issue when the documentation location "Jira issue text" is selected (R2)', async () => {
-    const task = await createJiraIssue('Task', 'Dummy task for R2');
+    const task = await createJiraIssue(defaultIssueType, 'Dummy task for R2');
 
     await createDecisionKnowledgeElement('Dummy decision knowledge issue for R2', 'Issue', 's', task.id, 'i');
 

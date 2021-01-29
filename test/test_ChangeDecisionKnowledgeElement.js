@@ -9,6 +9,8 @@ const {
   getSpecificKnowledgeElement,
 } = require('./helpers.js');
 
+const { defaultIssueType } = require('../config.json');
+
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
 /**
@@ -32,7 +34,7 @@ describe('TCS: Test change decision knowledge element', () => {
    * Postcondition system: The alternative changed to a decision with status decided
    */
   it('should change the status to "decided" when an alternative is changed to a decision (R1)', async () => {
-    const jiraTask = await createJiraIssue('Task', 'Enable persistence of user data');
+    const jiraTask = await createJiraIssue(defaultIssueType, 'Enable persistence of user data');
 
     const issue = await createDecisionKnowledgeElement(
       'Which database should be used to store user data?',

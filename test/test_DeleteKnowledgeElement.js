@@ -11,6 +11,7 @@ const {
   deleteDecisionKnowledgeElement,
 } = require('./helpers.js');
 
+const { defaultIssueType } = require('../config.json');
 // chai-like provides the 'like' function, which searches for an object's subset
 chai.use(require('chai-like'));
 // chai-things allows us to use 'something' syntax to access array elements without knowing their indices
@@ -76,7 +77,7 @@ describe('TCS: Test delete knowledge element', () => {
    */
   it('should remove knowledge elements from issue description and comments from the database when a Jira issue is deleted (R2)', async () => {
     const issue = await createJiraIssue(
-      'Task',
+      defaultIssueType,
       'Develop strategy for maximizing joy',
       '{issue}Which method of transportation to use?{issue}\n{alternative}Use a bicycle!{alternative}'
     );
@@ -106,7 +107,10 @@ describe('TCS: Test delete knowledge element', () => {
    * Postcondition system: The Jira issue is no longer stored as decision knowledge
    */
   it('should delete the knowledge element representing a Jira issue from the graph when the Jira issue is deleted (R3)', async () => {
-    const issue = await createJiraIssue('Task', 'Develop strategy for fast and cost-effective pizza delivery');
+    const issue = await createJiraIssue(
+      defaultIssueType,
+      'Develop strategy for fast and cost-effective pizza delivery'
+    );
     await jira.deleteIssue(issue.id);
 
     const knowledgeElements = await getKnowledgeElements();
@@ -132,7 +136,7 @@ describe('TCS: Test delete knowledge element', () => {
    */
   it('should delete all decision knowledge from the database that was in the body of a Jira issue comment when the comment is deleted (R4)', async () => {
     // Precondition: Jira issue exists with a comment containing decision knowledge
-    const createdIssue = await createJiraIssue('Task', 'Plan the tasks from June until October');
+    const createdIssue = await createJiraIssue(defaultIssueType, 'Plan the tasks from June until October');
     const addedComment = await jira.addComment(
       createdIssue.key,
       '{issue}Which language should we use to define tasks?{issue}'
@@ -161,7 +165,11 @@ describe('TCS: Test delete knowledge element', () => {
    */
 
   it('should delete a knowledge element from the database when it is removed from the description of a Jira issue (R5)', async () => {
-    const issue = await createJiraIssue('Task', 'Buy mugs for serving coffee', '(!) How large to make the mugs?');
+    const issue = await createJiraIssue(
+      defaultIssueType,
+      'Buy mugs for serving coffee',
+      '(!) How large to make the mugs?'
+    );
 
     await jira.updateIssue(issue.id, {
       update: { description: [{ set: 'foo' }] },
@@ -188,7 +196,7 @@ describe('TCS: Test delete knowledge element', () => {
    */
   it('should delete a knowledge element from the database when deletion is triggered in a view on the knowledge graph (R6)', async () => {
     // Precondition: Decision knowledge element exists
-    const jiraIssue = await createJiraIssue('Task', 'Order coffee from suppliers');
+    const jiraIssue = await createJiraIssue(defaultIssueType, 'Order coffee from suppliers');
     const knowledgeElement = await createDecisionKnowledgeElement(
       'Which suppliers should be contacted?',
       'Issue',
@@ -216,7 +224,7 @@ describe('TCS: Test delete knowledge element', () => {
    */
   it('should not remove knowledge element from comment when it is deleted via a view on the knowledge graph (R7)', async () => {
     // Precondition: Jira issue exists with decision knowledge in its description or comment
-    const jiraIssue = await createJiraIssue('Task', 'Set up eBay storefront for the Moo company');
+    const jiraIssue = await createJiraIssue(defaultIssueType, 'Set up eBay storefront for the Moo company');
     const knowledgeElement = await createDecisionKnowledgeElement(
       "Accept only currencies we don't have to pay fees for!",
       'Issue',

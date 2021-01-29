@@ -11,6 +11,8 @@ const {
   filterKnowledgeElements,
 } = require('./helpers.js');
 
+const { defaultIssueType } = require('../config.json');
+
 chai.use(require('chai-like'));
 chai.use(require('chai-things'));
 /**
@@ -46,7 +48,7 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
       - {con} Reduces usability. {con}
      */
 
-    const jiraIssue = await createJiraIssue('Task', 'Create a blog page for the Moo company');
+    const jiraIssue = await createJiraIssue(defaultIssueType, 'Create a blog page for the Moo company');
     await jira.addComment(
       jiraIssue.id,
       '{issue}Which site generator should be used to make the blog?{issue}\n' +
@@ -114,7 +116,7 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
     (-) - con
      */
 
-    const jiraIssue = await createJiraIssue('Task', 'Decide on the domain name for the blog');
+    const jiraIssue = await createJiraIssue(defaultIssueType, 'Decide on the domain name for the blog');
     await jira.addComment(
       jiraIssue.id,
       '(!) Which domain registrar should be used?\n' +
@@ -166,7 +168,7 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
    *
    */
   it('should replace Jira icons with macro tags in Jira issue comments (R2)', async () => {
-    const issue = await createJiraIssue('Task', 'Enable website navigation');
+    const issue = await createJiraIssue(defaultIssueType, 'Enable website navigation');
 
     await jira.addComment(
       issue.id,
@@ -197,7 +199,7 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
    *
    */
   it('should set knowledge type of parts of a sentence not annotated as decision knowledge to "other" and property "relevant" to false (R4)', async () => {
-    const issue = await createJiraIssue('Task', 'Enhance user experience');
+    const issue = await createJiraIssue(defaultIssueType, 'Enhance user experience');
     await jira.addComment(
       issue.id,
       "I don't think we should use cookies to track our users.\n{issue}How can we enhance user experience without compromising privacy?{issue}"
@@ -226,7 +228,7 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
    * Postcondition system: The comment no longer contains the macro tags but still contains the original text. The knowledge element from the comment has type "Other".
    */
   it('should remove macro tags from a manually annotated Jira comment when it is marked as irrelevant in a view on the knowledge graph (R5)', async () => {
-    const jiraIssue = await createJiraIssue('Task', 'Implement dark mode');
+    const jiraIssue = await createJiraIssue(defaultIssueType, 'Implement dark mode');
     const decisionKnowledgeElement = await createDecisionKnowledgeElement(
       'Should the default text be green?',
       'Issue',

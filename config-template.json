@@ -4,5 +4,6 @@
   "fullUrl": "http://localhost:2990/jira",
   "localJiraUsername": "admin",
   "localJiraPassword": "admin",
-  "projectKey": "CDTEST"
+  "projectKey": "CDTEST",
+  "defaultIssueType": "Task"
 }
