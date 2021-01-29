@@ -16,7 +16,13 @@ npm install
 
 ### Adding your local configuration to the repo
 
-You will need to copy the file `config-template.json` and name the copy `config.json`. In `config.json` you can change the settings to use a specific URL for Jira or a specific user.
+You will need to copy the file `config-template.json` and name the copy
+`config.json`. In `config.json` you can change the settings to use a specific
+URL for Jira or a specific user. If you are using Jira issue types with names in
+a language other than English, you can set the property "defaultIssueType" to an
+issue type name existing on your system. For German, a good value for this
+property is "Aufgabe", which corresponds to the type "Task", which is the
+standard task type for the default issue type scheme.
 **Do not push the `config.json` file!** It contains data local to your computer, which could be sensitive!
 
 ## Running the tests
@@ -25,7 +31,6 @@ Checklist:
 
 - [ ] (optional) run `atlas-clean` to clean the Jira database
 - [ ] Run Jira using `atlas-run`
-- [ ] Disable and then enable the ConDec plugin
 
 You are now ready to run the tests!
 
