@@ -1,6 +1,7 @@
 # ConDec System Tests
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e2ed5ab4866a41e4b4a21e132e84152e)](https://app.codacy.com/gh/cures-hub/cures-condec-jira-system-tests?utm_source=github.com&utm_medium=referral&utm_content=cures-hub/cures-condec-jira-system-tests&utm_campaign=Badge_Grade_Settings)
+[![GitHub contributors](https://img.shields.io/github/contributors/cures-hub/cures-condec-jira-system-tests.svg)](https://github.com/cures-hub/cures-condec-jira-system-tests/graphs/contributors)
 
 This repo contains system tests for the ConDec Jira plugin. The tests run by sending HTTP requests to a Jira instance running the ConDec plugin. The tests aim to test the most important functionalities of the ConDec plugin.
 
