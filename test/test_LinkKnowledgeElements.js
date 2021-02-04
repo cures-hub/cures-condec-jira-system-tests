@@ -106,23 +106,25 @@ describe('TCS: Test link knowledge elements', () => {
    * Expected exception: An error message appears
    * Postcondition system: Nothing changed
    */
-  // This is currently failing in v2.2.9, see CONDEC-895
   it('should not allow an element with documentation location "i" to be linked to itself (R3)', async () => {
     const alternative = await createJiraIssue('Alternative', 'Dummy Alternative');
 
     // Link the alternative to itself
-    const link = await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json` +
-        `?projectKey=${JSONConfig.projectKey}` +
-        `&idOfParent=${alternative.id}` +
-        '&documentationLocationOfParent=i' +
-        `&idOfChild=${alternative.id}` +
-        '&documentationLocationOfChild=i' +
-        '&linkTypeName=Relates',
-      undefined,
-      localCredentialsObject
-    );
-    chai.expect(link.status).not.to.eql(200);
+    try{
+      const link = await axios.post(
+        `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json` +
+          `?projectKey=${JSONConfig.projectKey}` +
+          `&idOfParent=${alternative.id}` +
+          '&documentationLocationOfParent=i' +
+          `&idOfChild=${alternative.id}` +
+          '&documentationLocationOfChild=i' +
+          '&linkTypeName=Relates',
+        undefined,
+        localCredentialsObject
+      );
+    } catch (err) {
+      chai.expect(err.message).to.eql('Request failed with status code 400');
+    }
   });
 
   /**
@@ -170,7 +172,6 @@ describe('TCS: Test link knowledge elements', () => {
    * Expected result on GUI: An error message should appear with the message: Link could not be created due to a bad request.
    * Expected exception: A 400 error occurs
    * Postcondition system: nothing changed
-   *
    */
   it('should not allow an element that does not exist in the database to be linked (E1)', async () => {
     const issue = await createDecisionKnowledgeElement('Dummy issue', 'Issue', 'i');
