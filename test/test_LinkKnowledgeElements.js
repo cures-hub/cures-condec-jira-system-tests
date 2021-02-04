@@ -111,7 +111,7 @@ describe('TCS: Test link knowledge elements', () => {
 
     // Link the alternative to itself
     try{
-      const link = await axios.post(
+      await axios.post(
         `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json` +
           `?projectKey=${JSONConfig.projectKey}` +
           `&idOfParent=${alternative.id}` +
