@@ -22,10 +22,10 @@ describe('TCS: Test change decision knowledge element', () => {
   });
 
   /**
-   * TCS: Test change decision knowledge element should change the status to "decided" when an alternative is changed to a decision (R1)
+   * TCS: Test change decision knowledge element should change the status to "decided" when an alternative is changed to a decision (R1, documentation location Jira issue text)
    *
    * System function: Change decision knowledge element
-   * Precondition system: A decision knowledge element with type "Alternative" exists
+   * Precondition system: A decision knowledge element with type "Alternative" exists, it is documented in the description or a comment of a Jira issue
    * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
    * Test steps:
       1. Update the alternative to have type "Decision"
@@ -33,7 +33,7 @@ describe('TCS: Test change decision knowledge element', () => {
    * Expected exception: None
    * Postcondition system: The alternative changed to a decision with status decided
    */
-  it('should change the status to "decided" when an alternative is changed to a decision (R1)', async () => {
+  it('should change the status to "decided" when an alternative is changed to a decision (R1, documentation location Jira issue text)', async () => {
     const jiraTask = await createJiraIssue(defaultIssueType, 'Enable persistence of user data');
 
     const issue = await createDecisionKnowledgeElement(
@@ -63,6 +63,37 @@ describe('TCS: Test change decision knowledge element', () => {
   });
 
   /**
+   * TCS: Test change decision knowledge element should change the status to "decided" when an alternative is changed to a decision (R1, documentation location Jira issue)
+   *
+   * System function: Change decision knowledge element
+   * Precondition system: A decision knowledge element with type "Alternative" exists, it is documented as an entire Jira issue
+   * Precondition GUI: WS1.3 (Decision knowledge view) or WS1.4 (Jira issue view)
+   * Test steps:
+      1. Update the alternative to have type "Decision"
+   * Expected result on GUI: The updated element is shown with the decision icon and black text. A success message is shown.
+   * Expected exception: None
+   * Postcondition system: The alternative changed to a decision with status decided
+   */
+  // R1 is currently not fullfilled for decision knowledge elements documented as entire Jira issues because workflow transition is hard to implement. (see CONDEC-169)
+  // this test case does not exist in Jira yet
+  xit('should change the status to "decided" when an alternative is changed to a decision (R1, documentation location Jira issue)', async () => {
+    const alternative = await createDecisionKnowledgeElement(
+      'A password should have at least 8 characters!',
+      'Alternative',
+      'i'
+    );
+    const updatePayload = Object.assign(alternative, {
+      type: 'Decision',
+      status: 'decided',
+    });
+    await updateDecisionKnowledgeElement(0, null, updatePayload);
+    const alternativeAfterUpdate = await getSpecificKnowledgeElement(alternative.id, 'i');
+    
+    chai.expect(alternativeAfterUpdate.type).to.eql('Decision');    
+    chai.expect(alternativeAfterUpdate.status).to.eql('decided');
+  });
+
+  /**
    * TCS: Test change decision knowledge element should change the decision's status to 'rejected' when a user tries to change it to an alternative
    *
    * System function: Change decision knowledge element
@@ -73,8 +104,6 @@ describe('TCS: Test change decision knowledge element', () => {
    * Expected result on GUI: The decision has gray text on the treant view and red text on the graph and treeviewer views. A success message is shown.
    * Expected exception: None
    * Postcondition system: The updated knowledge element still has type 'Decision' and its new status is 'rejected'
-   *
-   *
    */
   it('should change the decision\'s status to "rejected" when a user tries to change it to an alternative (R2)', async () => {
     // Precondition: A decision knowledge element exists with type 'Decision'
@@ -206,7 +235,6 @@ describe('TCS: Test change decision knowledge element', () => {
    * Expected exception: none
    * Postcondition system: The alternative has changed to a decision, and has status "decided". The issue has the status "resolved"
    */
-  // Failing on ConDec v2.2.9 -> see CONDEC-892
   it('should change the status of an issue to "resolved" when a linked alternative is changed to a decision with the status "decided" (R4)', async () => {
     const issue = await createDecisionKnowledgeElement(
       'Which standards should be enforced for password creation?',
@@ -216,7 +244,7 @@ describe('TCS: Test change decision knowledge element', () => {
     const alternative = await createDecisionKnowledgeElement(
       'A password should have at least 8 characters!',
       'Alternative',
-      'i',
+      's',
       issue.id,
       'i'
     );
@@ -225,7 +253,7 @@ describe('TCS: Test change decision knowledge element', () => {
       status: 'decided',
     });
     await updateDecisionKnowledgeElement(0, null, updatePayload);
-    const alternativeAfterUpdate = await getSpecificKnowledgeElement(alternative.id, 'i');
+    const alternativeAfterUpdate = await getSpecificKnowledgeElement(alternative.id, 's');
     const issueAfterUpdate = await getSpecificKnowledgeElement(issue.id, 'i');
 
     chai.expect(alternativeAfterUpdate.status).to.eql('decided');

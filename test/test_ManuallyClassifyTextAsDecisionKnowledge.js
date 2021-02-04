@@ -104,8 +104,6 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
    * Expected exception: none
    * Postcondition system: Each tagged decision knowledge element is stored as an element with the corresponding type in the ConDec database. The summary of each element is its text excluding the icon.
    */
-
-  // Currently failing on ConDec v2.2.9
   it('should classify elements marked with specific Jira icons as decision knowledge (R1)', async () => {
     /*
     The icons are:
@@ -196,7 +194,6 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
    * Expected result on GUI: The knowledge element is shown on the knowledge graph. The untagged part of the comment is not shown.
    * Expected exception: none
    * Postcondition system: The untagged text is stored with the property "relevant" set to false, and knowledge type "Other"
-   *
    */
   it('should set knowledge type of parts of a sentence not annotated as decision knowledge to "other" and property "relevant" to false (R4)', async () => {
     const issue = await createJiraIssue(defaultIssueType, 'Enhance user experience');
