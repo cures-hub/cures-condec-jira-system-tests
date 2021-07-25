@@ -11,6 +11,8 @@ const {
   createDecisionKnowledgeElement,
 } = require('./helpers.js');
 
+const { defaultIssueType } = require('../config.json');
+
 /**
  * CONDEC-172: Unlink knowledge elements
  */
@@ -91,24 +93,28 @@ describe('TCS: Test unlink knowledge elements', () => {
    * Postcondition system: The issue's status is "unresolved"
    */
   it('should set the status of an issue to "unresolved" when it is unlinked from a "decided" decision and has no other "decided" decisions linked (R3)', async () => {
+    const jiraTask = await createJiraIssue(defaultIssueType, 'Find new team member');
+
     const issue = await createDecisionKnowledgeElement(
       'Which qualifications should be considered in hiring a new developer?',
       'Issue',
+      's',
+      jiraTask.id,
       'i'
     );
-
-    const comment = await createDecisionKnowledgeElement(
+    const decision = await createDecisionKnowledgeElement(
       'Consider the amount of experience the candidate has!',
       'Decision',
       's',
       issue.id,
-      'i'
+      's'
     );
+
     const payload = {
-      idOfSourceElement: comment.id,
+      idOfSourceElement: decision.id,
       idOfDestinationElement: issue.id,
       documentationLocationOfSourceElement: 's',
-      documentationLocationOfDestinationElement: 'i',
+      documentationLocationOfDestinationElement: 's',
       projectKey: JSONConfig.projectKey,
     };
     const deleteLinkRequest = {

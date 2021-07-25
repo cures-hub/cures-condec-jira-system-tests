@@ -52,7 +52,7 @@ describe('TCS: Test change decision knowledge element', () => {
     );
 
     const updatedAlternative = Object.assign(alternative, { type: 'Decision' });
-    await updateDecisionKnowledgeElement(issue.id, 'i', updatedAlternative);
+    await updateDecisionKnowledgeElement(issue.id, 's', updatedAlternative);
 
     const decisionKnowledgeAfterChange = await getKnowledgeElements();
     chai.expect(decisionKnowledgeAfterChange).to.be.an('Array').that.contains.something.like({
