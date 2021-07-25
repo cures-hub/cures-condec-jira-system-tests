@@ -67,7 +67,7 @@ const activateConDec = async () => {
 const setIssueStrategy = async (useIssueStrategy) => {
   await axios
     .post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/config/setIssueStrategy.json?projectKey=${JSONConfig.projectKey}&isIssueStrategy=${useIssueStrategy}`,
+      `${JSONConfig.fullUrl}/rest/condec/latest/config/setJiraIssueDocumentationLocationActivated.json?projectKey=${JSONConfig.projectKey}&isActivated=${useIssueStrategy}`,
       undefined, // no data in the body
       localCredentialsObject
     )
@@ -229,7 +229,7 @@ const getSpecificKnowledgeElement = async (id, documentationLocation) => {
   try {
     const result = await axios.get(
       `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/` +
-        'getDecisionKnowledgeElement.json' +
+        'knowledgeElement.json' +
         `?projectKey=${JSONConfig.projectKey}` +
         `&id=${id}` +
         `&documentationLocation=${documentationLocation}`,
