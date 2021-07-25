@@ -279,7 +279,7 @@ describe('TCS: Test change decision knowledge element', () => {
     try {
       await updateDecisionKnowledgeElement(0, null, updatePayload);
     } catch (err) {
-      chai.expect(err.message).to.eql('Request failed with status code 404');
+      chai.expect(err.message).to.eql('Request failed with status code 400');
     }
   });
 });
