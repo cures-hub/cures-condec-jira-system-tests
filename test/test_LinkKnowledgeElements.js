@@ -8,6 +8,7 @@ const {
   localCredentialsObject,
   getKnowledgeElements,
   createDecisionKnowledgeElement,
+  createLink,
 } = require('./helpers.js');
 
 chai.use(require('chai-like'));
@@ -36,18 +37,10 @@ describe('TCS: Test link knowledge elements', () => {
   it('should create a Jira issue link when both the source and destination elements are Jira issues (R1)', async () => {
     const issue1 = await createJiraIssue('Issue', 'Issue 1');
     const issue2 = await createJiraIssue('Alternative', 'Issue 2');
+    chai.expect(parseInt(issue1.id)).to.be.greaterThan(0);
+    chai.expect(parseInt(issue2.id)).to.be.greaterThan(0);
 
-    const link = await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json` +
-        `?projectKey=${JSONConfig.projectKey}` +
-        '&documentationLocationOfParent=i' +
-        '&documentationLocationOfChild=i' +
-        `&idOfParent=${issue1.id}` +
-        `&idOfChild=${issue2.id}` +
-        '&linkTypeName=relates',
-      undefined,
-      localCredentialsObject
-    );
+    const link = await createLink(issue1.id, 'i', issue2.id, 'i');
 
     const issue1Links = await jira.findIssue(issue1.id);
     const issue2Links = await jira.findIssue(issue2.id);
@@ -110,18 +103,8 @@ describe('TCS: Test link knowledge elements', () => {
     const alternative = await createJiraIssue('Alternative', 'Dummy Alternative');
 
     // Link the alternative to itself
-    try{
-      await axios.post(
-        `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json` +
-          `?projectKey=${JSONConfig.projectKey}` +
-          `&idOfParent=${alternative.id}` +
-          '&documentationLocationOfParent=i' +
-          `&idOfChild=${alternative.id}` +
-          '&documentationLocationOfChild=i' +
-          '&linkTypeName=Relates',
-        undefined,
-        localCredentialsObject
-      );
+    try {
+      createLink(alternative.id, 'i', alternative.id, 'i');
     } catch (err) {
       chai.expect(err.message).to.eql('Request failed with status code 400');
     }
@@ -175,18 +158,9 @@ describe('TCS: Test link knowledge elements', () => {
    */
   it('should not allow an element that does not exist in the database to be linked (E1)', async () => {
     const issue = await createDecisionKnowledgeElement('Dummy issue', 'Issue', 'i');
+    
     try {
-      await axios.post(
-        `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json` +
-          `?projectKey=${JSONConfig.projectKey}` +
-          `&idOfParent=${issue.id}` +
-          '&documentationLocationOfParent=i' +
-          `&idOfChild=-1` + // id -1 does not exist
-          '&documentationLocationOfChild=i' +
-          '&linkTypeName=Relates',
-        undefined,
-        localCredentialsObject
-      );
+      createLink(issue.id, 'i', -1, 'i'); // id -1 does not exist
     } catch (err) {
       chai.expect(err.message).to.eql('Request failed with status code 400');
     }

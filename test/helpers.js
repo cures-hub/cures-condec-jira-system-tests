@@ -169,6 +169,7 @@ const setUpJira = async (useIssueStrategy = false) => {
     throw err;
   }
 };
+
 /**
  * Get all the knowledge elements via the ConDec REST API
  *
@@ -187,6 +188,7 @@ const getKnowledgeElements = async (searchTerm = '', selectedElement = null) => 
     throw new Error('Getting knowledge elements did not work');
   }
 };
+
 /**
  * Get knowledge elements matching certain filter settings
  *
@@ -208,6 +210,7 @@ const filterKnowledgeElements = async (filterSettings) => {
     return err;
   }
 };
+
 const getSpecificKnowledgeElement = async (id, documentationLocation) => {
   try {
     const result = await axios.get(
@@ -225,6 +228,7 @@ const getSpecificKnowledgeElement = async (id, documentationLocation) => {
     throw new Error(`An error occurred while getting element with id ${id}`);
   }
 };
+
 /**
  *
  * @param {string} newElementSummary - a summary for the new element
@@ -297,7 +301,55 @@ const updateDecisionKnowledgeElement = async (parentElementId, parentElementLoca
     );
     return res.data;
   } catch (err) {
-    console.info(`[INFO] Updating decision knowledge failed with message: ${err.message}`);
+    return err;
+  }
+};
+
+/**
+ * Links two knowledge elements
+ */
+ const createLink = async (parentElementId, parentElementLocation, childElementId, childElementLocation) => {
+  try {
+    const result = await axios.post(
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink` +
+        `?projectKey=${JSONConfig.projectKey}` +
+        '&documentationLocationOfParent=' + parentElementLocation +
+        '&documentationLocationOfChild=' + childElementLocation +
+        '&idOfParent=' + parentElementId +
+        '&idOfChild=' + childElementId +
+        '&linkTypeName=relates',
+      null,
+      localCredentialsObject
+    );
+    return result;
+  } catch (err) {
+    return err;
+  }
+};
+
+/**
+ * Unlinks two knowledge elements
+ */
+ const deleteLink = async (sourceElementId, sourceElementLocation, destinationElementId, destinationElementLocation) => {
+  try {
+    const deleteLinkRequest = {
+      method: 'delete',
+      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink?projectKey=${JSONConfig.projectKey}`,
+      headers: {
+        Authorization: `Basic ${base64LocalCredentials}`,
+        'Content-Type': 'application/json',
+      },
+      data: {
+        idOfSourceElement: sourceElementId,
+        idOfDestinationElement: destinationElementId,
+        documentationLocationOfSourceElement: sourceElementLocation,
+        documentationLocationOfDestinationElement: destinationElementLocation,
+        projectKey: JSONConfig.projectKey
+      }
+    };
+    result = await axios(deleteLinkRequest);
+    return result;
+  } catch (err) {
     return err;
   }
 };
@@ -316,5 +368,7 @@ module.exports = {
   getSpecificKnowledgeElement,
   setSentenceIrrelevant,
   deleteDecisionKnowledgeElement,
-  filterKnowledgeElements
+  filterKnowledgeElements,
+  createLink,
+  deleteLink
 };
