@@ -7,10 +7,11 @@ const {
   createJiraIssue,
   localCredentialsObject,
   base64LocalCredentials,
-  getKnowledgeElements,
   createDecisionKnowledgeElement,
   deleteLink,
-  createLink
+  createLink,
+  getSpecificKnowledgeElement,
+  filterKnowledgeElements
 } = require('./helpers.js');
 
 const { defaultIssueType } = require('../config.json');
@@ -82,16 +83,24 @@ describe('TCS: Test unlink knowledge elements', () => {
       'Consider the amount of experience the candidate has!',
       'Decision',
       's',
-      jiraTask.id,
-      'i'
+      issue.id,
+      's'
     );
     chai.expect(parseInt(decision.id)).to.be.greaterThan(0);
-    await createLink(issue.id, 's', decision.id, 's');
 
-    const response = await deleteLink(decision.id, 's', issue.id, 's');
+    // issue will have a new id because the decision is added to the same comment and database entries get reset
+    const issueFilterResult = await filterKnowledgeElements({
+      projectKey : JSONConfig.projectKey,
+      searchTerm : "Which qualifications should be considered in hiring a new developer?",
+      knowledgeTypes : ["Issue"]
+    });
+    const issueInDatabase = issueFilterResult[0];
+    chai.expect(issueInDatabase).to.have.property('status', 'resolved');
+
+    const response = await deleteLink(decision.id, 's', issueInDatabase.id, 's');
     chai.expect(response.status).to.eql(200);
-    const knowledgeElements = await getKnowledgeElements('', jiraTask.key);
-    chai.expect(knowledgeElements).to.contain.something.like({ key: issue.key, status: 'unresolved' });
+    const issueAfterLinkDeletion = await getSpecificKnowledgeElement(issueInDatabase.id, 's');
+    chai.expect(issueAfterLinkDeletion).to.have.property('status', 'unresolved');
   });
 
   /**
