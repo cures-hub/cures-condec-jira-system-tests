@@ -233,6 +233,8 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
       jiraIssue.id,
       'i'
     );
+    
+    chai.expect(parseInt(decisionKnowledgeElement.id)).to.be.greaterThan(0);
     await setSentenceIrrelevant(decisionKnowledgeElement.id);
 
     const decisionKnowledgeElementAfterUpdate = await getSpecificKnowledgeElement(decisionKnowledgeElement.id, 's');

@@ -7,8 +7,11 @@ const {
   createJiraIssue,
   localCredentialsObject,
   base64LocalCredentials,
-  getKnowledgeElements,
   createDecisionKnowledgeElement,
+  deleteLink,
+  createLink,
+  getSpecificKnowledgeElement,
+  filterKnowledgeElements
 } = require('./helpers.js');
 
 const { defaultIssueType } = require('../config.json');
@@ -38,39 +41,11 @@ describe('TCS: Test unlink knowledge elements', () => {
     const issue2 = await createJiraIssue('Alternative', 'Issue 2');
 
     // Create a link between issue 1 and issue 2
-    await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json` +
-        `?projectKey=${JSONConfig.projectKey}` +
-        '&documentationLocationOfParent=i' +
-        '&documentationLocationOfChild=i' +
-        `&idOfParent=${issue1.id}` +
-        `&idOfChild=${issue2.id}` +
-        '&linkTypeName=relates',
-      undefined,
-      localCredentialsObject
-    );
-
-    // Then delete the link
-    const payload = {
-      // THESE ELEMENTS MUST BE PASSED IN THIS ORDER!!
-      idOfSourceElement: issue1.id,
-      idOfDestinationElement: issue2.id,
-      documentationLocationOfSourceElement: 'i',
-      documentationLocationOfDestinationElement: 'i',
-    };
-    const deleteLinkRequest = {
-      method: 'delete',
-      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink.json?projectKey=${JSONConfig.projectKey}`,
-      headers: {
-        Authorization: `Basic ${base64LocalCredentials}`,
-        'Content-Type': 'application/json',
-      },
-      data: payload,
-    };
+    await createLink(issue1.id, 'i', issue2.id, 'i');
     try {
       // Due to some strangeness with axios, we have to construct the request as above before
       // sending it
-      const deleted = await axios(deleteLinkRequest);
+      const deleted = await deleteLink(issue1.id, 'i', issue2.id, 'i');
       chai.expect(deleted.status).to.eql(200);
     } catch (err) {
       console.error(err);
@@ -102,6 +77,8 @@ describe('TCS: Test unlink knowledge elements', () => {
       jiraTask.id,
       'i'
     );
+    chai.expect(parseInt(issue.id)).to.be.greaterThan(0);
+
     const decision = await createDecisionKnowledgeElement(
       'Consider the amount of experience the candidate has!',
       'Decision',
@@ -109,30 +86,21 @@ describe('TCS: Test unlink knowledge elements', () => {
       issue.id,
       's'
     );
+    chai.expect(parseInt(decision.id)).to.be.greaterThan(0);
 
-    const payload = {
-      idOfSourceElement: decision.id,
-      idOfDestinationElement: issue.id,
-      documentationLocationOfSourceElement: 's',
-      documentationLocationOfDestinationElement: 's',
-      projectKey: JSONConfig.projectKey,
-    };
-    const deleteLinkRequest = {
-      method: 'delete',
-      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink.json?projectKey=${JSONConfig.projectKey}`,
-      headers: {
-        Authorization: `Basic ${base64LocalCredentials}`,
-        'Content-Type': 'application/json',
-      },
-      data: payload,
-    };
-    const response = await axios.request(deleteLinkRequest);
+    // issue will have a new id because the decision is added to the same comment and database entries get reset
+    const issueFilterResult = await filterKnowledgeElements({
+      projectKey : JSONConfig.projectKey,
+      searchTerm : "Which qualifications should be considered in hiring a new developer?",
+      knowledgeTypes : ["Issue"]
+    });
+    const issueInDatabase = issueFilterResult[0];
+    chai.expect(issueInDatabase).to.have.property('status', 'resolved');
+
+    const response = await deleteLink(decision.id, 's', issueInDatabase.id, 's');
     chai.expect(response.status).to.eql(200);
-    const knowledgeElements = await getKnowledgeElements('', issue.key);
-    chai
-      .expect(knowledgeElements)
-      .to.be.an('Array')
-      .that.contains.something.like({ key: issue.key, status: 'unresolved' });
+    const issueAfterLinkDeletion = await getSpecificKnowledgeElement(issueInDatabase.id, 's');
+    chai.expect(issueAfterLinkDeletion).to.have.property('status', 'unresolved');
   });
 
   /**
@@ -151,25 +119,8 @@ describe('TCS: Test unlink knowledge elements', () => {
     const issue = await createDecisionKnowledgeElement('How should files be organized?', 'Issue', 'i');
     // Create a decision that is not linked to the issue
     const decision = await createDecisionKnowledgeElement('Organize files alphabetically!', 'Decision', 'i');
-
-    const payload = {
-      // THESE ELEMENTS MUST BE PASSED IN THIS ORDER!!
-      idOfSourceElement: issue.id,
-      idOfDestinationElement: decision.id,
-      documentationLocationOfSourceElement: 'i',
-      documentationLocationOfDestinationElement: 'i',
-    };
-    const deleteLinkRequest = {
-      method: 'delete',
-      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink.json?projectKey=${JSONConfig.projectKey}`,
-      headers: {
-        Authorization: `Basic ${base64LocalCredentials}`,
-        'Content-Type': 'application/json',
-      },
-      data: payload,
-    };
     try {
-      await axios(deleteLinkRequest);
+      await deleteLink(issue.id, 'i', issue.id, 'i');
     } catch (err) {
       chai.assert(err);
     }

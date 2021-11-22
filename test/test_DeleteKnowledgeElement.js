@@ -237,7 +237,7 @@ describe('TCS: Test delete knowledge element', () => {
     const jiraIssueAfterKnowledgeDeletion = await jira.findIssue(jiraIssue.key);
     chai
       .expect(jiraIssueAfterKnowledgeDeletion.fields.comment.comments[0].body)
-      .to.eql("{issue}Accept only currencies we don't have to pay fees for!\n{issue}");
+      .to.eql("{issue}Accept only currencies we don't have to pay fees for! {issue}");
   });
 
   /**
