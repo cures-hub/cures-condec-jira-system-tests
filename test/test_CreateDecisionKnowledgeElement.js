@@ -13,7 +13,7 @@ chai.use(require('chai-things'));
 describe('TCS: Test create decision knowledge element', () => {
   // reset Jira project for every test case, to ensure no interference
   beforeEach(async () => {
-    // explicitly use issue persistence strategy here
+    // explicitly use Jira issue persistence method here
     await setUpJira(true);
   });
 
@@ -31,13 +31,15 @@ describe('TCS: Test create decision knowledge element', () => {
    */
   it('should create a new comment for an existing Jira issue when the documentation location "Jira issue text" is selected (R2)', async () => {
     const task = await createJiraIssue(defaultIssueType, 'Dummy task for R2');
+    chai.expect(parseInt(task.id)).to.be.greaterThan(0);
 
-    await createDecisionKnowledgeElement('Dummy decision knowledge issue for R2', 'Issue', 's', task.id, 'i');
+    const issue = await createDecisionKnowledgeElement('Dummy decision knowledge issue for R2', 'Issue', 's', task.id, 'i');
 
-    const taskAfterUpdate = await jira.findIssue(task.key);
+    const taskAfterUpdate = await jira.findIssue(task.key);       
     chai.expect(taskAfterUpdate.fields.comment.comments).to.be.an('Array').that.contains.something.like({
-      body: '{issue}Dummy decision knowledge issue for R2\n{issue}',
+      body: '{issue}Dummy decision knowledge issue for R2 {issue}',
     });
+    chai.expect(parseInt(issue.id)).to.be.greaterThan(0);
   });
 
   /**

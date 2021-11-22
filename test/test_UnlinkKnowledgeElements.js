@@ -39,7 +39,7 @@ describe('TCS: Test unlink knowledge elements', () => {
 
     // Create a link between issue 1 and issue 2
     await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink.json` +
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink` +
         `?projectKey=${JSONConfig.projectKey}` +
         '&documentationLocationOfParent=i' +
         '&documentationLocationOfChild=i' +
@@ -60,7 +60,7 @@ describe('TCS: Test unlink knowledge elements', () => {
     };
     const deleteLinkRequest = {
       method: 'delete',
-      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink.json?projectKey=${JSONConfig.projectKey}`,
+      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink?projectKey=${JSONConfig.projectKey}`,
       headers: {
         Authorization: `Basic ${base64LocalCredentials}`,
         'Content-Type': 'application/json',
@@ -97,14 +97,14 @@ describe('TCS: Test unlink knowledge elements', () => {
 
     const issue = await createDecisionKnowledgeElement(
       'Which qualifications should be considered in hiring a new developer?',
-      'Issue',
+      'issue',
       's',
       jiraTask.id,
       'i'
     );
     const decision = await createDecisionKnowledgeElement(
       'Consider the amount of experience the candidate has!',
-      'Decision',
+      'decision',
       's',
       issue.id,
       's'
@@ -119,7 +119,7 @@ describe('TCS: Test unlink knowledge elements', () => {
     };
     const deleteLinkRequest = {
       method: 'delete',
-      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink.json?projectKey=${JSONConfig.projectKey}`,
+      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink?projectKey=${JSONConfig.projectKey}`,
       headers: {
         Authorization: `Basic ${base64LocalCredentials}`,
         'Content-Type': 'application/json',
@@ -161,7 +161,7 @@ describe('TCS: Test unlink knowledge elements', () => {
     };
     const deleteLinkRequest = {
       method: 'delete',
-      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink.json?projectKey=${JSONConfig.projectKey}`,
+      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink?projectKey=${JSONConfig.projectKey}`,
       headers: {
         Authorization: `Basic ${base64LocalCredentials}`,
         'Content-Type': 'application/json',

@@ -43,21 +43,6 @@ const getIssueTypes = async () => {
   const issueTypes = await axios.get(`${JSONConfig.fullUrl}/rest/api/2/issuetype`, localCredentialsObject);
   return issueTypes.data;
 };
-/**
- * Activate the ConDec plugin for the configured Jira instance.
- *
- * Note that since this function calls the ConDec REST API,
- * it will only work if the ConDec plugin has been activated manually on the instance before.
- */
-const activateConDec = async () => {
-  await axios
-    .post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/config/setActivated.json?projectKey=${JSONConfig.projectKey}&isActivated=true`,
-      undefined, // no data in the body
-      localCredentialsObject
-    )
-    .then((res) => assert(res.status === 200));
-};
 
 /**
  * Set whether the ConDec plugin should use Jira issue types for decision knowledge
@@ -67,8 +52,8 @@ const activateConDec = async () => {
 const setIssueStrategy = async (useIssueStrategy) => {
   await axios
     .post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/config/setJiraIssueDocumentationLocationActivated.json?projectKey=${JSONConfig.projectKey}&isActivated=${useIssueStrategy}`,
-      undefined, // no data in the body
+      `${JSONConfig.fullUrl}/rest/condec/latest/config/${JSONConfig.projectKey}/activate-jira-issue-documentation`,
+      new Boolean(useIssueStrategy),
       localCredentialsObject
     )
     .then((res) => assert(res.status === 200));
@@ -84,7 +69,7 @@ const setIssueStrategy = async (useIssueStrategy) => {
 const deleteDecisionKnowledgeElement = async (id, documentationLocation) => {
   const deletionRequestPayload = {
     method: 'delete',
-    url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteDecisionKnowledgeElement.json`,
+    url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteDecisionKnowledgeElement`,
     headers: {
       Authorization: `Basic ${base64LocalCredentials}`,
       'Content-Type': 'application/json',
@@ -140,7 +125,7 @@ const createJiraIssue = async (issueTypeName, issueSummary, issueDescription = '
 const setSentenceIrrelevant = async (sentenceId) => {
   try {
     await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/setSentenceIrrelevant.json`,
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/setSentenceIrrelevant`,
       {
         projectKey: JSONConfig.projectKey,
         documentationLocation: 's',
@@ -177,9 +162,7 @@ const setUpJira = async (useIssueStrategy = false) => {
       lead: 'admin',
     });
 
-    // activate ConDec
-    await activateConDec();
-    // explicitly set whether to use the issue persistence strategy or not
+    // explicitly set whether to use the Jira issue persistence method or not
     await setIssueStrategy(useIssueStrategy);
   } catch (err) {
     console.error(err);
@@ -194,7 +177,7 @@ const setUpJira = async (useIssueStrategy = false) => {
 const getKnowledgeElements = async (searchTerm = '', selectedElement = null) => {
   try {
     const results = await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/knowledgeElements.json`,
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/knowledgeElements`,
       { projectKey: JSONConfig.projectKey, searchTerm, selectedElement },
       localCredentialsObject
     );
@@ -215,7 +198,7 @@ const filterKnowledgeElements = async (filterSettings) => {
   });
   try {
     const results = await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/knowledgeElements.json`,
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/knowledgeElements`,
       filterSettings,
       localCredentialsObject
     );
@@ -229,7 +212,7 @@ const getSpecificKnowledgeElement = async (id, documentationLocation) => {
   try {
     const result = await axios.get(
       `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/` +
-        'knowledgeElement.json' +
+        'knowledgeElement' +
         `?projectKey=${JSONConfig.projectKey}` +
         `&id=${id}` +
         `&documentationLocation=${documentationLocation}`,
@@ -268,10 +251,7 @@ const createDecisionKnowledgeElement = async (
 ) => {
   try {
     const result = await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/` +
-        'createDecisionKnowledgeElement.json' +
-        `?idOfExistingElement=${existingElementId}` +
-        `&documentationLocationOfExistingElement=${existingElementLocation}`,
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/element/${existingElementId}/${existingElementLocation}`,
       {
         summary: newElementSummary,
         type: newElementType,
@@ -303,7 +283,7 @@ const updateDecisionKnowledgeElement = async (parentElementId, parentElementLoca
   try {
     const res = await axios.post(
       `${JSONConfig.fullUrl}/rest/condec/latest/knowledge` +
-        `/updateDecisionKnowledgeElement.json?idOfParentElement=${parentElementId}&documentationLocationOfParentElement=${parentElementLocation}`,
+        `/updateDecisionKnowledgeElement?idOfParentElement=${parentElementId}&documentationLocationOfParentElement=${parentElementLocation}`,
       {
         id: updatedElement.id,
         summary: updatedElement.summary,
@@ -336,5 +316,5 @@ module.exports = {
   getSpecificKnowledgeElement,
   setSentenceIrrelevant,
   deleteDecisionKnowledgeElement,
-  filterKnowledgeElements,
+  filterKnowledgeElements
 };
