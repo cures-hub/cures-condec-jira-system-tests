@@ -318,7 +318,7 @@ const updateDecisionKnowledgeElement = async (parentElementId, parentElementLoca
         '&idOfParent=' + parentElementId +
         '&idOfChild=' + childElementId +
         '&linkTypeName=relates',
-      null,
+      {},
       localCredentialsObject
     );
     return result;
