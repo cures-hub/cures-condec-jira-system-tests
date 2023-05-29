@@ -119,27 +119,6 @@ const createJiraIssue = async (issueTypeName, issueSummary, issueDescription = '
 };
 
 /**
- * Set decision knowledge in a sentence (comment or Jira issue description) as irrelevant
- * @param {string|number} sentenceId
- */
-const setSentenceIrrelevant = async (sentenceId) => {
-  try {
-    await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/setSentenceIrrelevant`,
-      {
-        projectKey: JSONConfig.projectKey,
-        documentationLocation: 's',
-        id: String(sentenceId),
-      },
-      localCredentialsObject
-    );
-  } catch (err) {
-    console.error(err.message);
-    throw err;
-  }
-};
-
-/**
  * Set up the configured Jira instance in order to be able to run system tests against it.
  *
  * @param  {boolean} useIssueStrategy=false - if set to true, the project will be set up to use the
@@ -311,9 +290,9 @@ const updateDecisionKnowledgeElement = async (parentElementId, parentElementLoca
  const createLink = async (parentElementId, parentElementLocation, childElementId, childElementLocation) => {
   try {
     const result = await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/createLink` +
-        `?projectKey=${JSONConfig.projectKey}` +
-        '&documentationLocationOfParent=' + parentElementLocation +
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/link/` +
+        `${JSONConfig.projectKey}` +
+        '?documentationLocationOfParent=' + parentElementLocation +
         '&documentationLocationOfChild=' + childElementLocation +
         '&idOfParent=' + parentElementId +
         '&idOfChild=' + childElementId +
@@ -334,7 +313,7 @@ const updateDecisionKnowledgeElement = async (parentElementId, parentElementLoca
   try {
     const deleteLinkRequest = {
       method: 'delete',
-      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/deleteLink?projectKey=${JSONConfig.projectKey}`,
+      url: `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/link/${JSONConfig.projectKey}`,
       headers: {
         Authorization: `Basic ${base64LocalCredentials}`,
         'Content-Type': 'application/json',
@@ -366,7 +345,6 @@ module.exports = {
   createDecisionKnowledgeElement,
   updateDecisionKnowledgeElement,
   getSpecificKnowledgeElement,
-  setSentenceIrrelevant,
   deleteDecisionKnowledgeElement,
   filterKnowledgeElements,
   createLink,

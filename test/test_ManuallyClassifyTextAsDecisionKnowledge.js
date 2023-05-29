@@ -9,6 +9,7 @@ const {
   createDecisionKnowledgeElement,
   getSpecificKnowledgeElement,
   filterKnowledgeElements,
+  updateDecisionKnowledgeElement,
 } = require('./helpers.js');
 
 const { defaultIssueType } = require('../config.json');
@@ -235,7 +236,8 @@ describe('TCS: Test manually classify text as decision knowledge', () => {
     );
     
     chai.expect(parseInt(decisionKnowledgeElement.id)).to.be.greaterThan(0);
-    await setSentenceIrrelevant(decisionKnowledgeElement.id);
+    decisionKnowledgeElement.type = "Other";
+    await updateDecisionKnowledgeElement(jiraIssue.id, 'i', decisionKnowledgeElement);
 
     const decisionKnowledgeElementAfterUpdate = await getSpecificKnowledgeElement(decisionKnowledgeElement.id, 's');
     chai.expect(decisionKnowledgeElementAfterUpdate.type).to.eql('Other');
