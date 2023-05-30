@@ -290,8 +290,7 @@ const updateDecisionKnowledgeElement = async (parentElementId, parentElementLoca
  const createLink = async (parentElementId, parentElementLocation, childElementId, childElementLocation) => {
   try {
     const result = await axios.post(
-      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/link/` +
-        `${JSONConfig.projectKey}` +
+      `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/link/${JSONConfig.projectKey}` +
         '?documentationLocationOfParent=' + parentElementLocation +
         '&documentationLocationOfChild=' + childElementLocation +
         '&idOfParent=' + parentElementId +

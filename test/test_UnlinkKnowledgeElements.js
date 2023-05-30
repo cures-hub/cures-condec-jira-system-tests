@@ -46,7 +46,7 @@ describe('TCS: Test unlink knowledge elements', () => {
       // Due to some strangeness with axios, we have to construct the request as above before
       // sending it
       const deleted = await deleteLink(issue1.id, 'i', issue2.id, 'i');
-      //chai.expect(deleted.status).to.eql(200);
+      // chai.expect(deleted.status).to.eql(200);
     } catch (err) {
       console.error(err);
     }
