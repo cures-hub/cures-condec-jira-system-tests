@@ -291,11 +291,11 @@ const updateDecisionKnowledgeElement = async (parentElementId, parentElementLoca
   try {
     const result = await axios.post(
       `${JSONConfig.fullUrl}/rest/condec/latest/knowledge/link/${JSONConfig.projectKey}` +
-        '?documentationLocationOfParent=' + parentElementLocation +
-        '&documentationLocationOfChild=' + childElementLocation +
-        '&idOfParent=' + parentElementId +
-        '&idOfChild=' + childElementId +
-        '&linkTypeName=relates',
+        `?documentationLocationOfParent=${parentElementLocation}` +
+        `&documentationLocationOfChild=${childElementLocation}` +
+        `&idOfParent=${parentElementId}` +
+        `&idOfChild=${childElementId}` +
+        `&linkTypeName=relates`,
       {},
       localCredentialsObject
     );
