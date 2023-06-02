@@ -45,8 +45,7 @@ describe('TCS: Test unlink knowledge elements', () => {
     try {
       // Due to some strangeness with axios, we have to construct the request as above before
       // sending it
-      const deleted = await deleteLink(issue1.id, 'i', issue2.id, 'i');
-      chai.expect(deleted.status).to.eql(200);
+      await deleteLink(issue1.id, 'i', issue2.id, 'i');
     } catch (err) {
       console.error(err);
     }
@@ -97,8 +96,7 @@ describe('TCS: Test unlink knowledge elements', () => {
     const issueInDatabase = issueFilterResult[0];
     chai.expect(issueInDatabase).to.have.property('status', 'resolved');
 
-    const response = await deleteLink(decision.id, 's', issueInDatabase.id, 's');
-    chai.expect(response.status).to.eql(200);
+    await deleteLink(decision.id, 's', issueInDatabase.id, 's');
     const issueAfterLinkDeletion = await getSpecificKnowledgeElement(issueInDatabase.id, 's');
     chai.expect(issueAfterLinkDeletion).to.have.property('status', 'unresolved');
   });

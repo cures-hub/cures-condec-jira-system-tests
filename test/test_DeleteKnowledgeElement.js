@@ -172,7 +172,8 @@ describe('TCS: Test delete knowledge element', () => {
     );
 
     await jira.updateIssue(issue.id, {
-      update: { description: [{ set: 'foo' }] },
+    // the update requires a minumum text length, only "foo" is too short
+      update: { description: [{ set: 'foo foo' }] },
     });
     const knowledgeElements = await getKnowledgeElements();
     chai
