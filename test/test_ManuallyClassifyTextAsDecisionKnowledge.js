@@ -5,7 +5,6 @@ const {
   createJiraIssue,
   jira,
   getKnowledgeElements,
-  setSentenceIrrelevant,
   createDecisionKnowledgeElement,
   getSpecificKnowledgeElement,
   filterKnowledgeElements,
