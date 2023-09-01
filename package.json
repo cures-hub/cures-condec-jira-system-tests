@@ -27,7 +27,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-no-only-tests": "^3.0.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "prettier": "2.8.8",
+    "prettier": "3.0.3",
     "prettier-eslint": "^15.0.1"
   }
 }
